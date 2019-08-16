@@ -1,0 +1,57 @@
+syntax = "proto3";
+package  secwager;
+
+message Order {
+    string order_id = 1;
+    enum OrderType {
+        BUY = 0;
+        SELL = 1;
+        CANCEL = 2;
+        MODIFY = 3;
+    }
+    OrderType order_type = 2;
+    string symbol = 3;
+    bool is_limit = 4;
+    uint32 price = 5;
+    uint32 stop_price = 6;
+    uint32 order_qty = 7;
+    bool all_or_none = 8;
+    bool immediate_or_cancel = 9;
+
+    enum State {
+        SUBMITTED = 0;
+        REJECTED = 1; // terminal state
+        ACCEPTED = 2;
+        MODIFY_REQUESTED = 3;
+        MODIFY_REJECTED = 4;
+        MODIFIED = 5;
+        PARTIAL_FILLED = 6;
+        FILLED = 7; // terminal state
+        CANCEL_REQUESTED = 8;
+        CANCEL_REJECTED = 9;
+        CANCELLED = 10; // terminal state
+        UNKNOWN = 11;
+    }
+    State state=10;
+    string rejected_reason=11;
+    uint32 qty_filled =12;
+    uint32 fill_cost =13;
+    uint32 qty_on_market=14;
+    string originating_user_id=15;
+    repeated string matched_against=16;
+    bool is_buy = 17;
+}
+
+message LastTrade {
+    string symbol =1;
+    uint32 price =2;
+    uint32 qty=3;
+}
+
+message DepthBook {
+    string symbol = 1;
+    repeated uint32 bid_prices = 2;
+    repeated uint32 bid_qtys = 3;
+    repeated uint32 ask_prices = 4;
+    repeated uint32 ask_qtys = 5;
+}
