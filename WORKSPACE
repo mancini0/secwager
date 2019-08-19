@@ -29,8 +29,8 @@ http_archive(
 )
 
 load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
-
 rules_foreign_cc_dependencies()
+
 
 http_archive(
     name = "kafka",
@@ -41,6 +41,7 @@ http_archive(
         "https://github.com/edenhill/librdkafka/archive/v1.1.0.tar.gz",
     ],
 )
+
 
 git_repository(
     name = "boringssl",
@@ -79,3 +80,12 @@ load(
 )
 
 _cc_image_repos()
+
+
+http_archive(
+        name = "boost",
+        build_file_content = all_content,
+        strip_prefix = "boost_1_70_0",
+        sha256 = "882b48708d211a5f48e60b0124cf5863c1534cd544ecd0664bb534a4b5d506e9",
+        urls = ["https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz"],
+    )

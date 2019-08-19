@@ -1,15 +1,19 @@
 load("@io_bazel_rules_docker//cc:image.bzl", "cc_image")
 
-cc_binary(
+cc_image(
     name = "matchengine",
     srcs = [
         "main.cc",
-        "market_data_listener.cc",
-        "market_data_listener.h",
+        "market_data_publisher.cc",
+        "market_data_publisher.h",
+        "proto_publisher.h",
+        "proto_publisher_kafka_impl.h",
+        "proto_publisher_kafka_impl.cc"
     ],
     deps = [
         "//proto:matchengine_cc_proto",
         "//third_party/kafka:librdkafka",
-        "@liquibook",
+        "//third_party/boost:boost_fiber",
+        "@liquibook"
     ],
 )

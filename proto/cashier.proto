@@ -1,0 +1,18 @@
+syntax = "proto3";
+package  secwager;
+
+message Account {
+
+    string user_id = 1;
+    double available_funds = 2;
+    double escrowed_funds = 3;
+}
+
+
+
+service CashierService{
+    rpc Deposit(DepositRequest) returns (DepositResponse);
+
+}
+
+
