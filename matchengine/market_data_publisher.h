@@ -2,7 +2,7 @@
 
 #include "liquibook/depth_order_book.h"
 #include "proto/matchengine.pb.h"
-#include "proto_publisher.h"
+#include "proto_sender.h"
 
 typedef std::shared_ptr<secwager::Order> OrderPtr;
 typedef liquibook::book::DepthOrderBook<OrderPtr> DepthBook;
@@ -12,7 +12,7 @@ class MarketDataPublisher :
         public liquibook::book::DepthListener<DepthBook> {
 
 public:
-    MarketDataPublisher(ProtoPublisher *protoPublisher);
+    MarketDataPublisher(ProtoSender *protoSender);
 
     void on_depth_change(const DepthBook *book, const DepthBook::DepthTracker *depth) override;
 
@@ -21,7 +21,7 @@ public:
                   liquibook::book::Cost cost) override;
 
 private:
-    ProtoPublisher *protoPublisher;
+    ProtoSender *protoSender;
 };
 
 

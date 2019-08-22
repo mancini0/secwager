@@ -1,17 +1,17 @@
 #include "market_data_publisher.h"
 
-MarketDataPublisher::MarketDataPublisher(ProtoPublisher* protoPublisher) : protoPublisher(protoPublisher) {}
+MarketDataPublisher::MarketDataPublisher(ProtoSender *protoSender) : protoSender(protoSender) {}
 
 
 void MarketDataPublisher::on_trade(const DepthBook *book,
-                                        liquibook::book::Quantity qty,
-                                        liquibook::book::Cost cost) {
+                                   liquibook::book::Quantity qty,
+                                   liquibook::book::Cost cost) {
 
     secwager::LastTrade lastTrade;
     lastTrade.set_symbol(book->symbol());
     lastTrade.set_qty(qty);
     lastTrade.set_price(cost / qty);
-    protoPublisher->publish(lastTrade, lastTrade.symbol());
+    protoSender->send(lastTrade, lastTrade.symbol());
 }
 
 void MarketDataPublisher::on_depth_change(const DepthBook *book, const DepthBook::DepthTracker *depth) {
@@ -38,5 +38,5 @@ void MarketDataPublisher::on_depth_change(const DepthBook *book, const DepthBook
         }
         ++thisAsk;
     }
-    protoPublisher->publish(depthBook, depthBook.symbol());
+    protoSender->send(depthBook, depthBook.symbol());
 }
