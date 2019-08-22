@@ -24,13 +24,14 @@ all_content = """filegroup(name = "all", srcs = glob(["**"]), visibility = ["//v
 
 http_archive(
     name = "rules_foreign_cc",
+    sha256 = "045a24ac29402074fd20cba3fd472578cf1861e0b3d5585652e4b0dd249e92d6",
     strip_prefix = "rules_foreign_cc-master",
     url = "https://github.com/bazelbuild/rules_foreign_cc/archive/master.zip",
 )
 
 load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
-rules_foreign_cc_dependencies()
 
+rules_foreign_cc_dependencies()
 
 http_archive(
     name = "kafka",
@@ -42,11 +43,14 @@ http_archive(
     ],
 )
 
-
-git_repository(
-    name = "boringssl",
-    commit = "edb6488b63995693c2a6155e0b4e41c27d33b6c6",
-    remote = "https://boringssl.googlesource.com/boringssl",
+http_archive(
+    name = "spdlog",
+    build_file_content = all_content,
+    sha256 = "160845266e94db1d4922ef755637f6901266731c4cb3b30b45bf41efa0e6ab70",
+    strip_prefix = "spdlog-1.3.1",
+    urls = [
+        "https://github.com/gabime/spdlog/archive/v1.3.1.tar.gz",
+    ],
 )
 
 new_git_repository(
@@ -81,11 +85,10 @@ load(
 
 _cc_image_repos()
 
-
 http_archive(
-        name = "boost",
-        build_file_content = all_content,
-        strip_prefix = "boost_1_70_0",
-        sha256 = "882b48708d211a5f48e60b0124cf5863c1534cd544ecd0664bb534a4b5d506e9",
-        urls = ["https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz"],
-    )
+    name = "boost",
+    build_file_content = all_content,
+    sha256 = "882b48708d211a5f48e60b0124cf5863c1534cd544ecd0664bb534a4b5d506e9",
+    strip_prefix = "boost_1_70_0",
+    urls = ["https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz"],
+)

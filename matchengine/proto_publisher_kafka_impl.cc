@@ -2,17 +2,12 @@
 #include "proto/matchengine.pb.h"
 
 ProtoPublisherKafkaImpl::ProtoPublisherKafkaImpl(RdKafka::Producer *kafkaProducer,
-                                                 RdKafka::Topic *tradeTopic, RdKafka::Topic *depthTopic,
-                                                 RdKafka::Topic *orderEventTopic) : kafkaProducer(kafkaProducer) {
-
-    msgTypeToTopic["secwager.DepthBook"] = depthTopic;
-    msgTypeToTopic["secwager.LastTrade"] = tradeTopic;
-    msgTypeToTopic["secwager.Order"] = orderEventTopic;
-}
+                                                 const std::unordered_map<std::string, RdKafka::Topic *> *msgTypeToTopic)
+        : kafkaProducer(kafkaProducer), msgTypeToTopic(msgTypeToTopic) {}
 
 
 void ProtoPublisherKafkaImpl::publish(const google::protobuf::MessageLite &msg, const std::string &address) {
-    //publish(msg,address,msgTypeToTopic[msg.GetTypeName()]);
+    publish(msg, address, msgTypeToTopic->at(msg.GetTypeName()));
 }
 
 

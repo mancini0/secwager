@@ -7,13 +7,14 @@ cc_image(
         "market_data_publisher.cc",
         "market_data_publisher.h",
         "proto_publisher.h",
+        "proto_publisher_kafka_impl.cc",
         "proto_publisher_kafka_impl.h",
-        "proto_publisher_kafka_impl.cc"
     ],
     deps = [
         "//proto:matchengine_cc_proto",
-        "//third_party/kafka:librdkafka",
         "//third_party/boost:boost_fiber",
-        "@liquibook"
+        "//third_party/kafka:librdkafka",
+        "//third_party/spdlog",
+        "@liquibook",
     ],
 )

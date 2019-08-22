@@ -12,7 +12,7 @@ class MarketDataPublisher :
         public liquibook::book::DepthListener<DepthBook> {
 
 public:
-    MarketDataPublisher(ProtoPublisher* protoPublisher);
+    MarketDataPublisher(ProtoPublisher *protoPublisher);
 
     void on_depth_change(const DepthBook *book, const DepthBook::DepthTracker *depth) override;
 
@@ -21,7 +21,7 @@ public:
                   liquibook::book::Cost cost) override;
 
 private:
-    ProtoPublisher* protoPublisher;
+    ProtoPublisher *protoPublisher;
 };
 
 
