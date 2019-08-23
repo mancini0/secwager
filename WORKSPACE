@@ -53,6 +53,12 @@ http_archive(
     ],
 )
 
+git_repository(
+    name = "gtest",
+    remote = "https://github.com/google/googletest.git",
+    tag = "release-1.8.1",
+)
+
 new_git_repository(
     name = "liquibook",
     build_file_content = """cc_library(

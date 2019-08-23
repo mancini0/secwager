@@ -22,6 +22,7 @@ cc_binary(
         "//third_party/boost:boost_fiber",
         "//third_party/kafka:librdkafka",
         "//third_party/spdlog",
+        "@gtest",
         "@liquibook",
     ],
 )

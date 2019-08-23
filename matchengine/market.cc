@@ -18,7 +18,7 @@ void Market::start() {
             spdlog::info("created new depth book for symbol {}", order->symbol());
         }
         symbolToBooks[order->symbol()]->add(order);
-        spdlog::info("Added [id, symbol, type, price, qty]=[{},{},{},{},{}] to book.", order->order_id(),
+        spdlog::info("added [id, symbol, type, price, qty]=[{},{},{},{},{}] to book.", order->order_id(),
                      order->symbol(),
                      order->order_type(),
                      order->price(),
