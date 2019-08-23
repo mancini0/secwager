@@ -1,1 +1,1 @@
-build --experimental_google_legacy_api --incompatible_depset_is_not_iterable=false --incompatible_new_actions_api=false --incompatible_depset_union=false
+build --cxxopt='-std=c++14' --experimental_google_legacy_api --incompatible_depset_is_not_iterable=false --incompatible_new_actions_api=false --incompatible_depset_union=false
