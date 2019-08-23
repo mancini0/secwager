@@ -53,10 +53,17 @@ http_archive(
     ],
 )
 
+http_archive(
+    name = "rules_cc",
+    strip_prefix = "rules_cc-master",
+    urls = ["https://github.com/bazelbuild/rules_cc/archive/master.zip"],
+)
+
 git_repository(
     name = "gtest",
+    #tag = "release-1.8.1",
+    commit = "ed2eef654373c17b96bf5a007bb481a6e96ba629",
     remote = "https://github.com/google/googletest.git",
-    tag = "release-1.8.1",
 )
 
 new_git_repository(

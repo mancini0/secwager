@@ -4,11 +4,11 @@ cc_library(
     name = "protosender",
     srcs = [
         "kafka_proto_sender.cc",
-        "mock_proto_sender.cc",
+        "logging_proto_sender.cc",
     ],
     hdrs = [
         "kafka_proto_sender.h",
-        "mock_proto_sender.h",
+        "logging_proto_sender.h",
         "proto_sender.h",
     ],
     deps = [

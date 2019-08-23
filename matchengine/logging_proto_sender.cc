@@ -1,4 +1,4 @@
-#include "mock_proto_sender.h"
+#include "logging_proto_sender.h"
 #include "spdlog/spdlog.h"
 
 void MockProtoSender::send(const google::protobuf::MessageLite &msg, const std::string &address) {

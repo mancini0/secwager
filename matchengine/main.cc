@@ -1,7 +1,7 @@
 #include "boost/fiber/unbuffered_channel.hpp"
 #include <thread>
 #include "market.h"
-#include "mock_proto_sender.h"
+#include "logging_proto_sender.h"
 
 
 int main() {
