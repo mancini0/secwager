@@ -13,6 +13,7 @@ cc_library(
     ],
     deps = [
         "//proto:matchengine_cc_proto",
+        "//third_party/kafka:librdkafka",
         "//third_party/spdlog",
     ],
 )
@@ -29,6 +30,7 @@ cc_library(
     hdrs = [
         "market.h",
     ],
+    visibility = ["//matchengine/test:__pkg__"],
     deps = [
         ":protosender",
         "//proto:matchengine_cc_proto",

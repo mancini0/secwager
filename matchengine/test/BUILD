@@ -1,9 +1,10 @@
 cc_test(
-    name = "hello-test",
-    srcs = ["hello-test.cc"],
+    name = "market_test",
+    srcs = ["market_test.cc"],
     copts = ["-Iexternal/gtest/include"],
+    linkstatic = 1,
     deps = [
-        "//main:hello-greet",
-        "@gtest//:main",
+        "//matchengine:market",
+        "@gtest//:gtest_main",
     ],
 )
