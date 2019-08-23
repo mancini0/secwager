@@ -1,5 +1,3 @@
-#include "proto/matchengine.pb.h"
-#include "liquibook/depth_order_book.h"
 #include "boost/fiber/unbuffered_channel.hpp"
 #include <thread>
 #include "market.h"
