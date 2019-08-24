@@ -11,6 +11,8 @@ public:
     Market(boost::fibers::unbuffered_channel<OrderPtr> *inboundOrderChannel,
            MarketDataPublisher *marketDataPublisher, OrderStatusPublisher *orderStatusPublisher);
 
+    Market() = delete;
+
     void start();
 
 
