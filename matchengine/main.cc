@@ -1,34 +1,44 @@
 #include "boost/fiber/unbuffered_channel.hpp"
 #include <thread>
+#include <librdkafka/rdkafkacpp.h>
 #include "market.h"
 #include "logging_proto_sender.h"
-
+#include "librdkafka/rdkafkacpp.h"
+#include "constants.h"
+#include "spdlog/spdlog.h"
+#include "config_utils.h"
+#include "kafka_inbound_order_channel.h"
 
 int main() {
-    MockProtoSender mockProtoSender;
+
+    int statefulSetIndex = ConfigUtils::getStatefulSetIndexOrThrow();
+    RdKafka::Conf *consumerConfig = ConfigUtils::createBaseKafkaConfigFromEnvironmentVars();
+    ConfigUtils::setOrThrow(consumerConfig, "group.id", "matchengine-" + std::to_string(statefulSetIndex));
+    ConfigUtils::setOrThrow(consumerConfig, "enable.auto.commit", "false");
+    ConfigUtils::setOrThrow(consumerConfig, "queue.buffering.max.ms", "250");
+    ConfigUtils::setOrThrow(consumerConfig, "request.required.acks", "0"); //for now
+    std::string err;
+
+    RdKafka::KafkaConsumer *orderConsumer = RdKafka::KafkaConsumer::create(consumerConfig, err);
+    if (err.length()) {
+        spdlog::error("Could not construct  kafka consumer due to error {}", err);
+        return -1;
+    }
+    RdKafka::TopicPartition *orderTopicPartition = RdKafka::TopicPartition::create(
+            secwager::constants::KAFKA_ORDER_INBOUND_TOPIC,
+            statefulSetIndex);
+    orderConsumer->assign({orderTopicPartition});
+
+    boost::fibers::unbuffered_channel<OrderPtr> orderInboundChannel;
+    KafkaInboundOrderChannel kafkaInboundOrderChannel(orderConsumer, &orderInboundChannel);
+
+    LoggingProtoSender mockProtoSender;
     MarketDataPublisher marketDataPublisher(&mockProtoSender);
     OrderStatusPublisher orderStatusPublisher(&mockProtoSender);
-    boost::fibers::unbuffered_channel<OrderPtr> orderInboundChannel;
-    Market m(&orderInboundChannel, &marketDataPublisher, &orderStatusPublisher);
-
-    std::thread marketThread([&m]() { m.start(); });
-
-    std::thread orderProducerThread([&orderInboundChannel]() {
-        OrderPtr o = std::make_shared<secwager::Order>();
-        o->set_all_or_none(false);
-        o->set_is_limit(true);
-        o->set_price(100);
-        o->set_immediate_or_cancel(false);
-        o->set_order_id("1");
-        o->set_is_buy(true);
-        o->set_order_qty(50);
-        o->set_symbol("IBM");
-        orderInboundChannel.push(o);
-    });
-
+    Market market(&orderInboundChannel, &marketDataPublisher, &orderStatusPublisher);
+    std::thread marketThread([&market]() { market.start(); });
+    std::thread inboundOrderThread([&kafkaInboundOrderChannel]() { kafkaInboundOrderChannel.start(); });
     marketThread.join();
-    orderProducerThread.join();
-
+    inboundOrderThread.join();
 }
-
 

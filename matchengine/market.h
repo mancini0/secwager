@@ -1,7 +1,7 @@
 #pragma once
 
 #include "market_data_publisher.h"
-#include "proto/matchengine.pb.h"
+#include "proto/market.pb.h"
 #include "order_status_publisher.h"
 #include "boost/fiber/unbuffered_channel.hpp"
 #include <unordered_map>

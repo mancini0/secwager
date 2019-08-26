@@ -1,7 +1,7 @@
 #pragma once
 
 #include "liquibook/depth_order_book.h"
-#include "proto/matchengine.pb.h"
+#include "proto/market.pb.h"
 #include "proto_sender.h"
 
 typedef std::shared_ptr<secwager::Order> OrderPtr;

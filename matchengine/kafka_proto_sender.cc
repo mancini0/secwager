@@ -1,5 +1,5 @@
 #include "kafka_proto_sender.h"
-#include "proto/matchengine.pb.h"
+#include "proto/market.pb.h"
 
 KafkaProtoSender::KafkaProtoSender(RdKafka::Producer *kafkaProducer,
                                    const std::unordered_map<std::string, RdKafka::Topic *> *msgTypeToTopic)

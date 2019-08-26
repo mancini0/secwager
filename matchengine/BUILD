@@ -43,7 +43,10 @@ cc_library(
 cc_binary(
     name = "matchengine",
     srcs = [
+        "config_utils.h",
         "constants.h",
+        "kafka_inbound_order_channel.cc",
+        "kafka_inbound_order_channel.h",
         "main.cc",
     ],
     deps = [

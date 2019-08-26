@@ -2,15 +2,6 @@
 #include "gmock/gmock.h"
 #include "matchengine/market.h"
 
-using testing::AtLeast;
-using testing::_;
-
-//TODO use this Mock when I test my actual marketplace.
-class MockProtoSender : public ProtoSender {
-public:
-    MOCK_METHOD(void, send, (const google::protobuf::MessageLite &msg, const std::string &address), (override));
-};
-
 
 class DepthbookTest : public testing::Test {
     typedef std::shared_ptr<secwager::Order> OrderPtr;
@@ -118,7 +109,7 @@ TEST_F(DepthbookTest, RestingMarketExecutionAgainstIncomingLimitLargerRestingQty
     sellLimit->set_price(1200);
     sellLimit->set_is_limit(true);
     sellLimit->set_is_buy(false);
-    sellLimit->set_order_id("sell_30_amzn_1200_bucks");
+    sellLimit->set_order_id("sell_105_amzn_1200_bucks");
     book->add(sellLimit);
 
     ASSERT_EQ(book->bids().size(), 1); //remaining buy-side liquidity, 95@mkt
