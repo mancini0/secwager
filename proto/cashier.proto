@@ -1,16 +1,7 @@
 syntax = "proto3";
 package secwager;
+option java_package = "com.secwager.cashier";
 
-message Account {
-  string user_id = 1;
-  double available_funds = 2;
-}
-
-
-message OrderEscrowRequest {
-  string user_id = 1;
-  double amount = 2;
-}
 
 enum EscrowStatus {
   ESCROW_STATUS_UNSPECIFIED = 0;
@@ -18,12 +9,17 @@ enum EscrowStatus {
   FAILURE_INSUFFICIENT_FUNDS = 2;
 }
 
-message OrderEscrowResponse {
+message AttemptEscrowRequest {
+  string user_id = 1;
+  double amount = 2;
+}
+
+message AttemptEscrowResponse {
   EscrowStatus escrow_status = 1;
 }
 
 service Cashier {
-  rpc EscrowFundsBeforeOrder (OrderEscrowRequest) returns (OrderEscrowResponse);
+  rpc AttemptEscrow (AttemptEscrowRequest) returns (AttemptEscrowResponse);
 }
 
 
