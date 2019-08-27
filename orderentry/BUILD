@@ -31,10 +31,12 @@ java_library(
     exports = [":orderentry-grpc"],
     deps = [
         ":orderentry-grpc",
+        "//proto:market_java_proto",
         "//proto:orderentry_java_proto",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_apache_kafka_kafka_clients",
+        "@maven//:org_slf4j_slf4j_api",
     ],
 )
 
@@ -50,5 +52,6 @@ java_binary(
         ":dagger_lib",
         ":orderentry-service",
         "//grpc-common:grpc-server",
+        "@maven//:org_apache_kafka_kafka_clients",
     ],
 )
