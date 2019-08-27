@@ -4,6 +4,45 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
+all_content = """filegroup(name = "all", srcs = glob(["**"]), visibility = ["//visibility:public"])"""
+
+rules_jvm_external_tag = "2.0.1"
+
+rules_jvm_external_sha = "55e8d3951647ae3dffde22b4f7f8dee11b3f70f3f89424713debd7076197eaca"
+
+dagger_version = "2.23.2"
+
+grpc_version = "1.22.1"
+
+http_archive(
+    name = "rules_jvm_external",
+    sha256 = rules_jvm_external_sha,
+    strip_prefix = "rules_jvm_external-%s" % rules_jvm_external_tag,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % rules_jvm_external_tag,
+)
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+maven_install(
+    name = "maven",
+    artifacts = [
+        "io.grpc:grpc-netty-shaded:%s" % grpc_version,
+        "io.grpc:grpc-api:%s" % grpc_version,
+        "io.grpc:grpc-testing:%s" % grpc_version,
+        "io.grpc:grpc-core:%s" % grpc_version,
+        "io.grpc:grpc-stub:%s" % grpc_version,
+        "com.google.dagger:dagger:%s" % dagger_version,
+        "com.google.dagger:dagger-compiler:%s" % dagger_version,
+        "javax.inject:javax.inject:1",
+        "junit:junit:4.12",
+        "org.apache.kafka:kafka-clients:2.3.0",
+    ],
+    repositories = [
+        "https://jcenter.bintray.com/",
+        "https://repo1.maven.org/maven2",
+    ],
+)
+
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "e513c0ac6534810eb7a14bf025a0f159726753f97f74ab7863c650d26e01d677",
@@ -11,16 +50,23 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.9.0.tar.gz"],
 )
 
+#http_archive(
+#    name = "com_github_grpc_grpc",
+#    strip_prefix = "grpc-%s" % grpc_version,
+#    urls = [
+#        "https://github.com/grpc/grpc/archive/v%s.tar.gz" % grpc_version,
+#    ],
+#)
+
 http_archive(
-    name = "com_github_grpc_grpc",
-    sha256 = "11ac793c562143d52fd440f6549588712badc79211cdc8c509b183cb69bddad8",
-    strip_prefix = "grpc-1.22.0",
-    urls = [
-        "https://github.com/grpc/grpc/archive/v1.22.0.tar.gz",
-    ],
+    name = "io_grpc_grpc_java",
+    strip_prefix = "grpc-java-%s" % grpc_version,
+    url = "https://github.com/grpc/grpc-java/archive/v%s.zip" % grpc_version,
 )
 
-all_content = """filegroup(name = "all", srcs = glob(["**"]), visibility = ["//visibility:public"])"""
+load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
+
+grpc_java_repositories()
 
 http_archive(
     name = "rules_foreign_cc",
@@ -79,10 +125,6 @@ new_git_repository(
     remote = "https://github.com/objectcomputing/liquibook.git",
     shallow_since = "1562647708 -0500",
 )
-
-load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
-
-grpc_deps()
 
 load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",

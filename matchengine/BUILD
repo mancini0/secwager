@@ -12,7 +12,7 @@ cc_library(
         "proto_sender.h",
     ],
     deps = [
-        "//proto:matchengine_cc_proto",
+        "//proto:market_cc_proto",
         "//third_party/kafka:librdkafka",
         "//third_party/spdlog",
     ],
@@ -33,7 +33,7 @@ cc_library(
     visibility = ["//matchengine/test:__pkg__"],
     deps = [
         ":protosender",
-        "//proto:matchengine_cc_proto",
+        "//proto:market_cc_proto",
         "//third_party/boost:boost_fiber",
         "//third_party/spdlog",
         "@liquibook",

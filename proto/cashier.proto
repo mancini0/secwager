@@ -1,18 +1,29 @@
 syntax = "proto3";
-package  secwager;
+package secwager;
 
 message Account {
-
-    string user_id = 1;
-    double available_funds = 2;
-    double escrowed_funds = 3;
+  string user_id = 1;
+  double available_funds = 2;
 }
 
 
+message OrderEscrowRequest {
+  string user_id = 1;
+  double amount = 2;
+}
 
-service CashierService{
-    rpc Deposit(DepositRequest) returns (DepositResponse);
+enum EscrowStatus {
+  ESCROW_STATUS_UNSPECIFIED = 0;
+  SUCCESS = 1;
+  FAILURE_INSUFFICIENT_FUNDS = 2;
+}
 
+message OrderEscrowResponse {
+  EscrowStatus escrow_status = 1;
+}
+
+service Cashier {
+  rpc EscrowFundsBeforeOrder (OrderEscrowRequest) returns (OrderEscrowResponse);
 }
 
 
