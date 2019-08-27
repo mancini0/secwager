@@ -35,7 +35,8 @@ maven_install(
         "com.google.dagger:dagger-compiler:%s" % dagger_version,
         "javax.inject:javax.inject:1",
         "junit:junit:4.12",
-        "org.slf4j:slf4j-api:2.0.0-alpha0",
+        "org.slf4j:slf4j-api:1.7.25",
+        "ch.qos.logback:logback-classic:1.2.3",
         "org.apache.kafka:kafka-clients:2.3.0",
     ],
     repositories = [

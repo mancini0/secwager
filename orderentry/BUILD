@@ -52,6 +52,7 @@ java_binary(
         ":dagger_lib",
         ":orderentry-service",
         "//grpc-common:grpc-server",
+        "@maven//:ch_qos_logback_logback_classic",
         "@maven//:org_apache_kafka_kafka_clients",
     ],
 )
