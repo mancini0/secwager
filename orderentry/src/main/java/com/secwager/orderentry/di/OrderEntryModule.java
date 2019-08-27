@@ -1,8 +1,8 @@
 package com.secwager.orderentry.di;
 
-import static com.secwager.cashier.CashierGrpc.newFutureStub;
+import static com.secwager.cashier.CashierGrpc.newBlockingStub;
 
-import com.secwager.cashier.CashierGrpc.CashierFutureStub;
+import com.secwager.cashier.CashierGrpc.CashierBlockingStub;
 import dagger.Module;
 import dagger.Provides;
 import io.grpc.ManagedChannel;
@@ -48,8 +48,8 @@ public class OrderEntryModule {
 
   @Provides
   @Singleton
-  public CashierFutureStub provideCashierClient(@Named("cashierChannel") ManagedChannel channel) {
-    return newFutureStub(channel);
+  public CashierBlockingStub provideCashierClient(@Named("cashierChannel") ManagedChannel channel) {
+    return newBlockingStub(channel);
   }
 
 }
