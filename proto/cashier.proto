@@ -3,8 +3,8 @@ package secwager;
 option java_package = "com.secwager.cashier";
 
 
-enum EscrowStatus {
-  ESCROW_STATUS_UNSPECIFIED = 0;
+enum CashierActionResult {
+  RESULT_UNSET = 0;
   SUCCESS = 1;
   FAILURE_INSUFFICIENT_FUNDS = 2;
 }
@@ -15,11 +15,32 @@ message AttemptEscrowRequest {
 }
 
 message AttemptEscrowResponse {
-  EscrowStatus escrow_status = 1;
+  CashierActionResult escrow_status = 1;
+}
+
+message WithdrawalRequest {
+  string user_id = 1;
+  double amount = 2;
+}
+
+message WithdrawalResponse {
+  CashierActionResult result = 1;
+}
+
+message TransferRequest {
+  string from_user_id = 1;
+  string to_user_id = 2;
+  double amount = 3;
+}
+
+message TransferResponse {
+  CashierActionResult result = 1;
 }
 
 service Cashier {
   rpc AttemptEscrow (AttemptEscrowRequest) returns (AttemptEscrowResponse);
+  rpc Withdrawal (WithdrawalRequest) returns (WithdrawalResponse);
+  rpc Transfer (TransferRequest) returns (TransferResponse);
 }
 
 
