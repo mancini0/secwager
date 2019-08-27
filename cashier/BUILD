@@ -3,6 +3,7 @@ load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
 java_grpc_library(
     name = "cashier-grpc",
     srcs = ["//proto:cashier_proto"],
+    visibility = ["//orderentry:__pkg__"],
     deps = ["//proto:cashier_java_proto"],
 )
 

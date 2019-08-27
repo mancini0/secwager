@@ -1,6 +1,7 @@
 package com.secwager.orderentry;
 
 import com.secwager.Market.Order;
+import com.secwager.cashier.CashierGrpc.CashierFutureStub;
 import com.secwager.orderentry.OrderEntryOuterClass.SubmitOrderRequest;
 import com.secwager.orderentry.OrderEntryOuterClass.SubmitOrderResponse;
 import javax.inject.Inject;
@@ -14,10 +15,13 @@ public class OrderEntryServiceImpl extends OrderEntryGrpc.OrderEntryImplBase {
 
   final Logger log = LoggerFactory.getLogger(OrderEntryServiceImpl.class);
   private final KafkaProducer<String, byte[]> orderProducer;
+  private final CashierFutureStub cashierFutureStub;
 
   @Inject
-  public OrderEntryServiceImpl(KafkaProducer<String, byte[]> orderProducer) {
+  public OrderEntryServiceImpl(KafkaProducer<String, byte[]> orderProducer,
+      CashierFutureStub cashierFutureStub) {
     this.orderProducer = orderProducer;
+    this.cashierFutureStub = cashierFutureStub;
   }
 
   public void submitOrder(SubmitOrderRequest request,

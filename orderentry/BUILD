@@ -31,6 +31,7 @@ java_library(
     exports = [":orderentry-grpc"],
     deps = [
         ":orderentry-grpc",
+        "//cashier:cashier-grpc",
         "//proto:market_java_proto",
         "//proto:orderentry_java_proto",
         "@maven//:io_grpc_grpc_stub",
@@ -51,7 +52,9 @@ java_binary(
     deps = [
         ":dagger_lib",
         ":orderentry-service",
+        "//cashier:cashier-grpc",
         "//grpc-common:grpc-server",
+        "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:org_apache_kafka_kafka_clients",
     ],

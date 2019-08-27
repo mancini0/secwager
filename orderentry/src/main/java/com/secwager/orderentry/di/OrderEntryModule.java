@@ -1,15 +1,31 @@
 package com.secwager.orderentry.di;
 
+import static com.secwager.cashier.CashierGrpc.newFutureStub;
+
+import com.secwager.cashier.CashierGrpc.CashierFutureStub;
 import dagger.Module;
 import dagger.Provides;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import java.util.Optional;
 import java.util.Properties;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
 @Module
 public class OrderEntryModule {
 
+  @Singleton
+  @Provides
+  @Named("cashierChannel")
+  public ManagedChannel cashierGrpcChannel() {
+    return ManagedChannelBuilder
+        .forTarget("dns:///cashier")
+        .usePlaintext()
+        .maxRetryAttempts(0)
+        .build();
+  }
 
   @Singleton
   @Provides
@@ -29,4 +45,11 @@ public class OrderEntryModule {
     orderProducer.initTransactions();
     return orderProducer;
   }
+
+  @Provides
+  @Singleton
+  public CashierFutureStub provideCashierClient(@Named("cashierChannel") ManagedChannel channel) {
+    return newFutureStub(channel);
+  }
+
 }
