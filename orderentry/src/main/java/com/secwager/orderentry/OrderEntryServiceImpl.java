@@ -2,7 +2,7 @@ package com.secwager.orderentry;
 
 import com.secwager.Market.Order;
 import com.secwager.cashier.CashierGrpc.CashierBlockingStub;
-import com.secwager.cashier.CashierOuterClass.AttemptEscrowRequest;
+import com.secwager.cashier.CashierOuterClass.EscrowRequest;
 import com.secwager.cashier.CashierOuterClass.CashierActionResult;
 import com.secwager.orderentry.OrderEntryOuterClass.SubmitOrderRequest;
 import com.secwager.orderentry.OrderEntryOuterClass.SubmitOrderResponse;
@@ -32,9 +32,9 @@ public class OrderEntryServiceImpl extends OrderEntryGrpc.OrderEntryImplBase {
     int maxPrice =
         100 * 100; //quote in pennies to avoid rounding issues (100 dollars * 100 pennies)
     int escrowAmount = o.getIsLimit() ? o.getOrderQty() * o.getPrice() : o.getOrderQty() * maxPrice;
-    AttemptEscrowRequest req = AttemptEscrowRequest.newBuilder().setAmount(escrowAmount)
+    EscrowRequest req = EscrowRequest.newBuilder().setAmount(escrowAmount)
         .setUserId("todo-derive-from-token").build();
-    if (cashierBlockingStub.attemptEscrow(req).getEscrowStatus()
+    if (cashierBlockingStub.escrow(req).getEscrowStatus()
         .equals(CashierActionResult.SUCCESS)) {
       orderProducer.beginTransaction();
       orderProducer.send(new ProducerRecord<>(o.getSymbol(), o.toByteArray()));

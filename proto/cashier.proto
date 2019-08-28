@@ -9,12 +9,12 @@ enum CashierActionResult {
   FAILURE_INSUFFICIENT_FUNDS = 2;
 }
 
-message AttemptEscrowRequest {
+message EscrowRequest {
   string user_id = 1;
   double amount = 2;
 }
 
-message AttemptEscrowResponse {
+message EscrowResponse {
   CashierActionResult escrow_status = 1;
 }
 
@@ -38,7 +38,7 @@ message TransferResponse {
 }
 
 service Cashier {
-  rpc AttemptEscrow (AttemptEscrowRequest) returns (AttemptEscrowResponse);
+  rpc Escrow (EscrowRequest) returns (EscrowResponse);
   rpc Withdrawal (WithdrawalRequest) returns (WithdrawalResponse);
   rpc Transfer (TransferRequest) returns (TransferResponse);
 }
