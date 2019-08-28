@@ -1,4 +1,5 @@
 load("@io_bazel_rules_docker//cc:image.bzl", "cc_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 cc_library(
     name = "protosender",

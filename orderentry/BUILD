@@ -1,5 +1,6 @@
 load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 java_grpc_library(
     name = "orderentry-grpc",
@@ -60,4 +61,13 @@ java_image(
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:org_apache_kafka_kafka_clients",
     ],
+)
+
+container_push(
+    name = "push_orderentry",
+    format = "Docker",
+    image = ":orderentry",
+    registry = "us.gcr.io",
+    repository = "secwager/orderentry",
+    tag = "dev",
 )
