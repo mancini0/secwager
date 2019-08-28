@@ -136,9 +136,15 @@ load(
 container_repositories()
 
 load(
+    "@io_bazel_rules_docker//java:image.bzl",
+    _java_image_repos = "repositories",
+)
+load(
     "@io_bazel_rules_docker//cc:image.bzl",
     _cc_image_repos = "repositories",
 )
+
+_java_image_repos()
 
 _cc_image_repos()
 

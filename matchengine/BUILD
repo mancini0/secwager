@@ -40,7 +40,7 @@ cc_library(
     ],
 )
 
-cc_binary(
+cc_image(
     name = "matchengine",
     srcs = [
         "config_utils.h",

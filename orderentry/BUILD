@@ -1,4 +1,5 @@
 load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
+load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 
 java_grpc_library(
     name = "orderentry-grpc",
@@ -42,7 +43,7 @@ java_library(
     ],
 )
 
-java_binary(
+java_image(
     name = "orderentry",
     srcs = [
         "src/main/java/com/secwager/orderentry/App.java",
