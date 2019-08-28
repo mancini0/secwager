@@ -32,6 +32,7 @@ java_library(
     deps = [
         ":orderentry-grpc",
         "//cashier:cashier-grpc",
+        "//proto:cashier_java_proto",
         "//proto:market_java_proto",
         "//proto:orderentry_java_proto",
         "@maven//:io_grpc_grpc_stub",
