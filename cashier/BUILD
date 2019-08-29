@@ -1,4 +1,6 @@
 load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
+load("@io_bazel_rules_docker//java:image.bzl", "java_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 java_grpc_library(
     name = "cashier-grpc",
@@ -33,6 +35,7 @@ java_library(
     deps = [
         ":cashier-grpc",
         "//proto:cashier_java_proto",
+        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_slf4j_slf4j_api",
@@ -51,5 +54,18 @@ java_binary(
         ":cashier-service",
         ":dagger_lib",
         "//grpc-common:grpc-server",
+        "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:com_zaxxer_HikariCP",
+        "@maven//:commons_dbutils_commons_dbutils",
+        "@maven//:org_postgresql_postgresql",
     ],
 )
+
+#container_push(
+#    name = "push_cashier",
+#    format = "Docker",
+#    image = ":cashier",
+#    registry = "us.gcr.io",
+#    repository = "secwager/cashier",
+#    tag = "dev",
+#)

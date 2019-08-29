@@ -1,4 +1,7 @@
-workspace(name = "secwager")
+workspace(
+    name = "secwager",
+    managed_directories = {"@npm": ["ui/node_modules"]},
+)
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
@@ -21,6 +24,12 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % rules_jvm_external_tag,
 )
 
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "3356c6b767403392bab018ce91625f6d15ff8f11c6d772dc84bc9cada01c669a",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.36.1/rules_nodejs-0.36.1.tar.gz"],
+)
+
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
@@ -38,6 +47,9 @@ maven_install(
         "org.slf4j:slf4j-api:1.7.25",
         "ch.qos.logback:logback-classic:1.2.3",
         "org.apache.kafka:kafka-clients:2.3.0",
+        "commons-dbutils:commons-dbutils:1.7",
+        "org.postgresql:postgresql:42.2.6",
+        "com.zaxxer:HikariCP:3.3.1",
     ],
     repositories = [
         "https://jcenter.bintray.com/",
@@ -51,14 +63,6 @@ http_archive(
     strip_prefix = "rules_docker-0.9.0",
     urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.9.0.tar.gz"],
 )
-
-#http_archive(
-#    name = "com_github_grpc_grpc",
-#    strip_prefix = "grpc-%s" % grpc_version,
-#    urls = [
-#        "https://github.com/grpc/grpc/archive/v%s.tar.gz" % grpc_version,
-#    ],
-#)
 
 http_archive(
     name = "io_grpc_grpc_java",
@@ -155,3 +159,35 @@ http_archive(
     strip_prefix = "boost_1_70_0",
     urls = ["https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz"],
 )
+
+# Bazel workspace created by @bazel/create 0.36.1
+# Install the nodejs "bootstrap" package
+# This provides the basic tools for running and packaging nodejs programs in Bazel
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "3356c6b767403392bab018ce91625f6d15ff8f11c6d772dc84bc9cada01c669a",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.36.1/rules_nodejs-0.36.1.tar.gz"],
+)
+
+# The yarn_install rule runs yarn anytime the package.json or yarn.lock file changes.
+# It also extracts and installs any Bazel rules distributed in an npm package.
+load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
+
+yarn_install(
+    # Name this npm so that Bazel Label references look like @npm//package
+    name = "npm",
+    package_json = "//ui:package.json",
+    yarn_lock = "//ui:yarn.lock",
+)
+
+# Install any Bazel rules which were extracted earlier by the yarn_install rule.
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+
+install_bazel_dependencies()
+
+# Setup TypeScript toolchain
+load("@npm_bazel_typescript//:index.bzl", "ts_setup_workspace")
+
+ts_setup_workspace()

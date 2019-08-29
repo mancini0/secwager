@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@npm_bazel_typescript//:index.bzl", "ts_library", "ts_proto_library")
+
 proto_library(
     name = "market_proto",
     srcs = ["market.proto"],
@@ -31,6 +33,11 @@ java_proto_library(
     deps = [
         ":orderentry_proto",
     ],
+)
+
+ts_proto_library(
+    name = "orderentry_ts_proto",
+    deps = [":orderentry_proto"],
 )
 
 java_proto_library(
