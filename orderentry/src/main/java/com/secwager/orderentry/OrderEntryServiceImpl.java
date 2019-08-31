@@ -31,7 +31,7 @@ public class OrderEntryServiceImpl extends OrderEntryGrpc.OrderEntryImplBase {
     Order o = request.getOrder();
     int maxPrice =
         100 * 100; //quote in pennies to avoid rounding issues (100 dollars * 100 pennies)
-    int escrowAmount = o.getIsLimit() ? o.getOrderQty() * o.getPrice() : o.getOrderQty() * maxPrice;
+    int escrowAmount =  o.getOrderQty() * maxPrice;
     EscrowRequest req = EscrowRequest.newBuilder().setAmount(escrowAmount)
         .setUserId("todo-derive-from-token").build();
     if (cashierBlockingStub.escrow(req).getEscrowStatus()
