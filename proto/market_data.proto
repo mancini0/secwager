@@ -1,0 +1,44 @@
+syntax = "proto3";
+package secwager;
+option java_package = "com.secwager.marketdata";
+
+enum League {
+  LEAGUE_UNSPECIFIED=0;
+  ENGLISH_PREMIER_LEAGUE=1;
+  UEFA_CHAMPIONS_LEAGUE=2;
+  UEFA_EUROPA_LEAGUE=3;
+  LA_LIGA=4;
+  LIGUE_1=5;
+  SERIE_A=6;
+  LIGA_MX=7;
+  MLS=8;
+  EVERY_LEAGUE=9;
+}
+
+message Instrument {
+  string id =1;
+  string home =2;
+  string away =3;
+  int64 start_time_epoch_seconds =4;
+  int32 bid =5;
+  int32 ask=6;
+  int32 volume =7;
+  int32 last_price=8;
+}
+
+message MarketDataRequest{
+  oneof filter {
+    League league=1;
+  }
+}
+
+
+message MarketDataResponse{
+  repeated Instrument instruments=1;
+}
+
+
+service MarketDataService{
+  rpc streamMarketData(MarketDataRequest) returns(stream MarketDataResponse);
+
+}
