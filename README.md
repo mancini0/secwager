@@ -11,7 +11,7 @@ This repo demonstrates what I've found to be the most productive framework to de
     - The proto compiler, protoc,  can transform your protobuf message definitions / gRPC service definitions into clients and libraries in several languages. Bazel will handle this for you!
 3. Build your code using Bazel. Bazel offers you the following luxuries:
     - it provides fast, reproducible builds.
-    - it builds only what needs to be rebuilt (modified code, or any code that is dependent on modified code)
+    - it builds only what needs to be rebuilt (modified code, or any code that is dependent on modified code or dependencies)
     - it allows you develop different pieces of your codebase in different languages
     - it converts your protobuf messages and grpc definitions to library code in several languages
     - using [rules_docker](https://github.com/bazelbuild/rules_docker), Bazel can containerize your service by simply specifying a java_image target instead of java_binary target (or cc_image, go_image, etc). The developer need not specify a Dockerfile, or even have Docker installed locally! 
