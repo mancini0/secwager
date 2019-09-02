@@ -31,5 +31,10 @@ spec:
         - name: orderentry
           image: us.gcr.io/secwager/orderentry:dev
           env:
+            - name: POD_NAME_WITH_ORDINAL
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+
             - name: KAFKA_BOOTSTRAP_SERVERS
-              value: secwager-kafka-bootstrap
+              value: secwager-kafka-bootstrap:9092

@@ -36,7 +36,8 @@ public class OrderEntryModule {
     props.put("bootstrap.servers",
         Optional.ofNullable(System.getenv("KAFKA_BOOTSTRAP_SERVERS"))
             .orElseGet(() -> "localhost:9092"));
-    props.put("enable.idempotence", "true");
+    //https://issues.apache.org/jira/browse/KAFKA-8803
+    //props.put("enable.idempotence", "true");
     props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
     props.put("transactional.id", Optional.ofNullable(System.getenv("POD_NAME_WITH_ORDINAL"))
