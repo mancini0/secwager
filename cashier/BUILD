@@ -42,7 +42,7 @@ java_library(
     ],
 )
 
-java_binary(
+java_image(
     name = "cashier",
     srcs = [
         "src/main/java/com/secwager/cashier/App.java",
@@ -61,11 +61,11 @@ java_binary(
     ],
 )
 
-#container_push(
-#    name = "push_cashier",
-#    format = "Docker",
-#    image = ":cashier",
-#    registry = "us.gcr.io",
-#    repository = "secwager/cashier",
-#    tag = "dev",
-#)
+container_push(
+    name = "push_cashier",
+    format = "Docker",
+    image = ":cashier",
+    registry = "us.gcr.io",
+    repository = "secwager/cashier",
+    tag = "dev",
+)

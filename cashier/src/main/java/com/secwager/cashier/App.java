@@ -6,7 +6,7 @@ import com.secwager.common.GrpcServer;
 public class App {
 
   public static void main(String[] args) throws Exception {
-    GrpcServer server = new GrpcServer(0,
+    GrpcServer server = new GrpcServer(9090,
         DaggerCashierComponent.create().buildCashierService());
     server.start();
   }

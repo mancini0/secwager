@@ -7,7 +7,7 @@ public class App {
 
 
   public static void main(String[] args) throws Exception {
-    GrpcServer server = new GrpcServer(0,
+    GrpcServer server = new GrpcServer(9085,
         DaggerOrderEntryComponent.create().buildOrderEntryService());
     server.start();
   }

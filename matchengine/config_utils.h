@@ -25,7 +25,7 @@ namespace ConfigUtils {
         std::string err;
         RdKafka::Conf *commonConfig = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         ConfigUtils::setOrThrow(commonConfig, "bootstrap.servers",
-                                getEnvironmentVariableOrDefault("bootstrap.servers", "localhost:9092"));
+                                getEnvironmentVariableOrDefault(secwager::constants::KAFKA_BOOTSTRAP_SERVERS, "localhost:9092"));
         return commonConfig;
     }
 
@@ -50,16 +50,8 @@ namespace ConfigUtils {
         catch (const std::invalid_argument &e) {
             spdlog::error(
                     "The StatefulSet ordinal index could not be derived from the pod name '{}'. Please ensure your"
-                    "StatefulSet k8s definition is configured to set the {} environment variable as follows: {}",
-                    podName, secwager::constants::POD_NAME_ENV_VAR, "\n\n\n    spec:\n"
-                                                                    "      containers:\n"
-                                                                    "      - name: matchengine\n"
-                                                                    "        image: us.gcr.io/some-image\n"
-                                                                    "        env:\n"
-                                                                    "          - name: POD_NAME_WITH_ORDINAL\n"
-                                                                    "            valueFrom:\n"
-                                                                    "              fieldRef:\n"
-                                                                    "                fieldPath: metadata.name");
+                    "StatefulSet k8s definition is configured to set the {} environment variable.",
+                    podName, secwager::constants::POD_NAME_ENV_VAR);
             throw e;
         }
 

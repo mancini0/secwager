@@ -54,3 +54,12 @@ cc_image(
         ":market",
     ],
 )
+
+container_push(
+    name = "push_matchengine",
+    format = "Docker",
+    image = ":matchengine",
+    registry = "us.gcr.io",
+    repository = "secwager/matchengine",
+    tag = "dev",
+)

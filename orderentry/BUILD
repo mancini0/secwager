@@ -63,11 +63,11 @@ java_image(
     ],
 )
 
-#container_push(
-#    name = "push_orderentry",
-#    format = "Docker",
-#    image = ":orderentry",
-#    registry = "us.gcr.io",
-#    repository = "secwager/orderentry",
-#    tag = "dev",
-#)
+container_push(
+    name = "push_orderentry",
+    format = "Docker",
+    image = ":orderentry",
+    registry = "us.gcr.io",
+    repository = "secwager/orderentry",
+    tag = "dev",
+)
