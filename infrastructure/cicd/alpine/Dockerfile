@@ -21,5 +21,7 @@ RUN \
  && rm bazel-0.29.0-dist.zip \
  && cd bazel-0.29.0 \
  && bash ./compile.sh \
- && mv /bazel-0.29.0/output/bazel /bin/
+ && mv /bazel-0.29.0/output/bazel /bin/ \
+ && mkdir -p /workspace \
+ && echo 'startup --output_base=/workspace/.bazel' > ~/.bazelrc
 ENTRYPOINT ["bazel"]

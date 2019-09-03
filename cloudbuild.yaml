@@ -1,3 +1,3 @@
 steps:
-  - name: us.gcr.io/secwager/secwager-builder:dev
+  - name: us.gcr.io/secwager/secwager-builder:latest
     args: ['build', '//...']
