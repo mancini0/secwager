@@ -24,4 +24,6 @@ RUN \
  && mv /bazel-0.29.0/output/bazel /bin/ \
  && mkdir -p /workspace \
  && echo 'startup --output_base=/workspace/.bazel' > ~/.bazelrc
+
+RUN cd && git clone https://github.com/mancini0/secwager.git  && cd secwager && bazel build //...
 ENTRYPOINT ["bazel"]
