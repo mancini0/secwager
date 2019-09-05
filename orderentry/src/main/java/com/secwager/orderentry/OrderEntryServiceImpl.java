@@ -30,7 +30,7 @@ public class OrderEntryServiceImpl extends OrderEntryGrpc.OrderEntryImplBase {
       io.grpc.stub.StreamObserver<SubmitOrderResponse> responseObserver) {
     Order o = request.getOrder();
     int maxPrice =
-        100 * 100; //quote in pennies to avoid rounding issues (100 dollars * 100 pennies)
+        100 * 100; //(100 dollars * 100 pennies)
     int escrowAmount =  o.getOrderQty() * maxPrice;
     EscrowRequest req = EscrowRequest.newBuilder().setAmount(escrowAmount)
         .setUserId("todo-derive-from-token").build();

@@ -5,8 +5,3 @@ toolchain(
     toolchain = "@rules_foreign_cc//tools/build_defs/native_tools:built_cmake",
     toolchain_type = "@rules_foreign_cc//tools/build_defs:cmake_toolchain",
 )
-
-#cmake_tool(
-#    name = "cmaketool",
-#    cmake_srcs = "@cmake//:all",
-#)
