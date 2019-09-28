@@ -3,9 +3,9 @@ load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 java_grpc_library(
-    name = "orderentry-grpc",
-    srcs = ["//proto:orderentry_proto"],
-    deps = ["//proto:orderentry_java_proto"],
+    name = "marketdata-grpc",
+    srcs = ["//proto:marketdata_proto"],
+    deps = ["//proto:marketdata_java_proto"],
 )
 
 java_plugin(
@@ -26,36 +26,31 @@ java_library(
 )
 
 java_library(
-    name = "orderentry-service",
+    name = "marketdata-service",
     srcs = [
-        "src/main/java/com/secwager/orderentry/OrderEntryServiceImpl.java",
+        "src/main/java/com/secwager/marketdata/MarketDataServiceImpl.java",
     ],
-    exports = [":orderentry-grpc"],
+    exports = [":marketdata-grpc"],
     deps = [
-        ":orderentry-grpc",
-        "//cashier:cashier-grpc",
-        "//proto:cashier_java_proto",
-        "//proto:market_java_proto",
-        "//proto:orderentry_java_proto",
+        ":marketdata-grpc",
+        "//proto:marketdata_java_proto",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
-        "@maven//:org_apache_kafka_kafka_clients",
         "@maven//:org_slf4j_slf4j_api",
     ],
 )
 
 java_image(
-    name = "orderentry",
+    name = "marketdata",
     srcs = [
-        "src/main/java/com/secwager/orderentry/App.java",
-        "src/main/java/com/secwager/orderentry/di/OrderEntryComponent.java",
-        "src/main/java/com/secwager/orderentry/di/OrderEntryModule.java",
+        "src/main/java/com/secwager/marketdata/App.java",
+        "src/main/java/com/secwager/marketdata/di/MarketDataComponent.java",
+        "src/main/java/com/secwager/orderentry/di/MarketDataModule.java",
     ],
-    main_class = "com.secwager.orderentry.App",
+    main_class = "com.secwager.marketdata.App",
     deps = [
         ":dagger_lib",
-        ":orderentry-service",
-        "//cashier:cashier-grpc",
+        ":marketdata-service",
         "//grpc-common:grpc-server",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",

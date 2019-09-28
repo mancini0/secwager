@@ -2,39 +2,54 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {startLogout} from '../actions/AuthActions'
 import {Link} from 'react-router-dom';
-import {Icon} from 'semantic-ui-react';
 
 let Header = (props) => {
-    return <div className='header-container'>
-       <div className='header-element'>
-       <Icon name='chart line' size='big' />
-       <div>SECWAGER</div>
-        </div> 
-       {props.user && 
-       <div>
-       <div className='header-element'>
-            logged in as: {props.user.displayName}
-       </div>
-       <div className='header-element'>
-           <Link to="" style={{color:"blue"}} onClick={props.logout}>logout</Link> 
-        </div>
-        <div className='header-element'>
-           <Link to="" style={{color:"blue"}}>deposit</Link> 
-        </div>
-        <div className='header-element'>
-           <Link to="" style={{color:"blue"}}>withdrawal</Link> 
-        </div>
-       </div> 
-    }
+    return (
+        <div className='row'>
+            <div className='column'>
+                SECWAGER
+            </div>
+            {props.user
+                ? <React.Fragment>
 
-        {!props.user && 
-        <div className="header-element">
-            <Link style={{color:"blue"}} to="/login"><u>login</u></Link>
-        </div>}
-    </div>
-    
+                        <div className='column'>
+                            logged in as: {props.user.displayName}
+                        </div>
+                        <div className='column'>
+                            <Link
+                                to=""
+                                style={{
+                                color: "blue"
+                            }}
+                                onClick={props.logout}>logout</Link>
+                        </div>
+                        <div className='column'>
+                            <Link
+                                to=""
+                                style={{
+                                color: "blue"
+                            }}>deposit</Link>
+                        </div>
+                        <div className='column'>
+                            <Link
+                                to=""
+                                style={{
+                                color: "blue"
+                            }}>withdrawal</Link>
+                        </div>
+                    </React.Fragment>
+                : <div className="column">
+                    <Link
+                        style={{
+                        color: "gold"
+                    }}
+                        to="/login">
+                        <u>login</u>
+                    </Link>
+                </div>}
+        </div>
+    )
 }
-
 
 const mapStateToProps = (state) => ({user: state.auth.uid});
 
@@ -45,6 +60,5 @@ const mapDispatchToProps = (dispatch) => {
         }
     };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

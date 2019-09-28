@@ -1,14 +1,20 @@
-.header-container {
-    display: flex;
-    flex-direction: row;
-    background-color: beige;
-    color: green;
-    height: wrap-content;
-    justify-content: flex-start;
-}   
+.root {
+  margin: 15px;
+  background-color: sandybrown
+}
 
-.header-element {
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
 
+.column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
 }
 
 table {

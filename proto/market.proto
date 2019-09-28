@@ -49,9 +49,6 @@ message LastTrade {
   uint32 qty = 3;
 }
 
-message Foo {
-  string s = 1;
-}
 
 message DepthBook {
   string symbol = 1;
