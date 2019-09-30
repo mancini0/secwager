@@ -3,6 +3,7 @@ package(default_visibility = ["//visibility:public"])
 proto_library(
     name = "market_data_proto",
     srcs = ["market_data.proto"],
+    deps = [":market_proto"],
 )
 
 proto_library(
