@@ -1,17 +1,15 @@
-package com.secwager.cashier.di;
+package com.secwager.marketdata.di;
+
 
 import dagger.Module;
 import dagger.Provides;
-
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import org.apache.ignite.IgniteJdbcThinDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 
 @Module
-public class CashierModule {
-
-
+public class MarketDataModule {
 
   @Provides
   @Singleton
@@ -32,7 +30,6 @@ public class CashierModule {
   public QueryRunner provideQueryRunner(DataSource dataSource){
     return new QueryRunner(dataSource);
   }
-
 
 
 

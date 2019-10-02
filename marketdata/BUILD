@@ -4,8 +4,8 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 java_grpc_library(
     name = "marketdata-grpc",
-    srcs = ["//proto:marketdata_proto"],
-    deps = ["//proto:marketdata_java_proto"],
+    srcs = ["//proto:market_data_proto"],
+    deps = ["//proto:market_data_java_proto"],
 )
 
 java_plugin(
@@ -33,7 +33,8 @@ java_library(
     exports = [":marketdata-grpc"],
     deps = [
         ":marketdata-grpc",
-        "//proto:marketdata_java_proto",
+        "//proto:market_data_java_proto",
+        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_slf4j_slf4j_api",
@@ -45,7 +46,7 @@ java_image(
     srcs = [
         "src/main/java/com/secwager/marketdata/App.java",
         "src/main/java/com/secwager/marketdata/di/MarketDataComponent.java",
-        "src/main/java/com/secwager/orderentry/di/MarketDataModule.java",
+        "src/main/java/com/secwager/marketdata/di/MarketDataModule.java",
     ],
     main_class = "com.secwager.marketdata.App",
     deps = [
@@ -54,6 +55,8 @@ java_image(
         "//grpc-common:grpc-server",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:commons_dbutils_commons_dbutils",
+        "@maven//:org_apache_ignite_ignite_core",
         "@maven//:org_apache_kafka_kafka_clients",
     ],
 )

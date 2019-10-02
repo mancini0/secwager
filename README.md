@@ -6,7 +6,7 @@ This repo demonstrates what I've found to be the most productive framework to de
 1. Keep all of your code in a monorepo. CI/CD becomes trivial in a monorepo when using Bazel as your build system - see this [talk](https://www.youtube.com/watch?v=DTvXa-iqrfA). 
 2. Define your microservices as [gRPC](https://grpc.io) services (see /proto directory for examples).
     - protobuf / gRPC enjoys a very concise syntax, compared to alternatives such as openapi.
-    - gRPC services use HTTP/2  and are performant. Protobuf allows much faster serialization compared to json, and is typesafe.
+    - gRPC services use HTTP/2  and are performant. Protobuf allows faster serialization compared to json, and is typesafe.
     - gRPC services are [easy to test](https://github.com/mancini0/bazel-grpc-playground/blob/9651f7912f4d46da7c13bb96019aa1dfc52bbf3d/capitalization/src/test/java/com/example/capitalization/CapitalizationServiceTest.java#L34)
     - The proto compiler, protoc,  can transform your protobuf message definitions / gRPC service definitions into clients and libraries in several languages. Bazel will handle this for you!
 3. Build your code using Bazel. Bazel offers you the following luxuries:

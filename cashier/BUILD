@@ -55,9 +55,8 @@ java_image(
         ":dagger_lib",
         "//grpc-common:grpc-server",
         "@maven//:ch_qos_logback_logback_classic",
-        "@maven//:com_zaxxer_HikariCP",
         "@maven//:commons_dbutils_commons_dbutils",
-        "@maven//:org_postgresql_postgresql",
+        "@maven//:org_apache_ignite_ignite_core",
     ],
 )
 

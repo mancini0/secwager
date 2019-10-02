@@ -34,6 +34,7 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     name = "maven",
     artifacts = [
+        "org.apache.ignite:ignite-core:2.7.6",
         "io.grpc:grpc-netty-shaded:%s" % grpc_version,
         "io.grpc:grpc-api:%s" % grpc_version,
         "io.grpc:grpc-testing:%s" % grpc_version,
@@ -47,8 +48,6 @@ maven_install(
         "ch.qos.logback:logback-classic:1.2.3",
         "org.apache.kafka:kafka-clients:2.3.0",
         "commons-dbutils:commons-dbutils:1.7",
-        "org.postgresql:postgresql:42.2.6",
-        "com.zaxxer:HikariCP:3.3.1",
     ],
     repositories = [
         "https://jcenter.bintray.com/",
