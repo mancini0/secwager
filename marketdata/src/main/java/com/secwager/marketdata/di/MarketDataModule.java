@@ -1,6 +1,8 @@
 package com.secwager.marketdata.di;
 
 
+import com.secwager.marketdata.dao.InstrumentRepo;
+import com.secwager.marketdata.dao.InstrumentRepoIgniteImpl;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Singleton;
@@ -31,6 +33,10 @@ public class MarketDataModule {
     return new QueryRunner(dataSource);
   }
 
-
+  @Provides
+  @Singleton
+  public InstrumentRepo provideRepo(QueryRunner queryRunner){
+    return new InstrumentRepoIgniteImpl(queryRunner);
+  }
 
 }

@@ -24,12 +24,12 @@ message Team {
 
 message Instrument {
   string isin=1;
-  League league=2;
-  Team home_team=3;
-  Team away_team=4;
-  bool active=5;
+  string description=2;
+  League league=3;
+  bool active=4;
   uint64 start_time_epoch_seconds=6;
 }
+
 message Quote {
   string instrument_id =1;
   int32 last_price=2;

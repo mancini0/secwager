@@ -26,15 +26,38 @@ java_library(
 )
 
 java_library(
+    name = "marketdata-dao-interface",
+    srcs = ["src/main/java/com/secwager/marketdata/dao/InstrumentRepo.java"],
+    deps = [
+        "//proto:market_data_java_proto",
+    ],
+)
+
+java_library(
+    name = "marketdata-dao-impl",
+    srcs = [
+        "src/main/java/com/secwager/marketdata/dao/InstrumentRepoIgniteImpl.java",
+        "src/main/java/com/secwager/marketdata/dao/Queries.java",
+    ],
+    deps = [
+        ":marketdata-dao-interface",
+        "//proto:market_data_java_proto",
+        "@maven//:commons_dbutils_commons_dbutils",
+        "@maven//:javax_inject_javax_inject",
+        "@maven//:org_slf4j_slf4j_api",
+    ],
+)
+
+java_library(
     name = "marketdata-service",
     srcs = [
         "src/main/java/com/secwager/marketdata/MarketDataServiceImpl.java",
     ],
     exports = [":marketdata-grpc"],
     deps = [
+        ":marketdata-dao-interface",
         ":marketdata-grpc",
         "//proto:market_data_java_proto",
-        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_slf4j_slf4j_api",
@@ -51,6 +74,8 @@ java_image(
     main_class = "com.secwager.marketdata.App",
     deps = [
         ":dagger_lib",
+        ":marketdata-dao-impl",
+        ":marketdata-dao-interface",
         ":marketdata-service",
         "//grpc-common:grpc-server",
         "@io_grpc_grpc_java//api",
@@ -61,11 +86,11 @@ java_image(
     ],
 )
 
-#container_push(
-#    name = "push_orderentry",
-#    format = "Docker",
-#    image = ":orderentry",
-#    registry = "us.gcr.io",
-#    repository = "secwager/orderentry",
-#    tag = "dev",
-#)
+container_push(
+    name = "push_marketdata",
+    format = "Docker",
+    image = ":marketdata",
+    registry = "us.gcr.io",
+    repository = "secwager/marketdata",
+    tag = "dev",
+)

@@ -9,6 +9,9 @@ import store from './store/store'
 import LoginModal from "./components/LoginModal";
 import {NotFound} from "./components/NotFound";
 import './styles/styles.css';
+const {MarketDataServiceClient} = require('./proto/market_data_grpc_web_pb.js');
+const {InstrumentRequest, League, InstrumentResponse} = require('./proto/market_data_pb.js');
+
 
 ReactDOM.render(
 
@@ -21,6 +24,19 @@ ReactDOM.render(
     </Switch>
   </MemoryRouter>
 </Provider>, document.getElementById("root"));
+
+
+
+var marketDataClient = new MarketDataServiceClient(
+  'http://marketdata:31380');
+
+
+var req = new InstrumentRequest();
+req.setLeague(League.ENGLISH_PREMIER_LEAGUE);
+
+
+
+marketDataClient.getInstruments(req, {}, (err,res)=>console.log(res));
 
 
 

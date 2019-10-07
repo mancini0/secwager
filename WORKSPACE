@@ -14,19 +14,13 @@ rules_jvm_external_sha = "55e8d3951647ae3dffde22b4f7f8dee11b3f70f3f89424713debd7
 
 dagger_version = "2.23.2"
 
-grpc_version = "1.22.1"
+grpc_version = "1.24.0"
 
 http_archive(
     name = "rules_jvm_external",
     sha256 = rules_jvm_external_sha,
     strip_prefix = "rules_jvm_external-%s" % rules_jvm_external_tag,
     url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % rules_jvm_external_tag,
-)
-
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "3356c6b767403392bab018ce91625f6d15ff8f11c6d772dc84bc9cada01c669a",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.36.1/rules_nodejs-0.36.1.tar.gz"],
 )
 
 load("@rules_jvm_external//:defs.bzl", "maven_install")
@@ -63,18 +57,8 @@ http_archive(
 )
 
 http_archive(
-    name = "io_grpc_grpc_java",
-    strip_prefix = "grpc-java-%s" % grpc_version,
-    url = "https://github.com/grpc/grpc-java/archive/v%s.zip" % grpc_version,
-)
-
-load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
-
-grpc_java_repositories()
-
-http_archive(
     name = "rules_foreign_cc",
-    sha256 = "045a24ac29402074fd20cba3fd472578cf1861e0b3d5585652e4b0dd249e92d6",
+    #sha256 = "045a24ac29402074fd20cba3fd472578cf1861e0b3d5585652e4b0dd249e92d6",
     strip_prefix = "rules_foreign_cc-master",
     url = "https://github.com/bazelbuild/rules_foreign_cc/archive/master.zip",
 )
@@ -91,6 +75,26 @@ http_archive(
 load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
 
 rules_foreign_cc_dependencies(["//:built_cmake_toolchain"])
+
+http_archive(
+    name = "io_grpc_grpc_java",
+    strip_prefix = "grpc-java-%s" % grpc_version,
+    url = "https://github.com/grpc/grpc-java/archive/v%s.zip" % grpc_version,
+)
+
+http_archive(
+    name = "com_google_protobuf",
+    strip_prefix = "protobuf-3.10.0",
+    urls = ["https://github.com/google/protobuf/archive/v3.10.0.zip"],
+)
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
+protobuf_deps()
+
+load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
+
+grpc_java_repositories(omit_com_google_protobuf = True)
 
 http_archive(
     name = "kafka",

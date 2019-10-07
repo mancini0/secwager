@@ -14,12 +14,12 @@ export const App = (props) => (
       "height": "250px"
     }}>
       < div className='column' style={{
-        "background-color": "lightgrey"
+        "backgroundColor": "lightgrey"
       }}>
         <ContractTable contracts={[]}/>
       </div>
       < div className='column' style={{
-        "background-color": "salmon"
+        "backgroundColor": "salmon"
       }}>
         depth book here
       </div>
