@@ -36,7 +36,10 @@ req.setLeague(League.ENGLISH_PREMIER_LEAGUE);
 
 
 
-marketDataClient.getInstruments(req, {}, (err,res)=>console.log(res));
+marketDataClient.getInstruments(req, {}, (err,res)=>{
+  console.log(JSON.stringify(res));
+  console.log(JSON.stringify(err));
+});
 
 
 

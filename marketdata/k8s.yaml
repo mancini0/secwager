@@ -1,20 +1,3 @@
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: grpc-web-filter
-spec:
-  workloadLabels:
-    app: marketdata
-  filters:
-    - listenerMatch:
-        listenerType: SIDECAR_INBOUND
-        listenerProtocol: HTTP
-      insertPosition:
-        index: FIRST
-      filterType: HTTP
-      filterName: "envoy.grpc_web"
-      filterConfig: {}
----
 apiVersion: v1
 kind: Service
 metadata:
@@ -23,7 +6,7 @@ metadata:
     app: marketdata
 spec:
   ports:
-    - name: grpc-port
+    - name: grpc-web-port
       port: 9300
   selector:
     app: marketdata
@@ -38,7 +21,6 @@ spec:
     metadata:
       labels:
         app: marketdata
-        version: v1
     spec:
       containers:
         - name: marketdata

@@ -31,6 +31,6 @@ spec:
       containers:
       - name: secwager-ui
         image: us.gcr.io/secwager/secwager-ui:dev
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 9080
