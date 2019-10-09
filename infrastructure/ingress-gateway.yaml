@@ -28,9 +28,7 @@ spec:
             prefix: /secwager.MarketDataService
       route:
         - destination:
-            host: marketdata
-            port:
-              name: 9300
+            host: marketdata.default.svc.cluster.local
       corsPolicy:
         allowOrigin:
           - "*"
@@ -61,4 +59,4 @@ spec:
         allowCredentials: true
     - route:
         - destination:
-            host: secwager-ui
+            host: secwager-ui.default.svc.cluster.local
