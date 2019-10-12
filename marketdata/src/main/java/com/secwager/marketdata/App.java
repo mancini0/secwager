@@ -6,7 +6,7 @@ import com.secwager.common.GrpcServer;
 class App {
 
   public static void main(String[] args){
-    GrpcServer server = new GrpcServer(31738,
+    GrpcServer server = new GrpcServer(9300,
         DaggerMarketDataComponent.create().buildMarketDataService());
     server.start();
   }
