@@ -28,7 +28,7 @@ ReactDOM.render(
 
 
 var marketDataClient = new MarketDataServiceClient(
-  'http://marketdata:31257');
+  'http://'+window.location.host);
 
 
 var req = new InstrumentRequest();

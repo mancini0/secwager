@@ -6,7 +6,7 @@ metadata:
     app: marketdata
 spec:
   ports:
-    - name: grpc-web-port
+    - name: grpc-web
       port: 9300
   selector:
     app: marketdata

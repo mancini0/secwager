@@ -22,6 +22,7 @@ public class MarketDataServiceImpl extends MarketDataServiceGrpc.MarketDataServi
   @Override
   public void getInstruments(com.secwager.marketdata.MarketData.InstrumentRequest request,
       io.grpc.stub.StreamObserver<com.secwager.marketdata.MarketData.InstrumentResponse> responseObserver) {
+      log.info("hello my friend");
       Set<Instrument> instruments = instrumentRepo.findAllActiveInstruments();
       responseObserver.onNext(InstrumentResponse.newBuilder().addAllInstruments(instruments).build());
       responseObserver.onCompleted();
