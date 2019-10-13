@@ -12,7 +12,7 @@ class LoginModal extends React.Component {
 
 
 render = (props) => (
-  <Modal open={this.state.open}>
+  <Modal  open={this.state.open}>
     <Modal.Header>Please register or login.</Modal.Header>
     <Modal.Content image>
       <Modal.Description>

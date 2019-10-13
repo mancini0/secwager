@@ -7,13 +7,13 @@ let Header = (props) => {
     return (
         <div className='row'>
             <div className='column'>
-                SECWAGER
+                SECWAGER <i>securitized sports wagers</i>
             </div>
             {props.user
                 ? <React.Fragment>
 
                         <div className='column'>
-                            logged in as: {props.user.displayName}
+                           {props.user.email}
                         </div>
                         <div className='column'>
                             <Link

@@ -10,9 +10,7 @@ enum League {
   LA_LIGA=4;
   LIGUE_1=5;
   SERIE_A=6;
-  LIGA_MX=7;
-  MLS=8;
-  EVERY_LEAGUE=9;
+  EVERY_LEAGUE=7;
 }
 
 message Team {

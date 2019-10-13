@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './Header';
-import ContractTable from './ContractTable';
+import LeagueMenu from './LeagueMenu';
 import DepthBook from './DepthBook';
 
 export const App = (props) => (
@@ -16,12 +16,7 @@ export const App = (props) => (
       < div className='column' style={{
         "backgroundColor": "lightgrey"
       }}>
-        <ContractTable contracts={[]}/>
-      </div>
-      < div className='column' style={{
-        "backgroundColor": "salmon"
-      }}>
-        depth book here
+        <LeagueMenu/>
       </div>
     </div>
   </React.Fragment>

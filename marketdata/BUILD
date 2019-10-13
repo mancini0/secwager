@@ -64,7 +64,7 @@ java_library(
     ],
 )
 
-java_image(
+java_binary(
     name = "marketdata",
     srcs = [
         "src/main/java/com/secwager/marketdata/App.java",
@@ -86,11 +86,11 @@ java_image(
     ],
 )
 
-container_push(
-    name = "push_marketdata",
-    format = "Docker",
-    image = ":marketdata",
-    registry = "us.gcr.io",
-    repository = "secwager/marketdata",
-    tag = "dev",
-)
+#container_push(
+#    name = "push_marketdata",
+#    format = "Docker",
+#    image = ":marketdata_img",
+#    registry = "us.gcr.io",
+#    repository = "secwager/marketdata",
+#    tag = "dev",
+#)

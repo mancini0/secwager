@@ -1,6 +1,6 @@
 .root {
   margin: 15px;
-  background-color: sandybrown
+  background-color: skyblue
 }
 
 .row {
@@ -17,30 +17,27 @@
   flex: 1;
 }
 
+.leagueMenu tr {
+  cursor: pointer;
+}
+
+td:last-child{
+  text-align: left;
+  vertical-align: top;
+}
+
+
 table {
-    border-collapse: collapse;
-    table-layout: auto;
-  }
-  table td, table th {
-    border: 1px solid grey;
-    padding: 3px;
-  }
-  table tr:first-child th {
-    border-top: 0;
-  }
-  table tr:last-child td {
-    border-bottom: 0;
-  }
-  table tr td:first-child,
-  table tr th:first-child {
-    border-left: 0;
-  }
-  table tr td:last-child,
-  table tr th:last-child {
-    border-right: 0;
-  }
+  width: 100%;
   
-  
+}
+th.league {
+  width: 15%
+}
+
+.active-league {
+  background-color: gold;
+}
   
   .verticalLine {
     height:100px;
