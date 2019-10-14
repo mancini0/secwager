@@ -10,33 +10,24 @@
   width: 100%;
 }
 
-.column {
-  display: flex;
-  flex-direction: column;
-  flex-basis: 100%;
+.col {
   flex: 1;
 }
 
-.leagueMenu tr {
+.clickable {
   cursor: pointer;
-}
-
-td:last-child{
-  text-align: left;
-  vertical-align: top;
 }
 
 
 table {
   width: 100%;
-  
-}
-th.league {
-  width: 15%
-}
+  border: solid 1px;
+  }
 
-.active-league {
-  background-color: gold;
+
+
+.highlighted {
+  background-color: salmon;
 }
   
   .verticalLine {

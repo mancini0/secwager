@@ -11,6 +11,7 @@ enum League {
   LIGUE_1=5;
   SERIE_A=6;
   EVERY_LEAGUE=7;
+  MAJOR_LEAGUE_SOCCER=8;
 }
 
 message Team {

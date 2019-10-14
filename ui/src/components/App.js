@@ -13,7 +13,7 @@ export const App = (props) => (
     <div className='row' style={{
       "height": "250px"
     }}>
-      < div className='column' style={{
+      < div className='col' style={{
         "backgroundColor": "lightgrey"
       }}>
         <LeagueMenu/>
