@@ -1,13 +1,17 @@
 import React, { Component } from 'react'
 import ContractTable from './ContractTable'
 import { Icon } from 'semantic-ui-react'
+import { connect } from 'react-redux';
 const { League } = require('../proto/market_data_pb.js');
-export default class LeagueMenu extends Component {
+
+
+
+class LeagueMenu extends Component {
     state = {
         activeItem: League.ENGLISH_PREMIER_LEAGUE
     }
 
-    render() {
+    render(props) {
         const { activeItem } = this.state
         const classes = (bool) => [
             ...(bool ? ['highlighted'] : []),
@@ -26,9 +30,14 @@ export default class LeagueMenu extends Component {
                     <div onClick={() => this.setState({ activeItem: League.UEFA_EUROPA_LEAGUE })} className={classes(this.state.activeItem === League.UEFA_EUROPA_LEAGUE)}><i className="eu flag" />Europa League</div>
                 </div>
                 <div className='row'>
-                    <div className='col'><ContractTable contracts={[]} /></div>
+                    <div className='col'><ContractTable contracts={this.props.contracts} /></div>
                 </div>
             </React.Fragment >
         )
     }
 }
+
+const mapStateToProps = (state) => ({ contracts: state.marketData.instrumentsByIsin })
+
+
+export default connect(mapStateToProps)(LeagueMenu);

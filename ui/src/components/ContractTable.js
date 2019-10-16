@@ -6,7 +6,7 @@ class ContractTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            highlightedContractId: 0
+            highlightedIsin: 0
         }
     }
 
@@ -24,31 +24,35 @@ class ContractTable extends React.Component {
                         <th>volume</th>
                         <th>last_price</th>
                     </tr>
-                    {this
+                    {Object.keys(this
                         .props
-                        .contracts
-                        .map(c => <tr
-                            style={{
-                            backgroundColor: this.state.highlightedContractId == c.id
-                                ? "yellow"
-                                : null
-                        }}
-                            key={c.id}
-                            onClick={() => {
-                            this.setState({highlightedContractId: c.id});
-                            this
-                                .props
-                                .handleClick(c)
-                        }}>
-                            <td>{c.id}</td>
-                            <td>{c.home}</td>
-                            <td>{c.away}</td>
-                            <td>{c.start}</td>
-                            <td>{c.bid}</td>
-                            <td>{c.ask}</td>
-                            <td>{c.volume}</td>
-                            <td><PriceTickingCell price={c.last_price}/></td>
-                        </tr>)}
+                        .contracts)
+                        .map(isin => {
+                            const instrument = this.props.contracts[isin];
+                            return (<tr
+                                style={{
+                                    backgroundColor: this.state.highlightedIsin == isin
+                                        ? "yellow"
+                                        : null
+                                }}
+                                key={isin}
+                                onClick={() => {
+                                    this.setState({ highlightedIsin: isin });
+                                    this
+                                        .props
+                                        .handleClick(c)
+                                }}>
+                                <td>{isin}</td>
+                                <td>{instrument.getDescription()}</td>
+                                <td>{instrument.getDescription()}</td>
+                                <td>{instrument.getStartTimeEpochSeconds()}</td>
+                                <td>{}</td>
+                                <td>{}</td>
+                                <td>{}</td>
+                                <td><PriceTickingCell price={50.0} /></td>
+                            </tr>);
+                        })
+                    }
                 </tbody>
             </table>
         );
