@@ -8,7 +8,7 @@ export const App = (props) => (
     <div className='row' style={{
       "height": "50px"
     }}>
-      <Header/>
+      <Header />
     </div>
     <div className='row' style={{
       "height": "250px"
@@ -16,7 +16,12 @@ export const App = (props) => (
       < div className='col' style={{
         "backgroundColor": "lightgrey"
       }}>
-        <LeagueMenu/>
+        <LeagueMenu />
+      </div>
+      < div className='col' style={{
+        "backgroundColor": "gold"
+      }}>
+        Depth book here
       </div>
     </div>
   </React.Fragment>

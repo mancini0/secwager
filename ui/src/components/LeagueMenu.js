@@ -30,14 +30,16 @@ class LeagueMenu extends Component {
                     <div onClick={() => this.setState({ activeItem: League.UEFA_EUROPA_LEAGUE })} className={classes(this.state.activeItem === League.UEFA_EUROPA_LEAGUE)}><i className="eu flag" />Europa League</div>
                 </div>
                 <div className='row'>
-                    <div className='col'><ContractTable contracts={this.props.contracts} /></div>
+                    <div className='col'><ContractTable contracts={this.props.contracts} prices={this.props.prices}/></div>
                 </div>
             </React.Fragment >
         )
     }
 }
 
-const mapStateToProps = (state) => ({ contracts: state.marketData.instrumentsByIsin })
+const mapStateToProps = (state) => ({ contracts: state.marketData.instrumentsByIsin,
+ prices: state.marketData.pricesByIsin
+ })
 
 
 export default connect(mapStateToProps)(LeagueMenu);

@@ -37,10 +37,10 @@ public class InstrumentRepoIgniteImpl implements InstrumentRepo {
   public Set<Instrument> findAllActiveInstruments() {
     try {
       List<Map<String, Object>> rows = queryRunner
-          .query(Queries.ALL_ACTIVE_INSTRUMENTS, new MapListHandler());
+          .query("SELECT * FROM INSTRUMENT", new MapListHandler());
       log.info("Found {} rows", rows.size());
       return rows.stream().map(row -> Instrument.newBuilder()
-          .setDescription((String)row.get("DESCRIPTION"))
+          .setDescription("sosa")
           .setIsin((String) row.get("ISIN"))
           .setActive(true)
           .setLeague(leagueMap.get((String)row.get("LEAGUE_ID")))

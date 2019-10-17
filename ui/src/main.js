@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import { App } from './components/App'
 import { firebase } from './firebase/Firebase';
 import { login, logout } from './actions/AuthActions';
-import { addInstrument } from './actions/MarketDataActions';
+import { addInstrument, updatePrice } from './actions/MarketDataActions';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import store from './store/store'
@@ -28,6 +28,8 @@ ReactDOM.render(
 var marketDataClient = new MarketDataServiceClient('http://' +/*window.location.host*/
   'localhost:8080');
 
+
+//listen for new games
 var req = new InstrumentRequest();
 req.setLeague(League.EVERY_LEAGUE);
 marketDataClient.getInstruments(req, {}, (err, result) => {
@@ -40,7 +42,20 @@ marketDataClient.getInstruments(req, {}, (err, result) => {
 });
 
 
+//listen for price changes
 
+setInterval(()=>{
+  let price = Math.floor(Math.random() * 100) + 1;
+  let isins = ['BRHTOT8AEPL', 'MUNARS7AEPL','NORAVA8AEPL']
+  let isin = isins[Math.floor(Math.random()*isins.length)];
+  console.log(`fake price data: ${isin} ${price}`);
+  store.dispatch(updatePrice({isin,price}));
+},5000);
+
+
+
+
+//listen for auth changes
 firebase
   .auth()
   .onAuthStateChanged((user) => {

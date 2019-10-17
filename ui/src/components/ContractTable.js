@@ -1,6 +1,6 @@
 import React from 'react';
 import PriceTickingCell from './PriceTickingCell'
-
+import { secondsToDate } from '../utils';
 class ContractTable extends React.Component {
 
     constructor(props) {
@@ -22,7 +22,7 @@ class ContractTable extends React.Component {
                         <th>bid</th>
                         <th>ask</th>
                         <th>volume</th>
-                        <th>last_price</th>
+                        <th className='absorbing-column'>last_price</th>
                     </tr>
                     {Object.keys(this
                         .props
@@ -30,11 +30,10 @@ class ContractTable extends React.Component {
                         .map(isin => {
                             const instrument = this.props.contracts[isin];
                             return (<tr
-                                style={{
-                                    backgroundColor: this.state.highlightedIsin == isin
-                                        ? "yellow"
-                                        : null
-                                }}
+
+                                className={this.state.highlightedIsin == isin
+                                    ? "highlighted-row clickable"
+                                    : "clickable"}
                                 key={isin}
                                 onClick={() => {
                                     this.setState({ highlightedIsin: isin });
@@ -45,11 +44,11 @@ class ContractTable extends React.Component {
                                 <td>{isin}</td>
                                 <td>{instrument.getDescription()}</td>
                                 <td>{instrument.getDescription()}</td>
-                                <td>{instrument.getStartTimeEpochSeconds()}</td>
+                                <td>{secondsToDate(instrument.getStartTimeEpochSeconds()).toLocaleString()}</td>
                                 <td>{}</td>
                                 <td>{}</td>
                                 <td>{}</td>
-                                <td><PriceTickingCell price={50.0} /></td>
+                                <td><PriceTickingCell price={this.props.prices[isin]} /></td>
                             </tr>);
                         })
                     }
