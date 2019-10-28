@@ -51,9 +51,9 @@ maven_install(
 
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "e513c0ac6534810eb7a14bf025a0f159726753f97f74ab7863c650d26e01d677",
-    strip_prefix = "rules_docker-0.9.0",
-    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.9.0.tar.gz"],
+    #sha256 = "e513c0ac6534810eb7a14bf025a0f159726753f97f74ab7863c650d26e01d677",
+    strip_prefix = "rules_docker-0.12.1",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.12.1/rules_docker-v0.12.1.tar.gz"],
 )
 
 http_archive(
@@ -99,10 +99,10 @@ grpc_java_repositories(omit_com_google_protobuf = True)
 http_archive(
     name = "kafka",
     build_file_content = all_content,
-    sha256 = "123b47404c16bcde194b4bd1221c21fdce832ad12912bd8074f88f64b2b86f2b",
-    strip_prefix = "librdkafka-1.1.0",
+    #sha256 = "123b47404c16bcde194b4bd1221c21fdce832ad12912bd8074f88f64b2b86f2b",
+    strip_prefix = "librdkafka-1.2.1",
     urls = [
-        "https://github.com/edenhill/librdkafka/archive/v1.1.0.tar.gz",
+        "https://github.com/edenhill/librdkafka/archive/v1.2.1.tar.gz",
     ],
 )
 
