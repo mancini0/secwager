@@ -24,7 +24,7 @@ cmake_external(
         "RDKAFKA_BUILD_EXAMPLES": "OFF",
     },
     lib_source = "@kafka//:all",
-    out_lib_dir = "lib64",
+    #out_lib_dir = "lib64",
     static_libraries = [
         "librdkafka++.a",
         "librdkafka.a",

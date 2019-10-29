@@ -6,7 +6,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-all_content = """filegroup(name = "all", srcs = glob(["**"]), visibility = ["//visibility:public"])"""
+
+all_content = """filegroup(name = "all", srcs = glob(["**"],exclude = ["libs/wave/test/**/*"]), visibility = ["//visibility:public"])"""
 
 rules_jvm_external_tag = "2.0.1"
 
@@ -166,7 +167,6 @@ _cc_image_repos()
 http_archive(
     name = "boost",
     build_file_content = all_content,
-    sha256 = "882b48708d211a5f48e60b0124cf5863c1534cd544ecd0664bb534a4b5d506e9",
-    strip_prefix = "boost_1_70_0",
-    urls = ["https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz"],
+    strip_prefix = "boost_1_71_0",
+    urls = ["https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz"],
 )
