@@ -11,10 +11,10 @@ public class Queries {
       + "FROM\n"
       + "\tINSTRUMENT I\n"
       + "JOIN TEAM AWAY ON\n"
-      + "\tI.AWAY_TEAM_ID = AWAY.REUTERS_CODE\n"
+      + "\tI.AWAY_TEAM_ID = AWAY.TEAM_ID\n"
       + "\tAND I.LEAGUE_ID = AWAY.LEAGUE_ID\n"
       + "JOIN TEAM HOME ON\n"
-      + "\tI.HOME_TEAM_ID = HOME.REUTERS_CODE\n"
+      + "\tI.HOME_TEAM_ID = HOME.TEAM_ID\n"
       + "\tAND I.LEAGUE_ID = HOME.LEAGUE_ID\n"
       + "WHERE I.ACTIVE";
 

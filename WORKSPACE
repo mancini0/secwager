@@ -6,7 +6,6 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-
 all_content = """filegroup(name = "all", srcs = glob(["**"],exclude = ["libs/wave/test/**/*"]), visibility = ["//visibility:public"])"""
 
 rules_jvm_external_tag = "2.0.1"
@@ -142,6 +141,17 @@ new_git_repository(
     commit = "828a771d715438f487db15bbc6d6c310a952e26d",
     remote = "https://github.com/objectcomputing/liquibook.git",
     shallow_since = "1562647708 -0500",
+)
+
+load(
+    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
+    docker_toolchain_configure = "toolchain_configure",
+)
+
+#I shouldn't need this call.00 - defaults should be sufficient, but docker is not found on ubuntu 18.04 for some reason.
+docker_toolchain_configure(
+    name = "docker_config",
+    docker_path = "/usr/bin/docker",
 )
 
 load(

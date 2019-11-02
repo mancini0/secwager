@@ -1,6 +1,8 @@
 import React from 'react';
 import PriceTickingCell from './PriceTickingCell'
 import { secondsToDate } from '../utils';
+import { connect } from 'react-redux';
+import { getContractsByLeague } from '../selectors'
 class ContractTable extends React.Component {
 
     constructor(props) {
@@ -58,5 +60,10 @@ class ContractTable extends React.Component {
     }
 
 }
+/**getContractsByLeague(state, ownProps.league), **/
+const mapStateToProps = (state, ownProps) => ({
+    contracts: state.marketData.instrumentsByIsin,
+    prices: state.marketData.pricesByIsin
+})
 
-export default ContractTable;
+export default connect(mapStateToProps)(ContractTable);

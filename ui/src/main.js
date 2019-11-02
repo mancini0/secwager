@@ -26,7 +26,7 @@ ReactDOM.render(
   </Provider>, document.getElementById("root"));
 
 var marketDataClient = new MarketDataServiceClient('http://' +/*window.location.host*/
-  'localhost:8080');
+  'localhost:10000');
 
 
 //listen for new games
@@ -37,6 +37,7 @@ marketDataClient.getInstruments(req, {}, (err, result) => {
     console.log('err:' + JSON.stringify(err));
   }
   else {
+    console.log('found instruments: ' + JSON.stringify(result.getInstrumentsList()));
     result.getInstrumentsList().forEach(instrument => store.dispatch(addInstrument(instrument)));
   }
 });
@@ -44,13 +45,13 @@ marketDataClient.getInstruments(req, {}, (err, result) => {
 
 //listen for price changes
 
-setInterval(()=>{
+setInterval(() => {
   let price = Math.floor(Math.random() * 100) + 1;
-  let isins = ['BRHTOT8AEPL', 'MUNARS7AEPL','NORAVA8AEPL']
-  let isin = isins[Math.floor(Math.random()*isins.length)];
+  let isins = ['BRHTOT8AEPL', 'MUNARS7AEPL', 'NORAVA8AEPL']
+  let isin = isins[Math.floor(Math.random() * isins.length)];
   console.log(`fake price data: ${isin} ${price}`);
-  store.dispatch(updatePrice({isin,price}));
-},5000);
+  store.dispatch(updatePrice({ isin, price }));
+}, 5000);
 
 
 

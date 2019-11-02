@@ -13,9 +13,9 @@ export default (state = initialState, action) => {
         case ADD_INSTRUMENT:
             return produce(state, draft => { draft['instrumentsByIsin'][action.instrument.getIsin()] = action.instrument });
         case UPDATE_PRICE:
-            return produce(state, draft => {draft['pricesByIsin'][action.isin] = action.price});
+            return produce(state, draft => { draft['pricesByIsin'][action.isin] = action.price });
         case UPDATE_DEPTH:
-            return produce(state, draft => {draft['depthByIsin'][action.depth.symbol] = action.depth});
+            return produce(state, draft => { draft['depthByIsin'][action.depth.symbol] = action.depth });
         default:
             return state;
     }

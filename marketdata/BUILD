@@ -64,7 +64,7 @@ java_library(
     ],
 )
 
-java_binary(
+java_image(
     name = "marketdata",
     srcs = [
         "src/main/java/com/secwager/marketdata/App.java",
