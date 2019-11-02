@@ -3,6 +3,7 @@ import PriceTickingCell from './PriceTickingCell'
 import { secondsToDate } from '../utils';
 import { connect } from 'react-redux';
 import { getContractsByLeague } from '../selectors'
+import { ADD_INSTRUMENT } from '../actions/MarketDataActions';
 class ContractTable extends React.Component {
 
     constructor(props) {
@@ -18,24 +19,24 @@ class ContractTable extends React.Component {
                 <tbody>
                     <tr>
                         <th>id</th>
-                        <th>home</th>
-                        <th>away</th>
+                        <th>description</th>
                         <th>start</th>
                         <th>bid</th>
                         <th>ask</th>
                         <th>volume</th>
                         <th className='absorbing-column'>last_price</th>
                     </tr>
-                    {Object.keys(this
+                    {this
                         .props
-                        .contracts)
-                        .map(isin => {
-                            const instrument = this.props.contracts[isin];
+                        .contracts
+                        .map(instrument => {
+                            const isin = instrument.getIsin();
                             return (<tr
-
-                                className={this.state.highlightedIsin == isin
-                                    ? "highlighted-row clickable"
-                                    : "clickable"}
+                                className={
+                                    this.state.highlightedIsin == isin
+                                        ? "highlighted-row clickable"
+                                        : "clickable"
+                                }
                                 key={isin}
                                 onClick={() => {
                                     this.setState({ highlightedIsin: isin });
@@ -44,7 +45,6 @@ class ContractTable extends React.Component {
                                         .handleClick(c)
                                 }}>
                                 <td>{isin}</td>
-                                <td>{instrument.getDescription()}</td>
                                 <td>{instrument.getDescription()}</td>
                                 <td>{secondsToDate(instrument.getStartTimeEpochSeconds()).toLocaleString()}</td>
                                 <td>{}</td>
@@ -55,14 +55,14 @@ class ContractTable extends React.Component {
                         })
                     }
                 </tbody>
-            </table>
+            </table >
         );
     }
 
 }
 /**getContractsByLeague(state, ownProps.league), **/
 const mapStateToProps = (state, ownProps) => ({
-    contracts: state.marketData.instrumentsByIsin,
+    contracts: getContractsByLeague(state, ownProps.league),
     prices: state.marketData.pricesByIsin
 })
 

@@ -3,9 +3,9 @@ package com.secwager.marketdata.dao;
 public class Queries {
   protected static String ALL_ACTIVE_INSTRUMENTS = "SELECT\n"
       + "\tI.ISIN,\n"
-      + "\tCONCAT_WS(' vs ',\n"
-      + "\tHOME.LONG_NAME ,\n"
-      + "\tAWAY.LONG_NAME) AS DESCRIPTION,\n"
+      + "\tCONCAT_WS(' at ',\n"
+      + "\tAWAY.LONG_NAME ,\n"
+      + "\tHOME.LONG_NAME) AS DESCRIPTION,\n"
       + "\tI.LEAGUE_ID,\n"
       + "\tI.GAME_TIME\n"
       + "FROM\n"
