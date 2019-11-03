@@ -43,7 +43,7 @@ class ContractTable extends React.Component {
                                     this.setState({ highlightedIsin: isin });
                                     this
                                         .props
-                                        .handleClick(c)
+                                        .handleInstrumentSelection(instrument)
                                 }}>
                                 <td>{isin}</td>
                                 <td>{instrument.getDescription().split(" at ")[0]}</td>

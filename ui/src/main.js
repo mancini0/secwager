@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { App } from './components/App'
+import App from './components/App'
 import { firebase } from './firebase/Firebase';
 import { login, logout } from './actions/AuthActions';
 import { addInstrument, updatePrice } from './actions/MarketDataActions';

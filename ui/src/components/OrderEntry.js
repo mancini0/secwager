@@ -5,7 +5,7 @@ import * as yup from 'yup';
 
 var secwager = require('../proto/market_pb');
 
-import { firebase } from '../firebase/firebase';
+import { firebase } from '../firebase/Firebase';
 
 
 
@@ -21,8 +21,7 @@ class OrderEntry extends React.Component {
             errors: [],
             isSubmitting: false,
             wasTouched: false,
-            marketSide: props.side,
-            contractId: props.rowInfo.id,
+            marketSide: secwager.Order.OrderType.BUY,
             orderType: 'limit'
         });
     }
@@ -54,10 +53,10 @@ class OrderEntry extends React.Component {
 
     handleSubmit = () => {
         this.setState({ isSubmitting: true });
-        var order = new cairo.Order();
-        order.setOrderType(this.state.marketSide === 'buy' ? cairo.Order.OrderType.BUY : cairo.Order.OrderType.SELL);
+        var order = new secwager.Order();
+        order.setOrderType(this.state.marketSide);
         order.setSymbol(this.state.contractId);
-        order.setIsBuy((this.state.marketSide === 'buy'));
+        order.setIsBuy((this.state.marketSide === secwager.Order.OrderType.BUY));
         order.setIsLimit(this.state.orderType === 'limit');
         order.setPrice(this.state.orderType === 'limit' ? Math.round(parseFloat(this.state.price) * 100) : 0);
         order.setOrderQty(this.state.quantity);
@@ -88,11 +87,11 @@ class OrderEntry extends React.Component {
                 <Dimmer active={this.state.isSubmitting}>
                     <Icon size='massive' color='purple' name='soccer' loading />
                 </Dimmer>
-                <div className='dashboard-row'>
-                    <div className='dashboard-col'>
-                        <p>{'symbol: ' + this.state.contractId}</p>
+                <div className='row'>
+                    <div className='col'>
+                        <p>{'symbol: ' + this.props.intrument.getIsin()}</p>
                         <Form size='mini'>
-                            <Form.Field error={this.state.errorPaths.includes('marketSide')} name="marketSide" defaultValue={this.props.side} control={Select} label='Market side' options={this.options} placeholder='market side' onChange={this.handleChange} />
+                            <Form.Field error={this.state.errorPaths.includes('marketSide')} name="marketSide" defaultValue={secwager.Order.OrderType.BUY} control={Select} label='Market side' options={this.options} placeholder='market side' onChange={this.handleChange} />
                             <Form.Field error={this.state.errorPaths.includes('quantity')} type='number' name="quantity" control={Input} label='Quantity' placeholder='quantity' onChange={this.handleChange} />
 
                             <Form.Group>
@@ -120,7 +119,7 @@ class OrderEntry extends React.Component {
                             <Button color='green' disabled={!this.state.wasTouched || this.state.errorPaths.length || !this.props.user} onClick={this.handleSubmit}>Submit</Button>
                         </Form>
                     </div>
-                    <div className='dashboard-col'>
+                    <div className='col'>
                         {(this.state.errors.length || !this.props.user) &&
                             <div>
                                 {/**<h4>please correct these form issues:</h4>**/}
@@ -139,4 +138,4 @@ class OrderEntry extends React.Component {
 
 export default connect((state) => ({
     user: state.auth.uid
-}))(OrderEntryV3)
+}))(OrderEntry)

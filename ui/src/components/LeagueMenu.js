@@ -29,7 +29,7 @@ class LeagueMenu extends Component {
                     <div onClick={() => this.setState({ selectedLeague: League.UEFA_EUROPA_LEAGUE })} className={classes(this.state.selectedLeague === League.UEFA_EUROPA_LEAGUE)}><i className="eu flag" />Europa League</div>
                 </div>
                 <div className='row'>
-                    <div className='col'><ContractTable league={this.state.selectedLeague} /></div>
+                    <div className='col'><ContractTable handleInstrumentSelection={this.props.handleInstrumentSelection}league={this.state.selectedLeague} /></div>
                 </div>
             </React.Fragment >
         )
