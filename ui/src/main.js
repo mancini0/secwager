@@ -19,7 +19,6 @@ ReactDOM.render(
     <MemoryRouter>
       <Switch>
         <Route path="/" exact={true} component={TraderDashboard} />
-        <Route path="/login" exact={true} component={LoginModal} />
         <Route component={NotFound} />
       </Switch>
     </MemoryRouter>

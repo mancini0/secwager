@@ -2,8 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { startLogout } from '../actions/AuthActions'
 import { Link } from 'react-router-dom';
+import { Button, Header, Image, Modal } from 'semantic-ui-react'
+import { SignIn } from './SignIn';
 
-let Header = (props) => {
+let HeaderBar = (props) => {
     return (
         <div className='row'>
             <div className='col'>
@@ -38,14 +40,17 @@ let Header = (props) => {
                             }}>withdrawal</Link>
                     </div>
                 </React.Fragment>
-                : <div className="col">
-                    <Link
-                        style={{
-                            color: "gold"
-                        }}
-                        to="/login">
-                        <u>login</u>
-                    </Link>
+                : <div className="col clickable" >
+                    <Modal trigger={<u>login</u>}>
+                        <Modal.Header>Please register or login.</Modal.Header>
+                        <Modal.Content image>
+                            <Modal.Description>
+                                <p>Select an authentication option below.</p>
+                                <SignIn />
+                            </Modal.Description>
+                        </Modal.Content>
+                    </Modal>
+
                 </div>}
         </div>
     )
@@ -61,4 +66,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderBar);
