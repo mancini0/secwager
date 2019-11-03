@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import App from './components/App'
+import TraderDashboard from './components/TraderDashboard'
 import { firebase } from './firebase/Firebase';
 import { login, logout } from './actions/AuthActions';
 import { addInstrument, updatePrice } from './actions/MarketDataActions';
@@ -18,15 +18,14 @@ ReactDOM.render(
   <Provider store={store}>
     <MemoryRouter>
       <Switch>
-        <Route path="/" exact={true} component={App} />
+        <Route path="/" exact={true} component={TraderDashboard} />
         <Route path="/login" exact={true} component={LoginModal} />
         <Route component={NotFound} />
       </Switch>
     </MemoryRouter>
   </Provider>, document.getElementById("root"));
 
-var marketDataClient = new MarketDataServiceClient('http://' +/*window.location.host*/
-  'localhost:10000');
+var marketDataClient = new MarketDataServiceClient('http://' +/**window.location.host**/ "localhost:10000");
 
 
 //listen for new games

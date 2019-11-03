@@ -27,8 +27,8 @@ class OrderEntry extends React.Component {
     }
 
     options = [
-        { text: 'buy', value: 'buy' },
-        { text: 'sell', value: 'sell' },
+        { text: 'buy', value: secwager.Order.OrderType.BUY },
+        { text: 'sell', value: secwager.Order.OrderType.SELL },
     ]
 
 
@@ -39,7 +39,7 @@ class OrderEntry extends React.Component {
             then: yup.number().positive().min(.25).max(99.75).required('price is a required field for limit orders.'),
             otherwise: yup.object().nullable().notRequired()
         }),
-        marketSide: yup.string().required(),
+        marketSide: yup.number().required(),
         orderType: yup.string().required()
     });
 
@@ -80,8 +80,7 @@ class OrderEntry extends React.Component {
     };
 
 
-    render() {
-
+    render(props) {
         return (
             <Dimmer.Dimmable dimmed={this.state.isSubmitting}>
                 <Dimmer active={this.state.isSubmitting}>
@@ -89,13 +88,12 @@ class OrderEntry extends React.Component {
                 </Dimmer>
                 <div className='row'>
                     <div className='col'>
-                        <p>{'symbol: ' + this.props.intrument.getIsin()}</p>
+                        <p><b>{this.props.instrument.getDescription()}</b></p>
                         <Form size='mini'>
                             <Form.Field error={this.state.errorPaths.includes('marketSide')} name="marketSide" defaultValue={secwager.Order.OrderType.BUY} control={Select} label='Market side' options={this.options} placeholder='market side' onChange={this.handleChange} />
                             <Form.Field error={this.state.errorPaths.includes('quantity')} type='number' name="quantity" control={Input} label='Quantity' placeholder='quantity' onChange={this.handleChange} />
 
                             <Form.Group>
-                                <label><b>Order type</b></label>
                                 <Form.Field error={this.state.errorPaths.includes('orderType')} >
                                     <Radio
                                         label='market'
