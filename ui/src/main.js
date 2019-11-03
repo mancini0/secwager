@@ -7,7 +7,6 @@ import { addInstrument, updatePrice } from './actions/MarketDataActions';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import store from './store/store'
-import LoginModal from "./components/LoginModal";
 import { NotFound } from "./components/NotFound";
 import './styles/styles.css';
 const { MarketDataServiceClient } = require('./proto/market_data_grpc_web_pb.js');
