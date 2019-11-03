@@ -13,6 +13,11 @@ INSERT INTO INSTRUMENT(ISIN,HOME_TEAM_ID, AWAY_TEAM_ID, LEAGUE_ID, GAME_TIME, AC
 ('NORAVA8AEPL', 'NOR', 'AVA', 'EPL', '2019-10-05 09:00:00', TRUE),
 ('MUNARS7AEPL', 'MUN', 'ARS', 'EPL', '2019-09-30 14:00:00', TRUE);
 
+INSERT INTO INSTRUMENT(ISIN,HOME_TEAM_ID, AWAY_TEAM_ID, LEAGUE_ID, GAME_TIME, ACTIVE) VALUES
+('GENUDI9AITA', 'GEN', 'UDI', 'SERIE_A', '2019-10-05 06:30:00', TRUE);
+
+
+
 
 INSERT INTO TEAM(TEAM_ID, LONG_NAME, LEAGUE_ID) VALUES
 ('BOU', 'AFC Bournemouth', 'EPL'),
@@ -35,6 +40,28 @@ INSERT INTO TEAM(TEAM_ID, LONG_NAME, LEAGUE_ID) VALUES
 ('WAT', 'Watford', 'EPL'),
 ('WHU', 'West Ham United', 'EPL'),
 ('WLV', 'Wolverhampton Wanderers', 'EPL');
+
+INSERT INTO TEAM(TEAM_ID, LONG_NAME, LEAGUE_ID) VALUES
+('MIL', 'AC Milan', 'SERIE_A'),
+('ROM', 'AS Roma', 'SERIE_A'),
+('ATT', 'Atalanta', 'SERIE_A'),
+('BGN', 'Bologna', 'SERIE_A'),
+('BCA', 'Brescia', 'SERIE_A'),
+('CAG', 'Cagliari', 'SERIE_A'),
+('FIO', 'Fiorentina', 'SERIE_A'),
+('GEN', 'Genoa', 'SERIE_A'),
+('HEL', 'Hellas Verona', 'SERIE_A'),
+('INT', 'Inter Milan', 'SERIE_A'),
+('JUV', 'Juventus', 'SERIE_A'),
+('LAZ', 'Lazio', 'SERIE_A'),
+('LEC', 'Lecce', 'SERIE_A'),
+('NAP', 'Napoli', 'SERIE_A'),
+('PRM', 'Parma', 'SERIE_A'),
+('SAM', 'Sampdoria', 'SERIE_A'),
+('SAS', 'Sassuolo', 'SERIE_A'),
+('SPA', 'Societa Polisportiva Arts et Labor', 'SERIE_A'),
+('TOR', 'Torino', 'SERIE_A'),
+('UDI', 'Udinese', 'SERIE_A');
 
 
 INSERT INTO LEAGUE(ID, LONG_NAME) VALUES ('EPL', 'English Premier League'),

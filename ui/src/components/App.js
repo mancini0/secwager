@@ -18,11 +18,11 @@ export const App = (props) => (
       }}>
         <LeagueMenu />
       </div>
-      < div className='col' style={{
+      {/* < div className='col' style={{
         "backgroundColor": "gold"
       }}>
         Depth book here
-      </div>
+    </div> */}
     </div>
   </React.Fragment>
 );

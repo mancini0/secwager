@@ -18,8 +18,9 @@ class ContractTable extends React.Component {
             <table>
                 <tbody>
                     <tr>
-                        <th>id</th>
-                        <th>description</th>
+                        <th>isin</th>
+                        <th>home</th>
+                        <th>away</th>
                         <th>start</th>
                         <th>bid</th>
                         <th>ask</th>
@@ -45,7 +46,8 @@ class ContractTable extends React.Component {
                                         .handleClick(c)
                                 }}>
                                 <td>{isin}</td>
-                                <td>{instrument.getDescription()}</td>
+                                <td>{instrument.getDescription().split(" at ")[0]}</td>
+                                <td>{instrument.getDescription().split(" at ")[1]}</td>
                                 <td>{secondsToDate(instrument.getStartTimeEpochSeconds()).toLocaleString()}</td>
                                 <td>{}</td>
                                 <td>{}</td>
