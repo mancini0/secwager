@@ -4,8 +4,7 @@ import com.secwager.Market.Order;
 import com.secwager.cashier.CashierGrpc.CashierBlockingStub;
 import com.secwager.cashier.CashierOuterClass.EscrowRequest;
 import com.secwager.cashier.CashierOuterClass.CashierActionResult;
-import com.secwager.orderentry.OrderEntryOuterClass.SubmitOrderRequest;
-import com.secwager.orderentry.OrderEntryOuterClass.SubmitOrderResponse;
+
 import javax.inject.Inject;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -13,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class OrderEntryServiceImpl extends OrderEntryGrpc.OrderEntryImplBase {
+public class OrderEntryServiceImpl extends OrderEntryServiceGrpc.OrderEntryServiceImplBase {
 
   final Logger log = LoggerFactory.getLogger(OrderEntryServiceImpl.class);
   private final KafkaProducer<String, byte[]> orderProducer;
@@ -26,8 +25,8 @@ public class OrderEntryServiceImpl extends OrderEntryGrpc.OrderEntryImplBase {
     this.cashierBlockingStub = cashierBlockingStub;
   }
 
-  public void submitOrder(SubmitOrderRequest request,
-      io.grpc.stub.StreamObserver<SubmitOrderResponse> responseObserver) {
+  public void submitOrder(OrderEntry.SubmitOrderRequest request,
+                          io.grpc.stub.StreamObserver<OrderEntry.SubmitOrderResponse> responseObserver) {
     Order o = request.getOrder();
     int maxPrice =
         100 * 100;
@@ -39,12 +38,12 @@ public class OrderEntryServiceImpl extends OrderEntryGrpc.OrderEntryImplBase {
       orderProducer.beginTransaction();
       orderProducer.send(new ProducerRecord<>(o.getSymbol(), o.toByteArray()));
       orderProducer.commitTransaction();
-      responseObserver.onNext(SubmitOrderResponse.newBuilder().setSuccess(true).build());
+      responseObserver.onNext(OrderEntry.SubmitOrderResponse.newBuilder().setSuccess(true).build());
       responseObserver.onCompleted();
       return;
     }
     responseObserver
-        .onNext(SubmitOrderResponse.newBuilder().setSuccess(false)
+        .onNext(OrderEntry.SubmitOrderResponse.newBuilder().setSuccess(false)
             .setMessage("todo").build());
   }
 }

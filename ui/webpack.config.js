@@ -1,9 +1,15 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-
+const fs = require('fs');
 
 module.exports = (env) => {
+    const currentPath = path.join(__dirname);
+    const basePath = currentPath + '/.env';
+    const envPath = basePath + '.' + env;
+    const finalPath = fs.existsSync(envPath) ? envPath : basePath;
+    console.log('path is: ' + finalPath);
+
     return (
 
         {
@@ -18,7 +24,7 @@ module.exports = (env) => {
                         loader: 'babel-loader',
                         test: /\.js$/,
                         exclude: /node_modules/
-                    },{
+                    }, {
                         test: /\.css$/,
                         use: ['style-loader', 'css-loader']
                     }
@@ -35,6 +41,6 @@ module.exports = (env) => {
                 contentBase: path.join(__dirname, 'public'),
                 historyApiFallback: true
             },
-            plugins: [new Dotenv()]
+            plugins: [new Dotenv({ path: finalPath })]
         });
 };

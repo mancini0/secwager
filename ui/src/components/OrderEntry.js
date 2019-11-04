@@ -3,10 +3,11 @@ import { connect } from 'react-redux';
 import { Button, Checkbox, Form, Input, Radio, Select, Message, Label, Dimmer, Loader, Icon } from 'semantic-ui-react';
 import * as yup from 'yup';
 
-var secwager = require('../proto/market_pb');
 
 import { firebase } from '../firebase/Firebase';
 
+const { OrderEntryServiceClient } = require('../proto/order_entry_grpc_web_pb.js');
+const secwager = require('../proto/market_pb');
 
 
 

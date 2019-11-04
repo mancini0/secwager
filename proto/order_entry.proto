@@ -14,6 +14,6 @@ message SubmitOrderResponse {
   string message = 2;
 }
 
-service OrderEntry {
+service OrderEntryService {
   rpc SubmitOrder (SubmitOrderRequest) returns (SubmitOrderResponse);
 }

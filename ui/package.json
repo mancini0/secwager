@@ -33,7 +33,7 @@
     "webpack-dev-server": "^3.3.1"
   },
   "scripts": {
-    "build:dev": "webpack",
+    "build:dev": "webpack --env dev",
     "build:prod": "webpack -p --env production",
     "serve": "webpack-dev-server"
   }

@@ -23,7 +23,9 @@ ReactDOM.render(
     </MemoryRouter>
   </Provider>, document.getElementById("root"));
 
-var marketDataClient = new MarketDataServiceClient('http://' +/**window.location.host**/ "localhost:10000");
+console.log(`url is ${process.env.MARKET_DATA_URL}`);
+var marketDataClient = new MarketDataServiceClient('http://' + process.env.MARKET_DATA_URL);
+
 
 
 //listen for new games
