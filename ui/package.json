@@ -27,6 +27,7 @@
     "css-loader": "^2.1.1",
     "dotenv-webpack": "^1.7.0",
     "style-loader": "^0.23.1",
+    "terser-webpack-plugin": "^2.2.1",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.1",
@@ -35,6 +36,7 @@
   "scripts": {
     "build:dev": "webpack --env dev",
     "build:prod": "webpack -p --env production",
-    "serve": "webpack-dev-server"
+    "local": "bash ./envoy-for-local-dev/start.sh && webpack-dev-server --env dev --open --watch",
+    "serve": "webpack-dev-server --env dev --open --watch"
   }
 }

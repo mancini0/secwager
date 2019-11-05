@@ -25,6 +25,10 @@ static_resources:
                           route:
                             cluster: marketdata
                             max_grpc_timeout: 0s
+                        - match: { prefix: "/secwager.orderentry.OrderEntryService" }
+                          route:
+                            cluster: orderentry
+                            max_grpc_timeout: 0s                            
                       cors:
                         allow_origin:
                           - "*"
@@ -37,10 +41,15 @@ static_resources:
                   - name: envoy.cors
                   - name: envoy.router
   clusters:
+    - name: orderentry
+      connect_timeout: 0.25s
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      hosts: [{ socket_address: { address: orderentry, port_value: 9085 }}]
     - name: marketdata
       connect_timeout: 0.25s
       type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
-      # win/mac hosts: Use address: host.docker.internal instead of address: localhost in the line below
       hosts: [{ socket_address: { address: marketdata, port_value: 9300 }}]

@@ -7,7 +7,8 @@ import * as yup from 'yup';
 import { firebase } from '../firebase/Firebase';
 
 const { OrderEntryServiceClient } = require('../proto/order_entry_grpc_web_pb.js');
-const secwager = require('../proto/market_pb');
+const market = require('../proto/market_pb');
+const orderEntry = require('../proto/order_entry_pb');
 
 
 
@@ -22,14 +23,14 @@ class OrderEntry extends React.Component {
             errors: [],
             isSubmitting: false,
             wasTouched: false,
-            marketSide: secwager.Order.OrderType.BUY,
+            marketSide: market.Order.OrderType.BUY,
             orderType: 'limit'
         });
     }
 
     options = [
-        { text: 'buy', value: secwager.Order.OrderType.BUY },
-        { text: 'sell', value: secwager.Order.OrderType.SELL },
+        { text: 'buy', value: market.Order.OrderType.BUY },
+        { text: 'sell', value: market.Order.OrderType.SELL },
     ]
 
 
@@ -54,24 +55,33 @@ class OrderEntry extends React.Component {
 
     handleSubmit = () => {
         this.setState({ isSubmitting: true });
-        var order = new secwager.Order();
+        var order = new market.Order();
         order.setOrderType(this.state.marketSide);
         order.setSymbol(this.state.contractId);
-        order.setIsBuy((this.state.marketSide === secwager.Order.OrderType.BUY));
+        order.setIsBuy((this.state.marketSide === market.Order.OrderType.BUY));
         order.setIsLimit(this.state.orderType === 'limit');
         order.setPrice(this.state.orderType === 'limit' ? Math.round(parseFloat(this.state.price) * 100) : 0);
         order.setOrderQty(this.state.quantity);
-        firebase.auth().currentUser.getIdToken(true).then(idToken => {
-            const orderBase64 = btoa(String.fromCharCode(...new Uint8Array(order.serializeBinary())));
-            axios.post(process.env.ORDER_ENTRY_URL, {
-                idToken,
-                orderBase64
+        firebase.auth().currentUser.getIdToken(true)
+            .then(idToken => {
+                var submitOrderRequest = new orderEntry.SubmitOrderRequest();
+                var orderEntryClient = new OrderEntryServiceClient('http://' + process.env.ORDER_ENTRY_URL);
+                submitOrderRequest.setAuthToken(idToken);
+                submitOrderRequest.setOrder(order);
+                orderEntryClient.submitOrder(submitOrderRequest, {}, (err, result) => {
+                    if (err) {
+                        console.log('oe err:' + JSON.stringify(err));
+                    }
+                    else {
+                        console.log('oe success: ' + JSON.stringify(result.getSubmitOrderResponse()));
+                    }
+                });
             })
-                .then(response => console.log(response))
-                .catch(err => console.log(err))
-                .finally(this.setState({ isSubmitting: false }))
-        });
-    }
+            .then()
+            .catch(err => console.log(err))
+            .finally(this.setState({ isSubmitting: false }))
+    };
+
 
 
     handleChange = (e, component) => {
@@ -91,7 +101,7 @@ class OrderEntry extends React.Component {
                     <div className='col'>
                         <p><b>{this.props.instrument.getDescription()}</b></p>
                         <Form size='mini'>
-                            <Form.Field error={this.state.errorPaths.includes('marketSide')} name="marketSide" defaultValue={secwager.Order.OrderType.BUY} control={Select} label='Market side' options={this.options} placeholder='market side' onChange={this.handleChange} />
+                            <Form.Field error={this.state.errorPaths.includes('marketSide')} name="marketSide" defaultValue={market.Order.OrderType.BUY} control={Select} label='Market side' options={this.options} placeholder='market side' onChange={this.handleChange} />
                             <Form.Field error={this.state.errorPaths.includes('quantity')} type='number' name="quantity" control={Input} label='Quantity' placeholder='quantity' onChange={this.handleChange} />
 
                             <Form.Group>

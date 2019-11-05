@@ -23,7 +23,7 @@ ReactDOM.render(
     </MemoryRouter>
   </Provider>, document.getElementById("root"));
 
-console.log(`url is ${process.env.MARKET_DATA_URL}`);
+console.log(`market data url is ${process.env.MARKET_DATA_URL}`);
 var marketDataClient = new MarketDataServiceClient('http://' + process.env.MARKET_DATA_URL);
 
 
@@ -36,7 +36,6 @@ marketDataClient.getInstruments(req, {}, (err, result) => {
     console.log('err:' + JSON.stringify(err));
   }
   else {
-    console.log('found instruments: ' + JSON.stringify(result.getInstrumentsList()));
     result.getInstrumentsList().forEach(instrument => store.dispatch(addInstrument(instrument)));
   }
 });

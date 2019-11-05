@@ -1,5 +1,5 @@
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin')
 const Dotenv = require('dotenv-webpack');
 const fs = require('fs');
 
@@ -34,7 +34,8 @@ module.exports = (env) => {
             devtool: env !== 'production' ? 'cheap-module-eval-source-map' : false,
 
             optimization: {
-                minimizer: [new UglifyJsPlugin()],
+                minimize: false,
+                minimizer: [new TerserPlugin()],
             },
 
             devServer: {

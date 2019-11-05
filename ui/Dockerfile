@@ -3,7 +3,7 @@ FROM node:10.16-alpine AS builder
 WORKDIR /app
 COPY . ./
 RUN yarn
-RUN yarn build:dev
+RUN yarn build:prod
 
 FROM nginx:1.17-alpine
 COPY --from=builder /app/public /usr/share/nginx/html
