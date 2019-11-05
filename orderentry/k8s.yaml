@@ -6,22 +6,17 @@ metadata:
     app: orderentry
 spec:
   ports:
-    - port: 9085
-      name: grpc-web-port
-  clusterIP: None
+    - name: grpc-web
+      port: 9085
   selector:
     app: orderentry
 ---
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
   name: orderentry
 spec:
-  serviceName: "orderentry"
   replicas: 1
-  selector:
-    matchLabels:
-      app: orderentry
   template:
     metadata:
       labels:
@@ -35,6 +30,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: secwager-kafka-bootstrap:9092
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9085
