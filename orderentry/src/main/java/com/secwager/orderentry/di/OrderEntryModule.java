@@ -21,9 +21,8 @@ public class OrderEntryModule {
   @Named("cashierChannel")
   public ManagedChannel cashierGrpcChannel() {
     return ManagedChannelBuilder
-        .forTarget("dns:///cashier")
+        .forAddress("cashier",9305)
         .usePlaintext()
-        .maxRetryAttempts(0)
         .build();
   }
 

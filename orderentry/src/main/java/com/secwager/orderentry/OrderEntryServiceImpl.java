@@ -28,22 +28,24 @@ public class OrderEntryServiceImpl extends OrderEntryServiceGrpc.OrderEntryServi
   public void submitOrder(OrderEntry.SubmitOrderRequest request,
                           io.grpc.stub.StreamObserver<OrderEntry.SubmitOrderResponse> responseObserver) {
     Order o = request.getOrder();
+    log.info("order submission: {}", o.toString());
     int maxPrice =
         100 * 100;
     int escrowAmount =  o.getOrderQty() * maxPrice;
     EscrowRequest req = EscrowRequest.newBuilder().setAmount(escrowAmount)
         .setUserId("todo-derive-from-token").build();
-    if (cashierBlockingStub.escrow(req).getEscrowStatus()
-        .equals(CashierActionResult.SUCCESS)) {
+    try {
+      log.info("cashier authority: {}", cashierBlockingStub.getChannel().authority());
+      CashierActionResult cashierActionResult = cashierBlockingStub.escrow(req).getEscrowStatus();
       orderProducer.beginTransaction();
       orderProducer.send(new ProducerRecord<>(o.getSymbol(), o.toByteArray()));
       orderProducer.commitTransaction();
       responseObserver.onNext(OrderEntry.SubmitOrderResponse.newBuilder().setSuccess(true).build());
       responseObserver.onCompleted();
       return;
+    }catch (Exception e){
+      log.error("oops: {}", e);
+      responseObserver.onError(e);
     }
-    responseObserver
-        .onNext(OrderEntry.SubmitOrderResponse.newBuilder().setSuccess(false)
-            .setMessage("todo").build());
   }
 }

@@ -61,7 +61,7 @@ java_image(
 )
 
 container_push(
-    name = "push_cashier",
+    name = "push",
     format = "Docker",
     image = ":cashier",
     registry = "us.gcr.io",

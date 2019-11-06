@@ -56,7 +56,7 @@ cc_image(
 )
 
 container_push(
-    name = "push_matchengine",
+    name = "push",
     format = "Docker",
     image = ":matchengine",
     registry = "us.gcr.io",

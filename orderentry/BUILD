@@ -52,6 +52,7 @@ java_image(
         "src/main/java/com/secwager/orderentry/di/OrderEntryModule.java",
     ],
     main_class = "com.secwager.orderentry.App",
+    resources = ["src/main/resources/logback.xml"],
     deps = [
         ":dagger_lib",
         ":orderentry-service",
@@ -64,7 +65,7 @@ java_image(
 )
 
 container_push(
-    name = "push_orderentry",
+    name = "push",
     format = "Docker",
     image = ":orderentry",
     registry = "us.gcr.io",

@@ -18,7 +18,7 @@ public class MarketDataModule {
   public DataSource provideDataSource() {
     IgniteJdbcThinDataSource ds = new IgniteJdbcThinDataSource();
     try{
-      ds.setUrl("jdbc:ignite:thin://51.15.242.2:31698");
+      ds.setUrl("jdbc:ignite:thin://51.15.242.2:30822");
     }catch (Exception e){
       throw new RuntimeException(e);
     }

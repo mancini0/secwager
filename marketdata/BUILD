@@ -87,7 +87,7 @@ java_image(
 )
 
 container_push(
-    name = "push_marketdata",
+    name = "push",
     format = "Docker",
     image = ":marketdata",
     registry = "us.gcr.io",

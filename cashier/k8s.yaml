@@ -6,8 +6,8 @@ metadata:
     app: cashier
 spec:
   ports:
-    - name: grpc
-      port: 9090
+    - name: grpc-port
+      port: 9305
   selector:
     app: cashier
 ---
@@ -27,4 +27,4 @@ spec:
           image: us.gcr.io/secwager/cashier:dev
           imagePullPolicy: Always
           ports:
-            - containerPort: 9090
+            - containerPort: 9305
