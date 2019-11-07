@@ -6,9 +6,12 @@ import com.secwager.cashier.CashierOuterClass.EscrowResponse;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.apache.commons.dbutils.QueryRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CashierServiceImpl extends CashierGrpc.CashierImplBase{
   private final QueryRunner queryRunner;
+  private static final Logger log = LoggerFactory.getLogger(CashierServiceImpl.class);
 
   @Inject
   public CashierServiceImpl(QueryRunner queryRunner){
@@ -18,7 +21,7 @@ public class CashierServiceImpl extends CashierGrpc.CashierImplBase{
   @Override
   public void escrow(com.secwager.cashier.CashierOuterClass.EscrowRequest request,
       io.grpc.stub.StreamObserver<com.secwager.cashier.CashierOuterClass.EscrowResponse> responseObserver) {
-
+    log.info("Hello from escrow");
     responseObserver.onNext(EscrowResponse.newBuilder().setEscrowStatus(CashierActionResult.SUCCESS).build());
     responseObserver.onCompleted();
   }

@@ -50,6 +50,7 @@ java_image(
         "src/main/java/com/secwager/cashier/di/CashierModule.java",
     ],
     main_class = "com.secwager.cashier.App",
+    resources = ["src/main/resources/logback.xml"],
     deps = [
         ":cashier-service",
         ":dagger_lib",
