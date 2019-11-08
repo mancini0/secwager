@@ -6,7 +6,7 @@ metadata:
     app: cashier
 spec:
   ports:
-    - name: grpc-port
+    - name: grpc
       port: 9305
   selector:
     app: cashier
