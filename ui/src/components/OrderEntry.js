@@ -55,6 +55,8 @@ class OrderEntry extends React.Component {
 
     handleSubmit = () => {
         this.setState({ isSubmitting: true });
+        var submitOrderRequest = new orderEntry.SubmitOrderRequest();
+        var orderEntryClient = new OrderEntryServicePromiseClient('http://' + process.env.ORDER_ENTRY_URL);
         var order = new market.Order();
         order.setOrderType(this.state.marketSide);
         order.setSymbol(this.state.contractId);
@@ -64,21 +66,12 @@ class OrderEntry extends React.Component {
         order.setOrderQty(this.state.quantity);
         firebase.auth().currentUser.getIdToken(true)
             .then(idToken => {
-                var submitOrderRequest = new orderEntry.SubmitOrderRequest();
-                var orderEntryClient = new OrderEntryServiceClient('http://' + process.env.ORDER_ENTRY_URL);
                 submitOrderRequest.setAuthToken(idToken);
                 submitOrderRequest.setOrder(order);
-                orderEntryClient.submitOrder(submitOrderRequest, {}, (err, result) => {
-                    if (err) {
-                        console.log('oe err:' + JSON.stringify(err));
-                    }
-                    else {
-                        console.log('oe success: ' + JSON.stringify(result.getSubmitOrderResponse()));
-                    }
-                });
+                return orderEntryClient.submitOrder(submitOrderRequest);
             })
-            .then()
-            .catch(err => console.log(err))
+            .then(submitOrderResponse =>console.log('Hooray:'+JSON.stringify(submitOrderResponse)))
+            .catch(err => 'Whoopsies:'+console.log(err))
             .finally(this.setState({ isSubmitting: false }))
     };
 

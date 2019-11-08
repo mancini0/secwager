@@ -17,8 +17,6 @@ class TraderDashboard extends React.Component {
 
 
   handleInstrumentSelection = (selectedInstrument) => {
-    console.log("selectedInstrument:" + JSON.stringify(selectedInstrument))
-    console.log("isin:" + JSON.stringify(selectedInstrument.getIsin()));
     this.setState({ selectedInstrument });
   }
 
@@ -41,7 +39,7 @@ class TraderDashboard extends React.Component {
       </div>
       {this.state.selectedInstrument &&
         < div className='row' style={{
-          "backgroundColor": "gold"
+          "backgroundColor": "lilac"
         }}>
           <OrderEntry instrument={this.state.selectedInstrument} />
         </ div>
