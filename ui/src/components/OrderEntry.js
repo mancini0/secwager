@@ -6,7 +6,7 @@ import * as yup from 'yup';
 
 import { firebase } from '../firebase/Firebase';
 
-const { OrderEntryServiceClient } = require('../proto/order_entry_grpc_web_pb.js');
+const { OrderEntryServicePromiseClient } = require('../proto/order_entry_grpc_web_pb.js');
 const market = require('../proto/market_pb');
 const orderEntry = require('../proto/order_entry_pb');
 
