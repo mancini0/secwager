@@ -4,18 +4,24 @@ import { startLogout } from '../actions/AuthActions'
 import { Link } from 'react-router-dom';
 import { Button, Header, Image, Modal } from 'semantic-ui-react'
 import { SignIn } from './SignIn';
+import DepositModal from './DepositModal';
 
-let HeaderBar = (props) => {
-    return (
+class HeaderBar extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    render = (props) => (
         <div className='row'>
             <div className='col'>
                 <b>SECWAGER</b> <br /> <i>securitized sports wagers</i>
             </div>
-            {props.user
+            {this.props.user
                 ? <React.Fragment>
 
                     <div className='col'>
-                        {props.user.email}
+                        {this.props.user.email}
                     </div>
                     <div className='col'>
                         <Link
@@ -23,14 +29,10 @@ let HeaderBar = (props) => {
                             style={{
                                 color: "blue"
                             }}
-                            onClick={props.logout}>logout</Link>
+                            onClick={this.props.logout}>logout</Link>
                     </div>
-                    <div className='col'>
-                        <Link
-                            to=""
-                            style={{
-                                color: "blue"
-                            }}>deposit</Link>
+                    <div className='col clickable'>
+                        <DepositModal trigger={<u>deposit</u>} />
                     </div>
                     <div className='col'>
                         <Link
@@ -54,6 +56,8 @@ let HeaderBar = (props) => {
                 </div>}
         </div>
     )
+
+
 }
 
 const mapStateToProps = (state) => ({ user: state.auth.uid });

@@ -39,7 +39,7 @@ class TraderDashboard extends React.Component {
       </div>
       {this.state.selectedInstrument &&
         < div className='row' style={{
-          "backgroundColor": "lilac"
+          "backgroundColor": "#C8A2C8"
         }}>
           <OrderEntry instrument={this.state.selectedInstrument} />
         </ div>
