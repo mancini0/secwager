@@ -32,7 +32,11 @@ class HeaderBar extends React.Component {
                             onClick={this.props.logout}>logout</Link>
                     </div>
                     <div className='col clickable'>
-                        <DepositModal trigger={<u>deposit</u>} />
+                        <DepositModal trigger={<Link
+                            to=""
+                            style={{
+                                color: "blue"
+                            }}>deposit</Link>} />
                     </div>
                     <div className='col'>
                         <Link
@@ -43,7 +47,11 @@ class HeaderBar extends React.Component {
                     </div>
                 </React.Fragment>
                 : <div className="col clickable" >
-                    <Modal trigger={<u>login</u>}>
+                    <Modal trigger={<Link
+                        to=""
+                        style={{
+                            color: "blue"
+                        }}>login</Link>}>
                         <Modal.Header>Please register or login.</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>

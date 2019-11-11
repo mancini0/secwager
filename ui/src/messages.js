@@ -1,1 +1,1 @@
-export const DEPOSIT_INFO_MSG = "I use Stripe for deposit processing. I pass Stripe's fees onto you! You are encouraged to deposit via bank ACH, as Stripe only charges 0.80% of the of the deposit amount (80 cents per $100 deposited), with the deposit fee capped at $5. You can also deposit via credit card, but note this option is more expensive, costing 2.9% of the deposit amount ($2.90 per $100 deposited), plus 30 cents."
+export const DEPOSIT_INFO_MSG = "You may deposit funds by credit card or bank deposit."
