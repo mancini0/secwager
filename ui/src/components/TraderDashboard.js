@@ -3,6 +3,7 @@ import Header from './Header';
 import LeagueMenu from './LeagueMenu';
 import DepthBook from './DepthBook';
 import OrderEntry from './OrderEntry';
+import About from './About';
 
 
 
@@ -37,13 +38,15 @@ class TraderDashboard extends React.Component {
           <LeagueMenu handleInstrumentSelection={this.handleInstrumentSelection} />
         </div>
       </div>
-      {this.state.selectedInstrument &&
-        < div className='row' style={{
-          "backgroundColor": "#C8A2C8"
-        }}>
+
+      < div className='row' style={{
+        "backgroundColor": "#C8A2C8"
+      }}>
+        <About />
+        {this.state.selectedInstrument &&
           <OrderEntry instrument={this.state.selectedInstrument} />
-        </ div>
-      }
+        }
+      </ div>
     </React.Fragment>
   );
 
