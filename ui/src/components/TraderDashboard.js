@@ -40,7 +40,7 @@ class TraderDashboard extends React.Component {
       </div>
 
       < div className='row' style={{
-        "backgroundColor": "#C8A2C8"
+        "backgroundColor": "Moccasin"
       }}>
         <About />
         {this.state.selectedInstrument &&
