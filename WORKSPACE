@@ -8,13 +8,15 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 all_content = """filegroup(name = "all", srcs = glob(["**"],exclude = ["libs/wave/test/**/*"]), visibility = ["//visibility:public"])"""
 
-rules_jvm_external_tag = "2.0.1"
+rules_jvm_external_tag = "2.10"
 
-rules_jvm_external_sha = "55e8d3951647ae3dffde22b4f7f8dee11b3f70f3f89424713debd7076197eaca"
+rules_jvm_external_sha = "1bbf2e48d07686707dd85357e9a94da775e1dbd7c464272b3664283c9c716d26"
 
 dagger_version = "2.23.2"
 
 grpc_version = "1.24.0"
+
+ktor_version = "1.2.5"
 
 http_archive(
     name = "rules_jvm_external",
@@ -42,6 +44,11 @@ maven_install(
         "ch.qos.logback:logback-classic:1.2.3",
         "org.apache.kafka:kafka-clients:2.3.0",
         "commons-dbutils:commons-dbutils:1.7",
+        "io.ktor:ktor-server-netty:%s" % ktor_version,
+        "io.ktor:ktor-gson:%s" % ktor_version,
+        "com.github.jasync-sql:jasync-postgresql:1.0.11",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
+        "com.stripe:stripe-java:15.3.0",
     ],
     repositories = [
         "https://jcenter.bintray.com/",
@@ -180,3 +187,21 @@ http_archive(
     strip_prefix = "boost_1_71_0",
     urls = ["https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz"],
 )
+
+rules_kotlin_version = "legacy-1.3.0-rc1"
+
+rules_kotlin_sha = "9de078258235ea48021830b1669bbbb678d7c3bdffd3435f4c0817c921a88e42"
+
+http_archive(
+    name = "io_bazel_rules_kotlin",
+    sha256 = rules_kotlin_sha,
+    strip_prefix = "rules_kotlin-%s" % rules_kotlin_version,
+    type = "zip",
+    urls = ["https://github.com/bazelbuild/rules_kotlin/archive/%s.zip" % rules_kotlin_version],
+)
+
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_register_toolchains")
+
+kotlin_repositories()  # if you want the default. Otherwise see custom kotlinc distribution below
+
+kt_register_toolchains()  # to use the default toolchain, otherwise see toolchains below
