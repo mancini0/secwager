@@ -1,9 +1,9 @@
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary")
 
 kt_jvm_binary(
-    name = "stripe-webhook",
-    srcs = ["src/main/kotlin/StripeWebhook.kt"],
-    main_class = "secwager.stripe.StripeWebhookKt",
+    name = "stripe",
+    srcs = ["src/main/kotlin/App.kt"],
+    main_class = "secwager.stripe.AppKt",
     resources = [
         "src/main/resources/application.conf",
         "src/main/resources/logback.xml",
