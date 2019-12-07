@@ -69,7 +69,7 @@ java_image(
     srcs = [
         "src/main/java/com/secwager/marketdata/App.java",
         "src/main/java/com/secwager/marketdata/di/MarketDataComponent.java",
-        "src/main/java/com/secwager/marketdata/di/MarketDataModule.java",
+        "src/main/java/com/secwager/marketdata/di/MarketDataIgniteModule.java",
     ],
     main_class = "com.secwager.marketdata.App",
     deps = [

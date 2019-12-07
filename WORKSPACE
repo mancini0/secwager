@@ -14,7 +14,7 @@ rules_jvm_external_sha = "1bbf2e48d07686707dd85357e9a94da775e1dbd7c464272b366428
 
 dagger_version = "2.23.2"
 
-grpc_version = "1.24.0"
+grpc_version = "1.25.0"
 
 ktor_version = "1.2.5"
 
@@ -49,6 +49,7 @@ maven_install(
         "com.github.jasync-sql:jasync-postgresql:1.0.11",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
         "com.stripe:stripe-java:15.3.0",
+        #"com.google.firebase:firebase-admin:6.11.0",
     ],
     repositories = [
         "https://jcenter.bintray.com/",
@@ -107,9 +108,9 @@ http_archive(
     name = "kafka",
     build_file_content = all_content,
     #sha256 = "123b47404c16bcde194b4bd1221c21fdce832ad12912bd8074f88f64b2b86f2b",
-    strip_prefix = "librdkafka-1.2.1",
+    strip_prefix = "librdkafka-1.3.0",
     urls = [
-        "https://github.com/edenhill/librdkafka/archive/v1.2.1.tar.gz",
+        "https://github.com/edenhill/librdkafka/archive/v1.3.0.tar.gz",
     ],
 )
 
@@ -188,13 +189,13 @@ http_archive(
     urls = ["https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz"],
 )
 
-rules_kotlin_version = "legacy-1.3.0-rc1"
+rules_kotlin_version = "legacy-1.3.0-rc3"
 
-rules_kotlin_sha = "9de078258235ea48021830b1669bbbb678d7c3bdffd3435f4c0817c921a88e42"
+#rules_kotlin_sha = "9de078258235ea48021830b1669bbbb678d7c3bdffd3435f4c0817c921a88e42"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
-    sha256 = rules_kotlin_sha,
+    #sha256 = rules_kotlin_sha,
     strip_prefix = "rules_kotlin-%s" % rules_kotlin_version,
     type = "zip",
     urls = ["https://github.com/bazelbuild/rules_kotlin/archive/%s.zip" % rules_kotlin_version],
