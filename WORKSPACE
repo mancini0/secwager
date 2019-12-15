@@ -26,6 +26,7 @@ http_archive(
 )
 
 load("@rules_jvm_external//:defs.bzl", "maven_install")
+load("@rules_jvm_external//:specs.bzl", "maven")
 
 maven_install(
     name = "maven",
@@ -49,7 +50,16 @@ maven_install(
         "com.github.jasync-sql:jasync-postgresql:1.0.11",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
         "com.stripe:stripe-java:15.3.0",
-        #"com.google.firebase:firebase-admin:6.11.0",
+        maven.artifact(
+            group = "com.google.firebase",
+            artifact = "firebase-admin",
+            version = "6.11.0",
+            exclusions = [
+                "io.grpc:grpc-core",
+                "io.grpc:grpc-api",
+                "io.grpc:grpc-netty-shaded",
+            ],
+        ),
     ],
     repositories = [
         "https://jcenter.bintray.com/",

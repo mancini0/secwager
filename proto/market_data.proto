@@ -2,6 +2,7 @@ syntax = "proto3";
 package secwager;
 option java_package = "com.secwager.marketdata";
 import "proto/market.proto";
+
 enum League {
   LEAGUE_UNSPECIFIED=0;
   ENGLISH_PREMIER_LEAGUE=1;
@@ -14,45 +15,25 @@ enum League {
   MAJOR_LEAGUE_SOCCER=8;
 }
 
-message Team {
-  string reuters_code=1;
-  string long_name=2;
-  League league =3;
-  uint32 year =4;
-}
+
 
 message Instrument {
   string isin=1;
   string description=2;
   League league=3;
   bool active=4;
-  uint64 start_time_epoch_seconds=6;
+  LastTrade last_trade=5;
+  DepthBook depth=6;
+  uint64 start_time_epoch_seconds=7;
 }
 
-message Quote {
-  string instrument_id =1;
-  int32 last_price=2;
-}
 
-message QuoteRequest{
-  League league =1;
-}
 
-message DepthRequest{
-  League league =1;
-}
 
 message InstrumentRequest{
   League league =1;
 }
 
-message QuoteResponse{
-  repeated Quote quotes=1;
-}
-
-message DepthResponse{
-  repeated DepthBook depth_books=1;
-}
 
 message InstrumentResponse{
   repeated Instrument instruments=1;
@@ -60,7 +41,5 @@ message InstrumentResponse{
 
 
 service MarketDataService{
-  rpc streamQuotes(QuoteRequest) returns(stream QuoteResponse);
-  rpc streamDepth(DepthRequest) returns (stream DepthResponse);
   rpc getInstruments(InstrumentRequest) returns (InstrumentResponse);
 }

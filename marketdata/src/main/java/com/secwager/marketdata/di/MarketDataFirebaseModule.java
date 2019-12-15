@@ -16,26 +16,6 @@ public class MarketDataIgniteModule {
 
     @Provides
     @Singleton
-    public DataSource provideDataSource() {
-        IgniteJdbcThinDataSource ds = new IgniteJdbcThinDataSource();
-        try {
-            ds.setUrl("jdbc:ignite:thin://ignite-svc:30822");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        ds.setDistributedJoins(true);
-        return ds;
-    }
-
-
-    @Provides
-    @Singleton
-    public QueryRunner provideQueryRunner(DataSource dataSource) {
-        return new QueryRunner(dataSource);
-    }
-
-    @Provides
-    @Singleton
     public InstrumentRepo provideRepo(QueryRunner queryRunner) {
         return new InstrumentRepoIgniteImpl(queryRunner);
     }
