@@ -26,38 +26,23 @@ java_library(
 )
 
 java_library(
-    name = "marketdata-dao-interface",
-    srcs = ["src/main/java/com/secwager/marketdata/dao/InstrumentRepo.java"],
-    deps = [
-        "//proto:market_data_java_proto",
-    ],
-)
-
-java_library(
-    name = "marketdata-dao-impl",
-    srcs = [
-        "src/main/java/com/secwager/marketdata/dao/InstrumentRepoIgniteImpl.java",
-        "src/main/java/com/secwager/marketdata/dao/Queries.java",
-    ],
-    deps = [
-        ":marketdata-dao-interface",
-        "//proto:market_data_java_proto",
-        "@maven//:commons_dbutils_commons_dbutils",
-        "@maven//:javax_inject_javax_inject",
-        "@maven//:org_slf4j_slf4j_api",
-    ],
-)
-
-java_library(
     name = "marketdata-service",
     srcs = [
         "src/main/java/com/secwager/marketdata/MarketDataServiceImpl.java",
     ],
-    exports = [":marketdata-grpc"],
+    exports = [
+        ":marketdata-grpc",
+        "@maven//:com_google_auth_google_auth_library_oauth2_http",
+        "@maven//:com_google_cloud_google_cloud_firestore",
+        "@maven//:com_google_firebase_firebase_admin",
+        "@maven//:org_slf4j_slf4j_api",
+    ],
     deps = [
-        ":marketdata-dao-interface",
         ":marketdata-grpc",
         "//proto:market_data_java_proto",
+        "@maven//:com_google_auth_google_auth_library_oauth2_http",
+        "@maven//:com_google_cloud_google_cloud_firestore",
+        "@maven//:com_google_firebase_firebase_admin",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_slf4j_slf4j_api",
@@ -69,20 +54,18 @@ java_image(
     srcs = [
         "src/main/java/com/secwager/marketdata/App.java",
         "src/main/java/com/secwager/marketdata/di/MarketDataComponent.java",
-        "src/main/java/com/secwager/marketdata/di/MarketDataIgniteModule.java",
+        "src/main/java/com/secwager/marketdata/di/MarketDataFirebaseModule.java",
     ],
     main_class = "com.secwager.marketdata.App",
     deps = [
         ":dagger_lib",
-        ":marketdata-dao-impl",
-        ":marketdata-dao-interface",
         ":marketdata-service",
         "//grpc-common:grpc-server",
+        "//proto:market_data_java_proto",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
-        "@maven//:commons_dbutils_commons_dbutils",
-        "@maven//:org_apache_ignite_ignite_core",
-        "@maven//:org_apache_kafka_kafka_clients",
+        "@maven//:com_google_code_findbugs_jsr305",
+        "@maven//:javax_annotation_javax_annotation_api",
     ],
 )
 

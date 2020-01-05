@@ -30,16 +30,16 @@ message Instrument {
 
 
 
-message InstrumentRequest{
+message MarketDataRequest{
   League league =1;
 }
 
 
-message InstrumentResponse{
+message MarketDataResponse{
   repeated Instrument instruments=1;
 }
 
 
 service MarketDataService{
-  rpc getInstruments(InstrumentRequest) returns (InstrumentResponse);
+  rpc subscribeToMarketData(MarketDataRequest) returns (stream MarketDataResponse);
 }

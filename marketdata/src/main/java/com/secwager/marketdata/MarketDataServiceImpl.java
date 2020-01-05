@@ -1,29 +1,33 @@
 package com.secwager.marketdata;
 
 import com.secwager.marketdata.MarketData.Instrument;
-import com.secwager.marketdata.MarketData.InstrumentResponse;
-
-import com.secwager.marketdata.dao.InstrumentRepo;
+import com.secwager.marketdata.MarketData.MarketDataRequest;
+import com.secwager.marketdata.MarketData.MarketDataResponse;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.FirestoreClient;
+import com.google.auth.oauth2.GoogleCredentials;
+
 public class MarketDataServiceImpl extends MarketDataServiceGrpc.MarketDataServiceImplBase {
 
   final Logger log = LoggerFactory.getLogger(MarketDataServiceImpl.class);
-  private final InstrumentRepo instrumentRepo;
+
 
   @Inject
-  public MarketDataServiceImpl(InstrumentRepo instrumentRepo) {
-    this.instrumentRepo = instrumentRepo;
+  public MarketDataServiceImpl(){
+
   }
 
   @Override
-  public void getInstruments(com.secwager.marketdata.MarketData.InstrumentRequest request,
-      io.grpc.stub.StreamObserver<com.secwager.marketdata.MarketData.InstrumentResponse> responseObserver) {
-      Set<Instrument> instruments = instrumentRepo.findAllActiveInstruments();
-      responseObserver.onNext(InstrumentResponse.newBuilder().addAllInstruments(instruments).build());
+  public void subscribeToMarketData(com.secwager.marketdata.MarketData.MarketDataRequest request,
+      io.grpc.stub.StreamObserver<com.secwager.marketdata.MarketData.MarketDataResponse> responseObserver) {
+      responseObserver.onNext(MarketDataResponse.newBuilder().build());
       responseObserver.onCompleted();
   }
 

@@ -6,7 +6,7 @@ import dagger.Component;
 import javax.inject.Singleton;
 
 @Singleton
-@Component(modules = {MarketDataIgniteModule.class})
+@Component(modules = {MarketDataFirebaseModule.class})
 public interface MarketDataComponent {
     MarketDataServiceImpl buildMarketDataService();
 }

@@ -31,6 +31,7 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "javax.annotation:javax.annotation-api:1.3.2",
         "org.apache.ignite:ignite-core:2.7.6",
         "io.grpc:grpc-netty-shaded:%s" % grpc_version,
         "io.grpc:grpc-api:%s" % grpc_version,
@@ -50,10 +51,11 @@ maven_install(
         "com.github.jasync-sql:jasync-postgresql:1.0.11",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
         "com.stripe:stripe-java:15.3.0",
+        "com.google.code.findbugs:jsr305:3.0.2",
         maven.artifact(
             group = "com.google.firebase",
             artifact = "firebase-admin",
-            version = "6.11.0",
+            version = "6.12.0",
             exclusions = [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-api",
@@ -169,7 +171,7 @@ load(
 #I shouldn't need this call.00 - defaults should be sufficient, but docker is not found on ubuntu 18.04 for some reason.
 docker_toolchain_configure(
     name = "docker_config",
-    docker_path = "/usr/bin/docker",
+    docker_path = "/snap/bin/docker",
 )
 
 load(
