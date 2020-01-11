@@ -40,16 +40,6 @@ proto.secwager.orderentry.OrderEntryServiceClient =
    */
   this.hostname_ = hostname;
 
-  /**
-   * @private @const {?Object} The credentials to be used to connect
-   *    to the server
-   */
-  this.credentials_ = credentials;
-
-  /**
-   * @private @const {?Object} Options for the client
-   */
-  this.options_ = options;
 };
 
 
@@ -76,16 +66,6 @@ proto.secwager.orderentry.OrderEntryServicePromiseClient =
    */
   this.hostname_ = hostname;
 
-  /**
-   * @private @const {?Object} The credentials to be used to connect
-   *    to the server
-   */
-  this.credentials_ = credentials;
-
-  /**
-   * @private @const {?Object} Options for the client
-   */
-  this.options_ = options;
 };
 
 
@@ -100,7 +80,10 @@ const methodDescriptor_OrderEntryService_SubmitOrder = new grpc.web.MethodDescri
   grpc.web.MethodType.UNARY,
   proto.secwager.orderentry.SubmitOrderRequest,
   proto.secwager.orderentry.SubmitOrderResponse,
-  /** @param {!proto.secwager.orderentry.SubmitOrderRequest} request */
+  /**
+   * @param {!proto.secwager.orderentry.SubmitOrderRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
     return request.serializeBinary();
   },
@@ -116,7 +99,10 @@ const methodDescriptor_OrderEntryService_SubmitOrder = new grpc.web.MethodDescri
  */
 const methodInfo_OrderEntryService_SubmitOrder = new grpc.web.AbstractClientBase.MethodInfo(
   proto.secwager.orderentry.SubmitOrderResponse,
-  /** @param {!proto.secwager.orderentry.SubmitOrderRequest} request */
+  /**
+   * @param {!proto.secwager.orderentry.SubmitOrderRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
     return request.serializeBinary();
   },

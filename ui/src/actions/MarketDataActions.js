@@ -16,5 +16,6 @@ export const updateDepth = (depth) => ({
 export const updatePrice = (lastTrade) => ({
     type: UPDATE_PRICE,
     isin: lastTrade.isin,
-    price: lastTrade.price
+    price: lastTrade.price,
+    qty: lastTrade.qty
 });

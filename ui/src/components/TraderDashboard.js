@@ -3,7 +3,6 @@ import Header from './Header';
 import LeagueMenu from './LeagueMenu';
 import DepthBook from './DepthBook';
 import OrderEntry from './OrderEntry';
-import About from './About';
 
 
 
@@ -42,7 +41,6 @@ class TraderDashboard extends React.Component {
       < div className='row' style={{
         "backgroundColor": "Moccasin"
       }}>
-        <About />
         {this.state.selectedInstrument &&
           <OrderEntry instrument={this.state.selectedInstrument} />
         }

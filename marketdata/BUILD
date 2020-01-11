@@ -29,6 +29,7 @@ java_library(
     name = "marketdata-service",
     srcs = [
         "src/main/java/com/secwager/marketdata/MarketDataServiceImpl.java",
+        "src/main/java/com/secwager/marketdata/ObserverNotifyingMarketDataEventListener.java",
     ],
     exports = [
         ":marketdata-grpc",
@@ -40,8 +41,11 @@ java_library(
     deps = [
         ":marketdata-grpc",
         "//proto:market_data_java_proto",
+        "//proto:market_java_proto",
+        "//proto:market_proto",
         "@maven//:com_google_auth_google_auth_library_oauth2_http",
         "@maven//:com_google_cloud_google_cloud_firestore",
+        "@maven//:com_google_code_findbugs_jsr305",
         "@maven//:com_google_firebase_firebase_admin",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
@@ -57,6 +61,10 @@ java_image(
         "src/main/java/com/secwager/marketdata/di/MarketDataFirebaseModule.java",
     ],
     main_class = "com.secwager.marketdata.App",
+    resources = [
+        "src/main/resources/logback.xml",
+        "src/main/resources/service-key.json",
+    ],
     deps = [
         ":dagger_lib",
         ":marketdata-service",
@@ -64,7 +72,6 @@ java_image(
         "//proto:market_data_java_proto",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
-        "@maven//:com_google_code_findbugs_jsr305",
         "@maven//:javax_annotation_javax_annotation_api",
     ],
 )

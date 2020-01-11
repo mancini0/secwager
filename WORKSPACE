@@ -14,7 +14,7 @@ rules_jvm_external_sha = "1bbf2e48d07686707dd85357e9a94da775e1dbd7c464272b366428
 
 dagger_version = "2.23.2"
 
-grpc_version = "1.25.0"
+grpc_version = "1.26.0"
 
 ktor_version = "1.2.5"
 

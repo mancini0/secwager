@@ -39,16 +39,6 @@ proto.secwager.MarketDataServiceClient =
    */
   this.hostname_ = hostname;
 
-  /**
-   * @private @const {?Object} The credentials to be used to connect
-   *    to the server
-   */
-  this.credentials_ = credentials;
-
-  /**
-   * @private @const {?Object} Options for the client
-   */
-  this.options_ = options;
 };
 
 
@@ -75,228 +65,81 @@ proto.secwager.MarketDataServicePromiseClient =
    */
   this.hostname_ = hostname;
 
-  /**
-   * @private @const {?Object} The credentials to be used to connect
-   *    to the server
-   */
-  this.credentials_ = credentials;
-
-  /**
-   * @private @const {?Object} Options for the client
-   */
-  this.options_ = options;
 };
 
 
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.secwager.QuoteRequest,
- *   !proto.secwager.QuoteResponse>}
+ *   !proto.secwager.MarketDataRequest,
+ *   !proto.secwager.MarketDataResponse>}
  */
-const methodDescriptor_MarketDataService_streamQuotes = new grpc.web.MethodDescriptor(
-  '/secwager.MarketDataService/streamQuotes',
+const methodDescriptor_MarketDataService_subscribeToMarketData = new grpc.web.MethodDescriptor(
+  '/secwager.MarketDataService/subscribeToMarketData',
   grpc.web.MethodType.SERVER_STREAMING,
-  proto.secwager.QuoteRequest,
-  proto.secwager.QuoteResponse,
-  /** @param {!proto.secwager.QuoteRequest} request */
+  proto.secwager.MarketDataRequest,
+  proto.secwager.MarketDataResponse,
+  /**
+   * @param {!proto.secwager.MarketDataRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
     return request.serializeBinary();
   },
-  proto.secwager.QuoteResponse.deserializeBinary
+  proto.secwager.MarketDataResponse.deserializeBinary
 );
 
 
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.secwager.QuoteRequest,
- *   !proto.secwager.QuoteResponse>}
+ *   !proto.secwager.MarketDataRequest,
+ *   !proto.secwager.MarketDataResponse>}
  */
-const methodInfo_MarketDataService_streamQuotes = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.secwager.QuoteResponse,
-  /** @param {!proto.secwager.QuoteRequest} request */
+const methodInfo_MarketDataService_subscribeToMarketData = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.secwager.MarketDataResponse,
+  /**
+   * @param {!proto.secwager.MarketDataRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
     return request.serializeBinary();
   },
-  proto.secwager.QuoteResponse.deserializeBinary
+  proto.secwager.MarketDataResponse.deserializeBinary
 );
 
 
 /**
- * @param {!proto.secwager.QuoteRequest} request The request proto
+ * @param {!proto.secwager.MarketDataRequest} request The request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.secwager.QuoteResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.secwager.MarketDataResponse>}
  *     The XHR Node Readable Stream
  */
-proto.secwager.MarketDataServiceClient.prototype.streamQuotes =
+proto.secwager.MarketDataServiceClient.prototype.subscribeToMarketData =
     function(request, metadata) {
   return this.client_.serverStreaming(this.hostname_ +
-      '/secwager.MarketDataService/streamQuotes',
+      '/secwager.MarketDataService/subscribeToMarketData',
       request,
       metadata || {},
-      methodDescriptor_MarketDataService_streamQuotes);
+      methodDescriptor_MarketDataService_subscribeToMarketData);
 };
 
 
 /**
- * @param {!proto.secwager.QuoteRequest} request The request proto
+ * @param {!proto.secwager.MarketDataRequest} request The request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.secwager.QuoteResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.secwager.MarketDataResponse>}
  *     The XHR Node Readable Stream
  */
-proto.secwager.MarketDataServicePromiseClient.prototype.streamQuotes =
+proto.secwager.MarketDataServicePromiseClient.prototype.subscribeToMarketData =
     function(request, metadata) {
   return this.client_.serverStreaming(this.hostname_ +
-      '/secwager.MarketDataService/streamQuotes',
+      '/secwager.MarketDataService/subscribeToMarketData',
       request,
       metadata || {},
-      methodDescriptor_MarketDataService_streamQuotes);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.secwager.DepthRequest,
- *   !proto.secwager.DepthResponse>}
- */
-const methodDescriptor_MarketDataService_streamDepth = new grpc.web.MethodDescriptor(
-  '/secwager.MarketDataService/streamDepth',
-  grpc.web.MethodType.SERVER_STREAMING,
-  proto.secwager.DepthRequest,
-  proto.secwager.DepthResponse,
-  /** @param {!proto.secwager.DepthRequest} request */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.secwager.DepthResponse.deserializeBinary
-);
-
-
-/**
- * @const
- * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.secwager.DepthRequest,
- *   !proto.secwager.DepthResponse>}
- */
-const methodInfo_MarketDataService_streamDepth = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.secwager.DepthResponse,
-  /** @param {!proto.secwager.DepthRequest} request */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.secwager.DepthResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.secwager.DepthRequest} request The request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.secwager.DepthResponse>}
- *     The XHR Node Readable Stream
- */
-proto.secwager.MarketDataServiceClient.prototype.streamDepth =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/secwager.MarketDataService/streamDepth',
-      request,
-      metadata || {},
-      methodDescriptor_MarketDataService_streamDepth);
-};
-
-
-/**
- * @param {!proto.secwager.DepthRequest} request The request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.secwager.DepthResponse>}
- *     The XHR Node Readable Stream
- */
-proto.secwager.MarketDataServicePromiseClient.prototype.streamDepth =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/secwager.MarketDataService/streamDepth',
-      request,
-      metadata || {},
-      methodDescriptor_MarketDataService_streamDepth);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.secwager.InstrumentRequest,
- *   !proto.secwager.InstrumentResponse>}
- */
-const methodDescriptor_MarketDataService_getInstruments = new grpc.web.MethodDescriptor(
-  '/secwager.MarketDataService/getInstruments',
-  grpc.web.MethodType.UNARY,
-  proto.secwager.InstrumentRequest,
-  proto.secwager.InstrumentResponse,
-  /** @param {!proto.secwager.InstrumentRequest} request */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.secwager.InstrumentResponse.deserializeBinary
-);
-
-
-/**
- * @const
- * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.secwager.InstrumentRequest,
- *   !proto.secwager.InstrumentResponse>}
- */
-const methodInfo_MarketDataService_getInstruments = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.secwager.InstrumentResponse,
-  /** @param {!proto.secwager.InstrumentRequest} request */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.secwager.InstrumentResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.secwager.InstrumentRequest} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.Error, ?proto.secwager.InstrumentResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.secwager.InstrumentResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.secwager.MarketDataServiceClient.prototype.getInstruments =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/secwager.MarketDataService/getInstruments',
-      request,
-      metadata || {},
-      methodDescriptor_MarketDataService_getInstruments,
-      callback);
-};
-
-
-/**
- * @param {!proto.secwager.InstrumentRequest} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.secwager.InstrumentResponse>}
- *     A native promise that resolves to the response
- */
-proto.secwager.MarketDataServicePromiseClient.prototype.getInstruments =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/secwager.MarketDataService/getInstruments',
-      request,
-      metadata || {},
-      methodDescriptor_MarketDataService_getInstruments);
+      methodDescriptor_MarketDataService_subscribeToMarketData);
 };
 
 

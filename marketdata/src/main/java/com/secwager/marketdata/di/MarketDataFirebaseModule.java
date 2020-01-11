@@ -17,9 +17,7 @@ import com.google.cloud.firestore.DocumentChange;
 import com.google.cloud.firestore.FirestoreException;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.EventListener;
-import javax.annotation.Nullable;
-
-
+import com.secwager.marketdata.ObserverNotifyingMarketDataEventListener;
 import javax.inject.Singleton;
 
 @Module
@@ -33,7 +31,8 @@ public class MarketDataFirebaseModule {
 
         try{
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.getApplicationDefault())
+                    //.setCredentials(GoogleCredentials.getApplicationDefault())
+                    .setCredentials(GoogleCredentials.fromStream(getClass().getClassLoader().getResourceAsStream("service-key.json")))
                     .setDatabaseUrl("https://secwager.firebaseio.com/")
                     .build();
             FirebaseApp.initializeApp(options);
@@ -47,41 +46,7 @@ public class MarketDataFirebaseModule {
 
     @Provides
     @Singleton
-    public Map<String,Instrument> provideInstrumentCache(Firestore db) {
-        Map<String, Instrument> instrumentsById = new ConcurrentHashMap<>(100);
-        db.collection("instruments")
-                .whereEqualTo("active", true)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot snapshots,
-                                        @Nullable FirestoreException e) {
-                        if (e != null) {
-                           log.error("firebase market data listen failed: {}", e);
-                            return;
-                        }
-                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                            switch (dc.getType()) {
-                                case ADDED:
-                                case MODIFIED:
-                                    Map<String,Object> data = dc.getDocument().getData();
-                                    instrumentsById.put(dc.getDocument().getId(),toInstrument(data));
-                                    break;
-                                case REMOVED:
-                                    instrumentsById.remove(dc.getDocument().getId());
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                });
-        return instrumentsById;
+    public ObserverNotifyingMarketDataEventListener provideEventListener(Firestore db) {
+        return new ObserverNotifyingMarketDataEventListener(db);
     }
-
-    //move to commons library
-    private Instrument toInstrument(Map<String,Object> doc)
-    {
-       return Instrument.newBuilder().build();
-    }
-
 }

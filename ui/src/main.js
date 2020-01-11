@@ -10,7 +10,7 @@ import store from './store/store'
 import { NotFound } from "./components/NotFound";
 import './styles/styles.css';
 const { MarketDataServiceClient } = require('./proto/market_data_grpc_web_pb.js');
-const { InstrumentRequest, League, InstrumentResponse } = require('./proto/market_data_pb.js');
+const { MarketDataRequest, League, MarketDataResponse } = require('./proto/market_data_pb.js');
 
 ReactDOM.render(
 
@@ -28,30 +28,26 @@ var marketDataClient = new MarketDataServiceClient('http://' + process.env.MARKE
 
 
 
-//listen for new games
-var req = new InstrumentRequest();
+//set up market data listener
+var req = new MarketDataRequest();
 req.setLeague(League.EVERY_LEAGUE);
-marketDataClient.getInstruments(req, {}, (err, result) => {
-  if (err) {
-    console.log('err:' + JSON.stringify(err));
-  }
-  else {
-    result.getInstrumentsList().forEach(instrument => store.dispatch(addInstrument(instrument)));
-  }
+var stream = marketDataClient.subscribeToMarketData(req);
+stream.on('data', function(res) {
+  res.getInstrumentsList().forEach(i=>{
+  store.dispatch(addInstrument(i));
+  store.dispatch(updatePrice({isin:i.getIsin(), price: i.getLastTrade().getPrice(), qty:i.getLastTrade().getQty()}));
+  });
+  });
+
+stream.on('status', function(status) {
+  console.log("s:"+ status.code);
+  console.log("s:"+ status.details);
+  console.log("s:"+ status.metadata);
 });
 
-
-//listen for price changes
-
-setInterval(() => {
-  let price = Math.floor(Math.random() * 100) + 1;
-  let isins = ['BRHTOT8AEPL', 'MUNARS7AEPL', 'NORAVA8AEPL']
-  let isin = isins[Math.floor(Math.random() * isins.length)];
-  console.log(`fake price data: ${isin} ${price}`);
-  store.dispatch(updatePrice({ isin, price }));
-}, 5000);
-
-
+stream.on('end', function(end) {
+  console.log('stream ended');
+});
 
 
 //listen for auth changes
