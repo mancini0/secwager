@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import TraderDashboard from './components/TraderDashboard'
 import { firebase } from './firebase/Firebase';
 import { login, logout } from './actions/AuthActions';
-import { addInstrument, updatePrice } from './actions/MarketDataActions';
+import { addInstrument, updatePrice, updateDepth } from './actions/MarketDataActions';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import store from './store/store'
@@ -33,11 +33,13 @@ var req = new MarketDataRequest();
 req.setLeague(League.EVERY_LEAGUE);
 var stream = marketDataClient.subscribeToMarketData(req);
 stream.on('data', function(res) {
-  res.getInstrumentsList().forEach(i=>{
-  store.dispatch(addInstrument(i));
-  store.dispatch(updatePrice({isin:i.getIsin(), price: i.getLastTrade().getPrice(), qty:i.getLastTrade().getQty()}));
-  });
-  });
+        console.log("new data incoming");
+        res.getInstrumentsList().forEach(i=>{
+        store.dispatch(addInstrument(i));
+        store.dispatch(updatePrice({isin:i.getIsin(), price: i.getLastTrade().getPrice(), qty:i.getLastTrade().getQty()}));
+        store.dispatch(updateDepth({isin:i.getIsin(), depth: i.getDepth()}));
+      });
+ });
 
 stream.on('status', function(status) {
   console.log("s:"+ status.code);
@@ -48,6 +50,7 @@ stream.on('status', function(status) {
 stream.on('end', function(end) {
   console.log('stream ended');
 });
+
 
 
 //listen for auth changes

@@ -1,6 +1,6 @@
 package com.secwager.orderentry;
 
-import com.secwager.common.GrpcServer;
+import com.secwager.grpc.GrpcServer;
 import com.secwager.orderentry.di.DaggerOrderEntryComponent;
 
 public class App {

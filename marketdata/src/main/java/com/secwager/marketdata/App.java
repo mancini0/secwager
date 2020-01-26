@@ -1,7 +1,7 @@
 package com.secwager.marketdata;
 
 import com.secwager.marketdata.di.DaggerMarketDataComponent;
-import com.secwager.common.GrpcServer;
+import com.secwager.grpc.GrpcServer;
 
 class App {
 

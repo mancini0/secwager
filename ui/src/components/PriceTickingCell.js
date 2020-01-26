@@ -39,7 +39,7 @@ class PriceTickingCell extends React.Component {
                     }}>{this.state.arrow} {this.state.change}</span>
 
                 }
-                {this.state.price ? '  ' + this.state.price : '-'}
+                {this.state.price ? '  ' + (this.state.price/100).toFixed(2) : '-'}
             </div>
         );
 

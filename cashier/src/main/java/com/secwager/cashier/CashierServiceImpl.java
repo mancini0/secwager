@@ -21,7 +21,6 @@ public class CashierServiceImpl extends CashierGrpc.CashierImplBase{
   @Override
   public void escrow(com.secwager.cashier.CashierOuterClass.EscrowRequest request,
       io.grpc.stub.StreamObserver<com.secwager.cashier.CashierOuterClass.EscrowResponse> responseObserver) {
-    log.info("Hello from escrow");
     responseObserver.onNext(EscrowResponse.newBuilder().setEscrowStatus(CashierActionResult.SUCCESS).build());
     responseObserver.onCompleted();
   }

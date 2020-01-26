@@ -1,6 +1,7 @@
 package com.secwager.marketdata;
 
 
+
 import com.secwager.marketdata.MarketData.MarketDataRequest;
 import com.secwager.marketdata.MarketData.MarketDataResponse;
 
@@ -26,10 +27,10 @@ public class MarketDataServiceImpl extends MarketDataServiceGrpc.MarketDataServi
       io.grpc.stub.StreamObserver<MarketDataResponse> responseObserver) {
     ServerCallStreamObserver<MarketDataResponse> observer = (ServerCallStreamObserver<MarketDataResponse>) responseObserver;
     observer.setOnCancelHandler(()->{
+      log.info("removing observer!");
       eventListener.removeObserver(observer);
       observer.onCompleted();
     });
-    log.info("welcome friend");
     eventListener.addObserver(observer);
   }
 

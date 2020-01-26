@@ -9,7 +9,8 @@ export function addInstrument(instrument) {
 
 export const updateDepth = (depth) => ({
     type: UPDATE_DEPTH,
-    depth
+    isin: depth.isin,
+    depth: depth.depth
 });
 
 

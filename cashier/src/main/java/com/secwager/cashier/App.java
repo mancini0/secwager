@@ -1,7 +1,7 @@
 package com.secwager.cashier;
 
 import com.secwager.cashier.di.DaggerCashierComponent;
-import com.secwager.common.GrpcServer;
+import com.secwager.grpc.GrpcServer;
 
 public class App {
 

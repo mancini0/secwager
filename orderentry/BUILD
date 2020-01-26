@@ -57,7 +57,7 @@ java_image(
         ":dagger_lib",
         ":orderentry-service",
         "//cashier:cashier-grpc",
-        "//grpc-common:grpc-server",
+        "//jvm-common:grpc-server",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:org_apache_kafka_kafka_clients",

@@ -10,6 +10,8 @@ class LeagueMenu extends Component {
         selectedLeague: League.ENGLISH_PREMIER_LEAGUE
     }
 
+
+
     render(props) {
         const { selectedLeague } = this.state
         const classes = (bool) => [

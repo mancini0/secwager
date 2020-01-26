@@ -20,6 +20,8 @@ class TraderDashboard extends React.Component {
     this.setState({ selectedInstrument });
   }
 
+  unselectContract  = () => this.setState({selectedInstrument:undefined});
+
 
   render = (props) => (
     <React.Fragment>
@@ -31,11 +33,21 @@ class TraderDashboard extends React.Component {
       <div className='row' style={{
         "height": "250px"
       }}>
-        < div className='col' style={{
-          "backgroundColor": "lightgrey"
+        < div className='col divided' style={{
+          "backgroundColor": "BlanchedAlmond",
+          "flex":4
         }}>
-          <LeagueMenu handleInstrumentSelection={this.handleInstrumentSelection} />
+          <LeagueMenu unselectContract={this.unselectContract} handleInstrumentSelection={this.handleInstrumentSelection} />
+
         </div>
+        {this.state.selectedInstrument &&
+                < div className='col divided' style={{
+                  "flex": 1,
+                  "backgroundColor":"CornSilk"
+                }}>
+                <DepthBook isin={this.state.selectedInstrument.getIsin()}/>
+                </div>
+         }
       </div>
 
       < div className='row' style={{

@@ -15,7 +15,7 @@ export default (state = initialState, action) => {
         case UPDATE_PRICE:
             return produce(state, draft => { draft['pricesByIsin'][action.isin] = action.price });
         case UPDATE_DEPTH:
-            return produce(state, draft => { draft['depthByIsin'][action.depth.symbol] = action.depth });
+            return produce(state, draft => { draft['depthByIsin'][action.isin] = action.depth });
         default:
             return state;
     }

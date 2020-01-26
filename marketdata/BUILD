@@ -68,7 +68,7 @@ java_image(
     deps = [
         ":dagger_lib",
         ":marketdata-service",
-        "//grpc-common:grpc-server",
+        "//jvm-common:grpc-server",
         "//proto:market_data_java_proto",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",

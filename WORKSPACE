@@ -18,6 +18,10 @@ grpc_version = "1.26.0"
 
 ktor_version = "1.2.5"
 
+vertx_version = "3.8.4"
+
+kafka_version = "2.4.0"
+
 http_archive(
     name = "rules_jvm_external",
     sha256 = rules_jvm_external_sha,
@@ -31,6 +35,15 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "junit:junit:4.13",
+        "com.google.truth:truth:1.0.1",
+        "com.google.guava:guava:28.2-jre",
+        "io.vertx:vertx-kafka-client:%s" % vertx_version,
+        "io.vertx:vertx-lang-kotlin:%s" % vertx_version,
+        "io.vertx:vertx-lang-kotlin-coroutines:jar:%s" % vertx_version,
+        "io.vertx:vertx-core:%s" % vertx_version,
+        "org.apache.kafka:kafka-clients:%s" % kafka_version,
+        "org.springframework.kafka:spring-kafka:2.1.10.RELEASE",
         "javax.annotation:javax.annotation-api:1.3.2",
         "org.apache.ignite:ignite-core:2.7.6",
         "io.grpc:grpc-netty-shaded:%s" % grpc_version,
@@ -201,7 +214,7 @@ http_archive(
     urls = ["https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz"],
 )
 
-rules_kotlin_version = "legacy-1.3.0-rc3"
+rules_kotlin_version = "legacy-1.3.0-rc4"
 
 #rules_kotlin_sha = "9de078258235ea48021830b1669bbbb678d7c3bdffd3435f4c0817c921a88e42"
 

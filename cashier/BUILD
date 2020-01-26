@@ -54,7 +54,7 @@ java_image(
     deps = [
         ":cashier-service",
         ":dagger_lib",
-        "//grpc-common:grpc-server",
+        "//jvm-common:grpc-server",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:org_apache_ignite_ignite_core",
