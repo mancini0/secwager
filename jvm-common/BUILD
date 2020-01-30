@@ -19,20 +19,29 @@ kt_jvm_library(
 )
 
 kt_jvm_library(
-    name = "utils",
-    srcs = ["src/main/kotlin/SecwagerUtils.kt"],
+    name = "proto-to-dto-conversion-utils",
+    srcs = ["src/main/kotlin/ProtoToDtoConversionUtils.kt"],
     deps = [
         ":dto",
         "//proto:market_java_proto",
     ],
 )
 
-kt_jvm_test(
-    name = "utils-test",
-    srcs = ["src/test/kotlin/UtilsTest.kt"],
-    test_class = "com.secwager.utils.UtilsTest",
+kt_jvm_library(
+    name = "serdes",
+    srcs = ["src/main/kotlin/Serdes.kt"],
     deps = [
-        ":utils",
+        "//proto:market_java_proto",
+        "@maven//:org_apache_kafka_kafka_streams",
+    ],
+)
+
+kt_jvm_test(
+    name = "proto-to-dto-conversion-tests",
+    srcs = ["src/test/kotlin/ProtoToDtoConversionUtilsTest.kt"],
+    test_class = "com.secwager.utils.ProtoToDtoConversionUtilsTest",
+    deps = [
+        ":proto-to-dto-conversion-utils",
         "//proto:market_java_proto",
         "@maven//:com_google_truth_truth",
         "@maven//:junit_junit",

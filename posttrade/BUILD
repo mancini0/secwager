@@ -29,9 +29,11 @@ kt_jvm_binary(
     resources = [],
     deps = [
         ":dagger_lib",
+        "//jvm-common:serdes",
         "//proto:market_java_proto",
+        "@maven//:ch_qos_logback_logback_classic",
         "@maven//:com_google_guava_guava",
-        "@maven//:org_apache_kafka_kafka_clients",
+        "@maven//:org_apache_kafka_kafka_streams",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
     ],
 )

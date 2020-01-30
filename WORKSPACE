@@ -38,6 +38,7 @@ maven_install(
         "junit:junit:4.13",
         "com.google.truth:truth:1.0.1",
         "com.google.guava:guava:28.2-jre",
+        "org.apache.kafka:kafka-streams:2.4.0",
         "io.vertx:vertx-kafka-client:%s" % vertx_version,
         "io.vertx:vertx-lang-kotlin:%s" % vertx_version,
         "io.vertx:vertx-lang-kotlin-coroutines:jar:%s" % vertx_version,
