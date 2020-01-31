@@ -57,3 +57,9 @@ message DepthBook {
   repeated uint32 ask_prices = 4;
   repeated uint32 ask_qtys = 5;
 }
+
+message Quote {
+  string symbol = 1;
+  LastTrade last_trade =2;
+  DepthBook depth = 3;
+}
