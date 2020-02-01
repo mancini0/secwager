@@ -14,7 +14,7 @@ namespace secwager {
         /**topic names**/
         const std::string KAFKA_ORDER_INBOUND_TOPIC("order-inbound");
         const std::string KAFKA_ORDER_STATUS_EVENTS_TOPIC("order-status-events");
-        const std::string KAFKA_MARKET_DATA_DEPTH_TOPIC("market-data-depth");
-        const std::string KAFKA_MARKET_DATA_MATCHED_TRADES_TOPIC("market-data-matched-trades");
+        const std::string KAFKA_MARKET_DATA_DEPTH_TOPIC("depth");
+        const std::string KAFKA_MARKET_DATA_MATCHED_TRADES_TOPIC("trades");
     }
 }

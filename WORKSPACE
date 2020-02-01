@@ -36,14 +36,12 @@ maven_install(
     name = "maven",
     artifacts = [
         "junit:junit:4.13",
+        "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
         "com.google.truth:truth:1.0.1",
         "com.google.guava:guava:28.2-jre",
-        "org.apache.kafka:kafka-streams:2.4.0",
-        "io.vertx:vertx-kafka-client:%s" % vertx_version,
-        "io.vertx:vertx-lang-kotlin:%s" % vertx_version,
-        "io.vertx:vertx-lang-kotlin-coroutines:jar:%s" % vertx_version,
-        "io.vertx:vertx-core:%s" % vertx_version,
+        "org.apache.kafka:kafka-streams:%s" % kafka_version,
         "org.apache.kafka:kafka-clients:%s" % kafka_version,
+        "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
         "org.springframework.kafka:spring-kafka:2.1.10.RELEASE",
         "javax.annotation:javax.annotation-api:1.3.2",
         "org.apache.ignite:ignite-core:2.7.6",
@@ -58,13 +56,8 @@ maven_install(
         "junit:junit:4.12",
         "org.slf4j:slf4j-api:1.7.25",
         "ch.qos.logback:logback-classic:1.2.3",
-        "org.apache.kafka:kafka-clients:2.3.0",
         "commons-dbutils:commons-dbutils:1.7",
-        "io.ktor:ktor-server-netty:%s" % ktor_version,
-        "io.ktor:ktor-gson:%s" % ktor_version,
-        "com.github.jasync-sql:jasync-postgresql:1.0.11",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
-        "com.stripe:stripe-java:15.3.0",
         "com.google.code.findbugs:jsr305:3.0.2",
         maven.artifact(
             group = "com.google.firebase",
@@ -229,6 +222,6 @@ http_archive(
 
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_register_toolchains")
 
-kotlin_repositories()  # if you want the default. Otherwise see custom kotlinc distribution below
+kotlin_repositories()
 
-kt_register_toolchains()  # to use the default toolchain, otherwise see toolchains below
+kt_register_toolchains()

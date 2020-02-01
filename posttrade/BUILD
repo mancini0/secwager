@@ -1,39 +1,32 @@
-load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary")
-
-java_plugin(
-    name = "dagger_plugin",
-    processor_class = "dagger.internal.codegen.ComponentProcessor",
-    deps = [
-        "@maven//:com_google_dagger_dagger_compiler",
-    ],
-)
-
-java_library(
-    name = "dagger_lib",
-    exported_plugins = ["dagger_plugin"],
-    exports = [
-        "@maven//:com_google_dagger_dagger",
-        "@maven//:javax_inject_javax_inject",
-    ],
-)
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_test")
 
 kt_jvm_binary(
-    name = "posttrade",
+    name = "trade-depth-joiner",
     srcs = [
-        "App.kt",
-        "InstrumentDao.kt",
-        "InstrumentDaoImpl.kt",
-        "PosttradeService.kt",
+        "TradeDepthJoiner.kt",
     ],
-    main_class = "secwager.posttrade.AppKt",
+    main_class = "secwager.posttrade.quotes.TradeDepthJoinerKt",
     resources = [],
     deps = [
-        ":dagger_lib",
         "//jvm-common:serdes",
         "//proto:market_java_proto",
         "@maven//:ch_qos_logback_logback_classic",
-        "@maven//:com_google_guava_guava",
         "@maven//:org_apache_kafka_kafka_streams",
-        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
+    ],
+)
+
+kt_jvm_test(
+    name = "trade-depth-joiner-test",
+    srcs = [
+        "TradeDepthJoinerTest.kt",
+    ],
+    test_class = "secwager.posttrade.quotes.TradeDepthJoinerTest",
+    deps = [
+        ":trade-depth-joiner",
+        "//jvm-common:serdes",
+        "//proto:market_java_proto",
+        "@maven//:junit_junit",
+        "@maven//:org_apache_kafka_kafka_streams",
+        "@maven//:org_apache_kafka_kafka_streams_test_utils",
     ],
 )

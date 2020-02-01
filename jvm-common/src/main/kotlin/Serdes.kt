@@ -1,5 +1,5 @@
 package com.secwager.serdes
-import com.secwager.Market.LastTrade
+import com.secwager.Market.*
 import org.apache.kafka.common.serialization.Serializer
 import com.secwager.Market.DepthBook
 import org.apache.kafka.common.serialization.Deserializer
@@ -32,5 +32,20 @@ class LastTradeProtoDeserializer : Deserializer<LastTrade> {
 
     override fun deserialize(topic: String?, bytes: ByteArray): LastTrade {
         return LastTrade.parseFrom(bytes)
+    }
+}
+
+
+class QuoteProtoSerializer : Serializer<Quote> {
+
+    override fun serialize(topic:String?, quote: Quote) : ByteArray {
+        return quote.toByteArray()
+    }
+}
+
+class QuoteProtoDeserializer : Deserializer<Quote> {
+
+    override fun deserialize(topic: String?, bytes: ByteArray): Quote {
+        return Quote.parseFrom(bytes)
     }
 }
