@@ -1,0 +1,387 @@
+{
+  "api": {
+    "results": 10,
+    "fixtures": [
+      {
+        "fixture_id": 232745,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-07T19:45:00+00:00",
+        "event_timestamp": 1581104700,
+        "firstHalfStart": 1581104700,
+        "secondHalfStart": 1581108300,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Stadio Olimpico, Rome",
+        "referee": "Marco Guida, Italy",
+        "homeTeam": {
+          "team_id": 497,
+          "team_name": "AS Roma",
+          "logo": "https://media.api-football.com/teams/497.png"
+        },
+        "awayTeam": {
+          "team_id": 500,
+          "team_name": "Bologna",
+          "logo": "https://media.api-football.com/teams/500.png"
+        },
+        "goalsHomeTeam": 2,
+        "goalsAwayTeam": 3,
+        "score": {
+          "halftime": "1-2",
+          "fulltime": "2-3",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232744,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-08T14:00:00+00:00",
+        "event_timestamp": 1581170400,
+        "firstHalfStart": 1581170400,
+        "secondHalfStart": 1581174000,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Stadio Artemio Franchi, Florence",
+        "referee": "Maurizio Mariani, Italy",
+        "homeTeam": {
+          "team_id": 502,
+          "team_name": "Fiorentina",
+          "logo": "https://media.api-football.com/teams/502.png"
+        },
+        "awayTeam": {
+          "team_id": 499,
+          "team_name": "Atalanta",
+          "logo": "https://media.api-football.com/teams/499.png"
+        },
+        "goalsHomeTeam": 1,
+        "goalsAwayTeam": 2,
+        "score": {
+          "halftime": "1-0",
+          "fulltime": "1-2",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232751,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-08T17:00:00+00:00",
+        "event_timestamp": 1581181200,
+        "firstHalfStart": 1581181200,
+        "secondHalfStart": 1581184800,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Stadio Olimpico Grande Torino, Torino",
+        "referee": "Paolo Valeri, Italy",
+        "homeTeam": {
+          "team_id": 503,
+          "team_name": "Torino",
+          "logo": "https://media.api-football.com/teams/503.png"
+        },
+        "awayTeam": {
+          "team_id": 498,
+          "team_name": "Sampdoria",
+          "logo": "https://media.api-football.com/teams/498.png"
+        },
+        "goalsHomeTeam": 1,
+        "goalsAwayTeam": 3,
+        "score": {
+          "halftime": "0-0",
+          "fulltime": "1-3",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232747,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-08T19:45:00+00:00",
+        "event_timestamp": 1581191100,
+        "firstHalfStart": 1581191100,
+        "secondHalfStart": 1581194700,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Marc'Antonio Bentegodi, Verona",
+        "referee": "Davide Massa, Italy",
+        "homeTeam": {
+          "team_id": 504,
+          "team_name": "Verona",
+          "logo": "https://media.api-football.com/teams/504.png"
+        },
+        "awayTeam": {
+          "team_id": 496,
+          "team_name": "Juventus",
+          "logo": "https://media.api-football.com/teams/496.png"
+        },
+        "goalsHomeTeam": 2,
+        "goalsAwayTeam": 1,
+        "score": {
+          "halftime": "0-0",
+          "fulltime": "2-1",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232752,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-09T11:30:00+00:00",
+        "event_timestamp": 1581247800,
+        "firstHalfStart": 1581247800,
+        "secondHalfStart": 1581251400,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Stadio Paolo Mazza",
+        "referee": "Piero Giacomelli, Italy",
+        "homeTeam": {
+          "team_id": 493,
+          "team_name": "Spal",
+          "logo": "https://media.api-football.com/teams/493.png"
+        },
+        "awayTeam": {
+          "team_id": 488,
+          "team_name": "Sassuolo",
+          "logo": "https://media.api-football.com/teams/488.png"
+        },
+        "goalsHomeTeam": 1,
+        "goalsAwayTeam": 2,
+        "score": {
+          "halftime": "1-0",
+          "fulltime": "1-2",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232746,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-09T14:00:00+00:00",
+        "event_timestamp": 1581256800,
+        "firstHalfStart": 1581256800,
+        "secondHalfStart": 1581260400,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Stadio Comunale Luigi Ferraris",
+        "referee": "Gianpaolo Calvarese, Italy",
+        "homeTeam": {
+          "team_id": 495,
+          "team_name": "Genoa",
+          "logo": "https://media.api-football.com/teams/495.png"
+        },
+        "awayTeam": {
+          "team_id": 490,
+          "team_name": "Cagliari",
+          "logo": "https://media.api-football.com/teams/490.png"
+        },
+        "goalsHomeTeam": 1,
+        "goalsAwayTeam": 0,
+        "score": {
+          "halftime": "1-0",
+          "fulltime": "1-0",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232749,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-09T14:00:00+00:00",
+        "event_timestamp": 1581256800,
+        "firstHalfStart": 1581256800,
+        "secondHalfStart": 1581260400,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Stadio San Paolo",
+        "referee": "Antonio Giua, Italy",
+        "homeTeam": {
+          "team_id": 492,
+          "team_name": "Napoli",
+          "logo": "https://media.api-football.com/teams/492.png"
+        },
+        "awayTeam": {
+          "team_id": 867,
+          "team_name": "Lecce",
+          "logo": "https://media.api-football.com/teams/867.png"
+        },
+        "goalsHomeTeam": 2,
+        "goalsAwayTeam": 3,
+        "score": {
+          "halftime": "0-1",
+          "fulltime": "2-3",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232753,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-09T14:00:00+00:00",
+        "event_timestamp": 1581256800,
+        "firstHalfStart": 1581256800,
+        "secondHalfStart": 1581260400,
+        "round": "Regular Season - 23",
+        "status": "Match Finished",
+        "statusShort": "FT",
+        "elapsed": 90,
+        "venue": "Stadio Mario Rigamonti",
+        "referee": "Marco Piccinini, Italy",
+        "homeTeam": {
+          "team_id": 518,
+          "team_name": "Brescia",
+          "logo": "https://media.api-football.com/teams/518.png"
+        },
+        "awayTeam": {
+          "team_id": 494,
+          "team_name": "Udinese",
+          "logo": "https://media.api-football.com/teams/494.png"
+        },
+        "goalsHomeTeam": 1,
+        "goalsAwayTeam": 1,
+        "score": {
+          "halftime": "0-0",
+          "fulltime": "1-1",
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232748,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-09T17:00:00+00:00",
+        "event_timestamp": 1581267600,
+        "firstHalfStart": 1581267600,
+        "secondHalfStart": 1581271200,
+        "round": "Regular Season - 23",
+        "status": "Second Half",
+        "statusShort": "2H",
+        "elapsed": 57,
+        "venue": "Stadio Ennio Tardini",
+        "referee": "Marco Di Bello, Italy",
+        "homeTeam": {
+          "team_id": 523,
+          "team_name": "Parma",
+          "logo": "https://media.api-football.com/teams/523.png"
+        },
+        "awayTeam": {
+          "team_id": 487,
+          "team_name": "Lazio",
+          "logo": "https://media.api-football.com/teams/487.png"
+        },
+        "goalsHomeTeam": 0,
+        "goalsAwayTeam": 1,
+        "score": {
+          "halftime": "0-1",
+          "fulltime": null,
+          "extratime": null,
+          "penalty": null
+        }
+      },
+      {
+        "fixture_id": 232750,
+        "league_id": 891,
+        "league": {
+          "name": "Serie A",
+          "country": "Italy",
+          "logo": "https://media.api-football.com/leagues/94.png",
+          "flag": "https://media.api-football.com/flags/it.svg"
+        },
+        "event_date": "2020-02-09T19:45:00+00:00",
+        "event_timestamp": 1581277500,
+        "firstHalfStart": null,
+        "secondHalfStart": null,
+        "round": "Regular Season - 23",
+        "status": "Not Started",
+        "statusShort": "NS",
+        "elapsed": 0,
+        "venue": "Stadio Giuseppe Meazza",
+        "referee": null,
+        "homeTeam": {
+          "team_id": 505,
+          "team_name": "Inter",
+          "logo": "https://media.api-football.com/teams/505.png"
+        },
+        "awayTeam": {
+          "team_id": 489,
+          "team_name": "AC Milan",
+          "logo": "https://media.api-football.com/teams/489.png"
+        },
+        "goalsHomeTeam": null,
+        "goalsAwayTeam": null,
+        "score": {
+          "halftime": null,
+          "fulltime": null,
+          "extratime": null,
+          "penalty": null
+        }
+      }
+    ]
+  }
+}

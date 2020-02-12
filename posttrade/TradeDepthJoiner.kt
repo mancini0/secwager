@@ -8,10 +8,8 @@ import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.KTable
-import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.Produced
 import java.util.*
-
 
 
 fun main() {
@@ -23,7 +21,7 @@ fun main() {
 fun props(): Properties {
     val props = Properties()
     props["bootstrap.servers"] = System.getenv("bootstrap.servers") ?: "localhost:9092"
-    props["application.id"] = "posttrade-marketdata"
+    props["application.id"] = "marketdata-joiner"
     props["commit.interval.ms"] = System.getenv("commit.interval.ms") ?: 1000
     return props
 }
@@ -34,15 +32,14 @@ fun topology(): Topology {
 
     val depth: KTable<String, Market.DepthBook> = streamsBuilder
             .table<String, Market.DepthBook>("depth", Consumed.with(Serdes.String(),
-                    Serdes.serdeFrom(DepthBookProtoSerializer(), DepthBookProtoDeserializer())), Materialized.`as`("depth"))
+                    Serdes.serdeFrom(DepthBookProtoSerializer(), DepthBookProtoDeserializer())))
 
     val trades: KTable<String, Market.LastTrade> = streamsBuilder
             .table<String, Market.LastTrade>("trades", Consumed.with(Serdes.String(),
-                    Serdes.serdeFrom(LastTradeProtoSerializer(), LastTradeProtoDeserializer())), Materialized.`as`("trades"))
+                    Serdes.serdeFrom(LastTradeProtoSerializer(), LastTradeProtoDeserializer())))
 
     depth.outerJoin(trades, { depth, trade -> Market.Quote.newBuilder().setSymbol(depth.symbol).setDepth(depth).setLastTrade(trade).build() })
-            .toStream()
-            .to("quotes", Produced.with(Serdes.String(), Serdes.serdeFrom(QuoteProtoSerializer(), QuoteProtoDeserializer())))
+            .toStream().to("quotes", Produced.with(Serdes.String(), Serdes.serdeFrom(QuoteProtoSerializer(), QuoteProtoDeserializer())))
 
     return streamsBuilder.build()
 

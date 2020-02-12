@@ -36,6 +36,9 @@ maven_install(
     name = "maven",
     artifacts = [
         "junit:junit:4.13",
+        "com.squareup.okhttp3:mockwebserver:4.3.1",
+        "com.squareup.retrofit2:converter-gson:2.7.1",
+        "com.squareup.retrofit2:retrofit:2.7.1",
         "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
         "com.google.truth:truth:1.0.1",
         "com.google.guava:guava:28.2-jre",

@@ -5,10 +5,9 @@ import com.secwager.serdes.DepthBookProtoSerializer
 import com.secwager.serdes.LastTradeProtoSerializer
 import com.secwager.serdes.QuoteProtoDeserializer
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.TopologyTestDriver
-import org.junit.Test
 import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class TradeDepthJoinerTest {
 
@@ -21,20 +20,22 @@ class TradeDepthJoinerTest {
 
         val outputTopic = testDriver.createOutputTopic("quotes", Serdes.String().deserializer(),
                 QuoteProtoDeserializer());
+
     }
 
     @Test
-    fun latestTradesShouldJoinToDepth() {
-        val latestTrade = LastTrade.newBuilder().setSymbol("IBM").setPrice(137).setQty(10).build()
+    fun latestTradeShouldJoinToDepth() {
         val earlierTrade = LastTrade.newBuilder().setSymbol("IBM").setPrice(135).setQty(7).build()
+        val latestTrade = LastTrade.newBuilder().setSymbol("IBM").setPrice(137).setQty(10).build()
         val currentDepth = DepthBook.newBuilder().setSymbol("IBM")
                 .addAllAskPrices(listOf(100,101,102)).addAllAskQtys(listOf(500,250,1000)).build()
+
         tradesTopic.pipeInput("IBM", earlierTrade )
         tradesTopic.pipeInput("IBM", latestTrade)
         depthTopic.pipeInput("IBM",currentDepth)
-        println(outputTopic.queueSize)
-        assertEquals(outputTopic.readKeyValue(), KeyValue("IBM", Quote.newBuilder().setLastTrade(latestTrade)
-                .setDepth(currentDepth).build()))
+        val expectedQuote = Quote.newBuilder().setSymbol("IBM").setLastTrade(latestTrade)
+                .setDepth(currentDepth).build()
+        assertEquals(outputTopic.readKeyValuesToMap()["IBM"], expectedQuote)
     }
 
 
