@@ -3,7 +3,7 @@ Liquibook / gRPC / Kafka based, cloud native demo financial exchange
 
 This repo demonstrates what I've found to be the most productive framework to develop cloud native microservices:
 
-1. Keep all of your code in a monorepo. CI/CD becomes trivial in a monorepo when using Bazel as your build system - see this [talk](https://www.youtube.com/watch?v=DTvXa-iqrfA). 
+1. Keep all of your code in a monorepo. CI/CD is easier in a monorepo when using Bazel as your build system - see this [talk](https://www.youtube.com/watch?v=DTvXa-iqrfA). 
 2. Define your microservices as [gRPC](https://grpc.io) services (see /proto directory for examples).
     - protobuf / gRPC enjoys a very concise syntax, compared to alternatives such as openapi.
     - gRPC services use HTTP/2  and are performant. Protobuf allows faster serialization compared to json, and is typesafe.
