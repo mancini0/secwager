@@ -1,5 +1,5 @@
 # secwager
-Liquibook / gRPC / Kafka based, financial exchange composed of various microservices running on Kubernetes which aims to securitize sports wagers as tradeable binary option instruments.
+Liquibook / gRPC / Kafka based financial exchange composed of various microservices running on Kubernetes which aims to securitize sports wagers as tradeable binary option instruments.
 
 This repo demonstrates what I've found to be the most productive framework to develop cloud native microservices:
 
