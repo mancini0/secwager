@@ -1,5 +1,5 @@
 # secwager
-Liquibook / gRPC / Kafka based, cloud native demo financial exchange
+Liquibook / gRPC / Kafka based, financial exchange composed of various microservices running on Kubernetes which aims to securitize sports wagers as tradeable binary option instruments.
 
 This repo demonstrates what I've found to be the most productive framework to develop cloud native microservices:
 
@@ -17,6 +17,5 @@ This repo demonstrates what I've found to be the most productive framework to de
     - using [rules_docker](https://github.com/bazelbuild/rules_docker), Bazel can containerize your service by simply specifying a java_image target instead of java_binary target (or cc_image, go_image, etc). The developer need not specify a Dockerfile, or even have Docker installed locally! 
     - rules_docker also handles pushing your images to your container registry, and only rebuilds / repushes your image when the image has been affected by a code change.
     - [rules_k8s](https://github.com/bazelbuild/rules_k8s) handles deploying your services to your kubernetes cluster whenever they change
-4. Favor Dagger 2 over Spring - the former is lightweight, boots up very quickly, and catches dependency injection errors at compile time, not run time like spring!
-
-5. Embrace [Istio](https://istio.io) as your service mesh. Let Istio handle your services authentication, authorization, service discovery, retry, load balancing, and other concerns - you just focus on business logic! Istio provides a million other benefits as well, such as easy canary deployments, transparent upgrading of HTTP/1.1 traffic to gRPC protocol - allowing front-end clients to directly consume backend gRPC services(see [grpc-web](https://github.com/grpc/grpc-web).), tracing, etc.)
+    
+4. Embrace [Istio](https://istio.io) as your service mesh. Let Istio handle your services authentication, authorization, service discovery, retry, load balancing, and other concerns - you just focus on business logic! Istio provides a million other benefits as well, such as easy canary deployments, transparent upgrading of HTTP/1.1 traffic to gRPC protocol - allowing front-end clients to directly consume backend gRPC services(see [grpc-web](https://github.com/grpc/grpc-web).), tracing, etc.)
