@@ -1,6 +1,7 @@
 syntax = "proto3";
 package secwager;
 option java_package = "com.secwager";
+import "proto/ref_data.proto";
 
 message Order {
   string order_id = 1;
@@ -11,7 +12,7 @@ message Order {
     MODIFY = 3;
   }
   OrderType order_type = 2;
-  string symbol = 3;
+  Instrument instrument = 3;
   bool is_limit = 4;
   uint32 price = 5;
   uint32 stop_price = 6;
@@ -44,14 +45,14 @@ message Order {
 }
 
 message LastTrade {
-  string symbol = 1;
+  Instrument instrument = 1;
   uint32 price = 2;
   uint32 qty = 3;
 }
 
 
 message DepthBook {
-  string symbol = 1;
+  Instrument instrument = 1;
   repeated uint32 bid_prices = 2;
   repeated uint32 bid_qtys = 3;
   repeated uint32 ask_prices = 4;
@@ -59,7 +60,7 @@ message DepthBook {
 }
 
 message Quote {
-  string symbol = 1;
+  Instrument instrument = 1;
   LastTrade last_trade =2;
   DepthBook depth = 3;
 }

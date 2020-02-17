@@ -12,6 +12,12 @@ proto_library(
 )
 
 proto_library(
+    name = "refdata_proto",
+    srcs = ["ref_data.proto"],
+    deps = [],
+)
+
+proto_library(
     name = "cashier_proto",
     srcs = ["cashier.proto"],
 )
@@ -30,6 +36,11 @@ cc_proto_library(
 java_proto_library(
     name = "market_java_proto",
     deps = [":market_proto"],
+)
+
+java_proto_library(
+    name = "refdata_java_proto",
+    deps = [":refdata_proto"],
 )
 
 java_proto_library(

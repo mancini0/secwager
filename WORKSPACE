@@ -45,7 +45,6 @@ maven_install(
         "org.apache.kafka:kafka-streams:%s" % kafka_version,
         "org.apache.kafka:kafka-clients:%s" % kafka_version,
         "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
-        "org.springframework.kafka:spring-kafka:2.1.10.RELEASE",
         "javax.annotation:javax.annotation-api:1.3.2",
         "org.apache.ignite:ignite-core:2.7.6",
         "io.grpc:grpc-netty-shaded:%s" % grpc_version,
