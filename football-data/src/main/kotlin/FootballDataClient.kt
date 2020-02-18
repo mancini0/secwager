@@ -3,6 +3,7 @@ package com.secwager.refdata
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
+import com.secwager.refdata.dto.*
 import okhttp3.*
 import retrofit2.Call
 import retrofit2.Retrofit

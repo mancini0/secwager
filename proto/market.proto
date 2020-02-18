@@ -12,7 +12,7 @@ message Order {
     MODIFY = 3;
   }
   OrderType order_type = 2;
-  Instrument instrument = 3;
+  string isin = 3;
   bool is_limit = 4;
   uint32 price = 5;
   uint32 stop_price = 6;
@@ -42,17 +42,18 @@ message Order {
   string originating_user_id = 15;
   repeated string matched_against = 16;
   bool is_buy = 17;
+  Instrument instrument=18;
 }
 
 message LastTrade {
-  Instrument instrument = 1;
+  string isin = 1;
   uint32 price = 2;
   uint32 qty = 3;
 }
 
 
 message DepthBook {
-  Instrument instrument = 1;
+  string  isin = 1;
   repeated uint32 bid_prices = 2;
   repeated uint32 bid_qtys = 3;
   repeated uint32 ask_prices = 4;
@@ -60,7 +61,7 @@ message DepthBook {
 }
 
 message Quote {
-  Instrument instrument = 1;
+  string  isin = 1;
   LastTrade last_trade =2;
   DepthBook depth = 3;
 }

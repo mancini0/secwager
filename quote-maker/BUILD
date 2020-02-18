@@ -10,6 +10,7 @@ kt_jvm_binary(
     deps = [
         "//jvm-common:serdes",
         "//proto:market_java_proto",
+        "//proto:refdata_java_proto",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:org_apache_kafka_kafka_streams",
     ],
@@ -25,6 +26,7 @@ kt_jvm_test(
         ":trade-depth-joiner",
         "//jvm-common:serdes",
         "//proto:market_java_proto",
+        "//proto:refdata_java_proto",
         "@maven//:junit_junit",
         "@maven//:org_apache_kafka_kafka_streams",
         "@maven//:org_apache_kafka_kafka_streams_test_utils",

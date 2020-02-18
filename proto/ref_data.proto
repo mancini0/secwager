@@ -22,6 +22,7 @@ message Team {
     string name = 2;
 
 }
+
 message Fixture {
     uint32 fixture_id=1;
     League league=2;
@@ -55,22 +56,10 @@ enum Proposition {
 }
 
 message Instrument {
-    Proposition proposition=1;
-    Grade grade = 2;
-    string description=3;
-    uint32 fixture_id=4;
-    int32 threshold =5;
+    string isin=1;
+    Proposition proposition=2;
+    Grade grade = 3;
+    string description=4;
+    uint32 fixture_id=5;
+    int32 threshold =6;
 }
-
-
-
-message Bet {
-    string isin = 1;
-    repeated Instrument legs =2;
-    Grade grade=4;
-}
-
-
-
-
-

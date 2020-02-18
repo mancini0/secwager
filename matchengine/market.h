@@ -20,7 +20,7 @@ private:
     boost::fibers::unbuffered_channel<OrderPtr> *inboundOrderChannel;
     MarketDataPublisher *marketDataPublisher;
     OrderStatusPublisher *orderStatusPublisher;
-    std::unordered_map<std::string, DepthBook *> symbolToBooks;
+    std::unordered_map<std::string, DepthBook *> isinToBooks;
 
 };
 

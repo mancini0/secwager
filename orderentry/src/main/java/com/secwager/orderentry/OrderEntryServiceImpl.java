@@ -38,7 +38,7 @@ public class OrderEntryServiceImpl extends OrderEntryServiceGrpc.OrderEntryServi
       log.info("cashier authority: {}", cashierBlockingStub.getChannel().authority());
       CashierActionResult cashierActionResult = cashierBlockingStub.escrow(req).getEscrowStatus();
       orderProducer.beginTransaction();
-      orderProducer.send(new ProducerRecord<>(o.getSymbol(), o.toByteArray()));
+      orderProducer.send(new ProducerRecord<>(o.getIsin(), o.toByteArray()));
       orderProducer.commitTransaction();
       responseObserver.onNext(OrderEntry.SubmitOrderResponse.newBuilder().setSuccess(true).build());
       responseObserver.onCompleted();

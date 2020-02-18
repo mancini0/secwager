@@ -1,4 +1,4 @@
-package secwager.posttrade.quotes
+package `quote-maker`
 
 import com.secwager.Market.*
 import com.secwager.serdes.DepthBookProtoSerializer
@@ -25,15 +25,15 @@ class TradeDepthJoinerTest {
 
     @Test
     fun latestTradeShouldJoinToDepth() {
-        val earlierTrade = LastTrade.newBuilder().setSymbol("IBM").setPrice(135).setQty(7).build()
-        val latestTrade = LastTrade.newBuilder().setSymbol("IBM").setPrice(137).setQty(10).build()
-        val currentDepth = DepthBook.newBuilder().setSymbol("IBM")
+        val earlierTrade = LastTrade.newBuilder().setIsin("IBM").setPrice(135).setQty(7).build()
+        val latestTrade = LastTrade.newBuilder().setIsin("IBM").setPrice(137).setQty(10).build()
+        val currentDepth = DepthBook.newBuilder().setIsin("IBM")
                 .addAllAskPrices(listOf(100,101,102)).addAllAskQtys(listOf(500,250,1000)).build()
 
         tradesTopic.pipeInput("IBM", earlierTrade )
         tradesTopic.pipeInput("IBM", latestTrade)
         depthTopic.pipeInput("IBM",currentDepth)
-        val expectedQuote = Quote.newBuilder().setSymbol("IBM").setLastTrade(latestTrade)
+        val expectedQuote = Quote.newBuilder().setIsin("IBM").setLastTrade(latestTrade)
                 .setDepth(currentDepth).build()
         assertEquals(outputTopic.readKeyValuesToMap()["IBM"], expectedQuote)
     }

@@ -1,4 +1,4 @@
-package com.secwager.refdata
+package com.secwager.refdata.dto
 
 import com.google.gson.annotations.SerializedName
 

@@ -2,6 +2,7 @@
 #include <memory>
 #include "spdlog/spdlog.h"
 
+
 Market::Market(boost::fibers::unbuffered_channel<OrderPtr> *inboundOrderChannel,
                MarketDataPublisher *marketDataPublisher, OrderStatusPublisher *orderStatusPublisher)
         : inboundOrderChannel(inboundOrderChannel),
@@ -10,16 +11,17 @@ Market::Market(boost::fibers::unbuffered_channel<OrderPtr> *inboundOrderChannel,
 
 void Market::start() {
     for (OrderPtr order: *inboundOrderChannel) {
-        if (symbolToBooks.find(order->symbol()) == symbolToBooks.end()) {
-            DepthBook *book = new DepthBook(order->symbol());
+
+        if (isinToBooks.find(order->isin()) == isinToBooks.end()) {
+            DepthBook *book = new DepthBook(order->isin());
             book->set_depth_listener(marketDataPublisher);
             book->set_order_listener(orderStatusPublisher);
-            symbolToBooks.insert(std::make_pair(order->symbol(), book));
-            spdlog::info("created new depth book for symbol {}", order->symbol());
+            isinToBooks.insert(std::make_pair(order->isin(), book));
+            spdlog::info("created new depth book for isin {}", order->isin());
         }
-        symbolToBooks[order->symbol()]->add(order);
+        isinToBooks[order->isin()]->add(order);
         spdlog::info("added [id, symbol, type, price, qty]=[{},{},{},{},{}] to book.", order->order_id(),
-                     order->symbol(),
+                     order->isin(),
                      order->order_type(),
                      order->price(),
                      order->order_qty()

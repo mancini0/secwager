@@ -1,14 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
 proto_library(
-    name = "market_data_proto",
-    srcs = ["market_data.proto"],
-    deps = [":market_proto"],
-)
-
-proto_library(
     name = "market_proto",
     srcs = ["market.proto"],
+    deps = [":refdata_proto"],
 )
 
 proto_library(
@@ -48,11 +43,6 @@ java_proto_library(
     deps = [
         ":orderentry_proto",
     ],
-)
-
-java_proto_library(
-    name = "market_data_java_proto",
-    deps = [":market_data_proto"],
 )
 
 java_proto_library(

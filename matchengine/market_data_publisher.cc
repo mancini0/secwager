@@ -8,15 +8,15 @@ void MarketDataPublisher::on_trade(const DepthBook *book,
                                    liquibook::book::Cost cost) {
 
     secwager::LastTrade lastTrade;
-    lastTrade.set_symbol(book->symbol());
+    lastTrade.set_isin(book->symbol());
     lastTrade.set_qty(qty);
     lastTrade.set_price(cost / qty);
-    protoSender->send(lastTrade, lastTrade.symbol());
+    protoSender->send(lastTrade, lastTrade.isin());
 }
 
 void MarketDataPublisher::on_depth_change(const DepthBook *book, const DepthBook::DepthTracker *depth) {
     secwager::DepthBook depthBook;
-    depthBook.set_symbol(book->symbol());
+    depthBook.set_isin(book->symbol());
     const liquibook::book::DepthLevel *thisBid = depth->bids();
     const liquibook::book::DepthLevel *bidBottomOfBook = depth->last_bid_level();
 
@@ -38,5 +38,5 @@ void MarketDataPublisher::on_depth_change(const DepthBook *book, const DepthBook
         }
         ++thisAsk;
     }
-    protoSender->send(depthBook, depthBook.symbol());
+    protoSender->send(depthBook, depthBook.isin());
 }

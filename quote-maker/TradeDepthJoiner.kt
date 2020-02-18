@@ -1,4 +1,4 @@
-package secwager.posttrade.quotes
+package `quote-maker`
 
 import com.secwager.Market
 import com.secwager.serdes.*
@@ -38,7 +38,8 @@ fun topology(): Topology {
             .table<String, Market.LastTrade>("trades", Consumed.with(Serdes.String(),
                     Serdes.serdeFrom(LastTradeProtoSerializer(), LastTradeProtoDeserializer())))
 
-    depth.outerJoin(trades, { depth, trade -> Market.Quote.newBuilder().setSymbol(depth.symbol).setDepth(depth).setLastTrade(trade).build() })
+    depth.outerJoin(trades, { depth, trade -> Market.Quote.newBuilder() /**.setInstrument**/
+            .setDepth(depth).setLastTrade(trade).build() })
             .toStream().to("quotes", Produced.with(Serdes.String(), Serdes.serdeFrom(QuoteProtoSerializer(), QuoteProtoDeserializer())))
 
     return streamsBuilder.build()

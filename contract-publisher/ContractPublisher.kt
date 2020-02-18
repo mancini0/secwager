@@ -2,6 +2,7 @@ package com.secwager.refdata
 
 import java.time.Duration
 import org.apache.kafka.clients.producer.KafkaProducer
+
 import javax.inject.Inject
 
 class ContractPublisher {

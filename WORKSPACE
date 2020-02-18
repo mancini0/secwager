@@ -36,6 +36,7 @@ maven_install(
     name = "maven",
     artifacts = [
         "junit:junit:4.13",
+        "javax.inject:javax.inject:1",
         "com.squareup.okhttp3:mockwebserver:4.3.1",
         "com.squareup.retrofit2:converter-gson:2.7.1",
         "com.squareup.retrofit2:retrofit:2.7.1",

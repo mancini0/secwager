@@ -18,7 +18,7 @@ class ProtoToDtoConversionUtilsTest {
     @Test
     fun testBids() {
         assertThat(protoToDtoDepth(DepthBook.newBuilder()
-                .setSymbol("abc")
+                .setIsin("abc")
                 .addAllBidQtys(listOf(100, 150))
                 .addAllBidPrices(listOf(9900, 9800))
                 .build())).isEqualTo(com.secwager.dto.DepthBook(isin="abc",bids = listOf(Level(qty = 100, price = 9900), Level(qty = 150, price = 9800))))
@@ -27,7 +27,7 @@ class ProtoToDtoConversionUtilsTest {
     @Test
     fun testAsks() {
         assertThat(protoToDtoDepth(DepthBook.newBuilder()
-                .setSymbol("abc")
+                .setIsin("abc")
                 .addAllAskQtys(listOf(100, 150))
                 .addAllAskPrices(listOf(9900, 9800))
                 .build())).isEqualTo(com.secwager.dto.DepthBook(isin="abc",asks = listOf(Level(qty = 100, price = 9900), Level(qty = 150, price = 9800))))

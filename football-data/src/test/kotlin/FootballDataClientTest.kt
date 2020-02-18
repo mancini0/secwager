@@ -2,7 +2,7 @@ package com.secwager.refdata
 
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-
+import com.secwager.refdata.dto.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
