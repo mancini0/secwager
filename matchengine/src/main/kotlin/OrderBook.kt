@@ -4,7 +4,7 @@ import java.util.*
 
 
 data class Order(val id: String, val isBuy: Boolean, var qtyOnMarket: Int, var qtyFilled: Int = 0, val price: Int, val traderId: String)
-
+data class Level(val price: Int, val restingBids: MutableList<Order> = mutableListOf(), val restingAsks: MutableList<Order> = mutableListOf())
 class OrderBook {
 
     private val symbol: String
@@ -23,9 +23,12 @@ class OrderBook {
     }
 
 
+    fun getRestingOrdersByPrice() : Map<Int,List<Order>> {
+        return pricePoints.mapIndexedNotNull{i, orders->if (orders.isEmpty()) null else i to orders}.toMap()
+    }
+
     private fun executeTrade(buy: Order, sell: Order, price: Int, size: Int) {
         if(size==0) return
-        println("trade matched ${buy.id} to ${sell.id}, $size@$price")
         buy.qtyOnMarket -= size
         sell.qtyOnMarket -= size
         buy.qtyFilled += size
@@ -34,8 +37,7 @@ class OrderBook {
 
     private fun handleBuy(incomingOrder: Order) {
         if(incomingOrder.price > maxBid || maxBid ==0) maxBid=incomingOrder.price
-        if (incomingOrder.price >= minAsk && minAsk > 0) {
-            while (incomingOrder.price >= minAsk) {
+            while (incomingOrder.price >= minAsk && incomingOrder.qtyOnMarket > 0) {
                 val restingHereIterator = pricePoints.get(minAsk).iterator()
                 thisLevel@ for (restingOrder in restingHereIterator) {
                     when {
@@ -61,9 +63,8 @@ class OrderBook {
                 }
                 if (!restingHereIterator.hasNext()) ++minAsk
             }
-        } else {
+        if(incomingOrder.qtyOnMarket>0){
             pricePoints.get(incomingOrder.price).add(incomingOrder)
-            if (maxBid < incomingOrder.price) maxBid = incomingOrder.price;
             orderArena.put(incomingOrder.id, incomingOrder)
         }
 
@@ -71,9 +72,7 @@ class OrderBook {
 
     private fun handleSell(incomingOrder: Order) {
         if(incomingOrder.price < minAsk || minAsk ==0) minAsk=incomingOrder.price
-        if (incomingOrder.price <= maxBid && maxBid > 0) {
-            while (incomingOrder.price <= maxBid && incomingOrder.qtyOnMarket > 0) {
-                println("max bid $maxBid")
+            while (incomingOrder.price <= maxBid && incomingOrder.qtyOnMarket > 0 && maxBid >0) {
                 val pricePointIterator = pricePoints.descendingIterator().withIndex();
                 val restingHereIterator = pricePoints.get(maxBid).iterator()
                 thisLevel@ for (restingOrder in restingHereIterator) {
@@ -103,9 +102,8 @@ class OrderBook {
                 }
                 if (!restingHereIterator.hasNext()) --maxBid
             }
-        } else {
+            if(incomingOrder.qtyOnMarket>0){
             pricePoints.get(incomingOrder.price).add(incomingOrder)
-            if (minAsk > incomingOrder.price) minAsk = incomingOrder.price;
             orderArena.put(incomingOrder.id, incomingOrder)
         }
 
@@ -117,7 +115,6 @@ class OrderBook {
         }else {
             handleSell(incomingOrder)
         }
-        println("after handle: $pricePoints")
     }
 
 }
