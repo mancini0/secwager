@@ -37,9 +37,11 @@ class OrderBookTest {
     fun matchAgainstRestingSellAtAgreeablePrice() {
         val ob = OrderBook("IBM", 10)
         ob.submit(Order("a", isBuy = false, qtyOnMarket = 50, traderId = "me", price = 5))
+        println(ob.getPricePoints())
         ob.submit(Order("b", isBuy = true, qtyOnMarket = 75, traderId = "you", price = 10))
+        println(ob.getPricePoints())
         ob.submit(Order("c", isBuy = false, qtyOnMarket = 24, traderId = "you", price = 10))
-        println(ob.getRestingOrdersByPrice())
+        println(ob.getPricePoints())
     }
 
 //    @Test

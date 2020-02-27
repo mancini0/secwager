@@ -8,27 +8,27 @@ data class Level(val price: Int, val restingBids: MutableList<Order> = mutableLi
 class OrderBook {
 
     private val symbol: String
-    private val pricePoints: LinkedList<MutableList<Order>>
+    private val pricePoints: TreeMap<Int, MutableList<Order>>
     private var orderArena = mutableMapOf<String, Order>()
     private var maxBid = 0
     private var minAsk = 0
+    private val minTick = 1
 
 
     constructor(symbol: String, maxPrice: Int) {
         this.symbol = symbol
-        this.pricePoints = LinkedList()
-        (0..maxPrice).forEach { pricePoints.add(mutableListOf()) }
+        this.pricePoints = TreeMap()
         this.maxBid = 0
         this.minAsk = 0
     }
 
 
-    fun getRestingOrdersByPrice() : Map<Int,List<Order>> {
-        return pricePoints.mapIndexedNotNull{i, orders->if (orders.isEmpty()) null else i to orders}.toMap()
+    fun getPricePoints(): Map<Int, List<Order>> {
+        return pricePoints
     }
 
     private fun executeTrade(buy: Order, sell: Order, price: Int, size: Int) {
-        if(size==0) return
+        if (size == 0) return
         buy.qtyOnMarket -= size
         sell.qtyOnMarket -= size
         buy.qtyFilled += size
@@ -36,83 +36,80 @@ class OrderBook {
     }
 
     private fun handleBuy(incomingOrder: Order) {
-        if(incomingOrder.price > maxBid || maxBid ==0) maxBid=incomingOrder.price
-            while (incomingOrder.price >= minAsk && incomingOrder.qtyOnMarket > 0) {
-                val restingHereIterator = pricePoints.get(minAsk).iterator()
-                thisLevel@ for (restingOrder in restingHereIterator) {
-                    when {
-                        restingOrder.isBuy -> continue@thisLevel
-                        restingOrder.qtyOnMarket == incomingOrder.qtyOnMarket -> {
-                            executeTrade(buy = incomingOrder,
-                                    sell = restingOrder, price = minAsk, size = incomingOrder.qtyOnMarket)
-                            restingHereIterator.remove()
-                            break@thisLevel
-                        }
-                        restingOrder.qtyOnMarket < incomingOrder.qtyOnMarket -> {
-                            executeTrade(buy = incomingOrder,
-                                    sell = restingOrder, price = minAsk, size = restingOrder.qtyOnMarket)
-                            restingHereIterator.remove()
-                            continue@thisLevel
-                        }
-                        restingOrder.qtyOnMarket > incomingOrder.qtyOnMarket -> {
-                            executeTrade(buy = incomingOrder,
-                                    sell = restingOrder, price = minAsk, size = incomingOrder.qtyOnMarket)
-                            break@thisLevel
-                        }
+        if (incomingOrder.price > maxBid || maxBid == 0) maxBid = incomingOrder.price
+        val agreeableAsks = pricePoints.navigableKeySet().tailSet(minAsk).iterator()
+        prices@ for (price in agreeableAsks) {
+            val ordersThisLevel = pricePoints.get(price)?.iterator() ?: continue
+            price@ for (restingOrder in ordersThisLevel) {
+                when {
+                    restingOrder.isBuy -> continue@price
+                    restingOrder.qtyOnMarket == incomingOrder.qtyOnMarket -> {
+                        executeTrade(buy = incomingOrder,
+                                sell = restingOrder, price = price, size = incomingOrder.qtyOnMarket)
+                        ordersThisLevel.remove()
+                        break@price
+                    }
+                    restingOrder.qtyOnMarket < incomingOrder.qtyOnMarket -> {
+                        executeTrade(buy = incomingOrder,
+                                sell = restingOrder, price = price, size = restingOrder.qtyOnMarket)
+                        ordersThisLevel.remove()
+                        continue@price
+                    }
+                    restingOrder.qtyOnMarket > incomingOrder.qtyOnMarket -> {
+                        executeTrade(buy = incomingOrder,
+                                sell = restingOrder, price = price, size = incomingOrder.qtyOnMarket)
+                        break@price
                     }
                 }
-                if (!restingHereIterator.hasNext()) ++minAsk
             }
-        if(incomingOrder.qtyOnMarket>0){
-            pricePoints.get(incomingOrder.price).add(incomingOrder)
+            if (incomingOrder.qtyOnMarket == 0) break@prices
+        }
+        if (incomingOrder.qtyOnMarket > 0) {
+            pricePoints.getOrPut(incomingOrder.price, {mutableListOf()}).add(incomingOrder)
             orderArena.put(incomingOrder.id, incomingOrder)
         }
-
     }
 
     private fun handleSell(incomingOrder: Order) {
-        if(incomingOrder.price < minAsk || minAsk ==0) minAsk=incomingOrder.price
-            while (incomingOrder.price <= maxBid && incomingOrder.qtyOnMarket > 0 && maxBid >0) {
-                val pricePointIterator = pricePoints.descendingIterator().withIndex();
-                val restingHereIterator = pricePoints.get(maxBid).iterator()
-                thisLevel@ for (restingOrder in restingHereIterator) {
-                    when {
-                        !restingOrder.isBuy -> continue@thisLevel
-                        restingOrder.qtyOnMarket == incomingOrder.qtyOnMarket -> {
-
-                            executeTrade(sell = incomingOrder,
-                                    buy = restingOrder, price = maxBid, size = incomingOrder.qtyOnMarket)
-                            restingHereIterator.remove()
-
-                            break@thisLevel
-                        }
-                        restingOrder.qtyOnMarket < incomingOrder.qtyOnMarket -> {
-                            executeTrade(sell = incomingOrder,
-                                    buy = restingOrder, price = maxBid, size = restingOrder.qtyOnMarket)
-
-                            restingHereIterator.remove()
-                            continue@thisLevel
-                        }
-                        restingOrder.qtyOnMarket > incomingOrder.qtyOnMarket -> {
-                            executeTrade(sell = incomingOrder,
-                                    buy = restingOrder, price = maxBid, size = incomingOrder.qtyOnMarket)
-                            break@thisLevel
-                        }
+        if (incomingOrder.price < minAsk || minAsk == 0) minAsk = incomingOrder.price
+        val agreeableBids = pricePoints.navigableKeySet().headSet(maxBid + minTick).iterator()
+        prices@ for (price in agreeableBids) {
+            val ordersThisLevel = pricePoints.get(price)?.iterator() ?: continue
+            price@ for (restingOrder in ordersThisLevel) {
+                when {
+                    !restingOrder.isBuy -> continue@price
+                    restingOrder.qtyOnMarket == incomingOrder.qtyOnMarket -> {
+                        executeTrade(buy = restingOrder,
+                                sell = incomingOrder, price = price, size = incomingOrder.qtyOnMarket)
+                        ordersThisLevel.remove()
+                        break@price
+                    }
+                    restingOrder.qtyOnMarket < incomingOrder.qtyOnMarket -> {
+                        executeTrade(buy = restingOrder,
+                                sell = incomingOrder, price = price, size = restingOrder.qtyOnMarket)
+                        ordersThisLevel.remove()
+                        continue@price
+                    }
+                    restingOrder.qtyOnMarket > incomingOrder.qtyOnMarket -> {
+                        executeTrade(buy = restingOrder,
+                                sell = incomingOrder, price = price, size = incomingOrder.qtyOnMarket)
+                        break@price
                     }
                 }
-                if (!restingHereIterator.hasNext()) --maxBid
             }
-            if(incomingOrder.qtyOnMarket>0){
-            pricePoints.get(incomingOrder.price).add(incomingOrder)
+            if (incomingOrder.qtyOnMarket == 0) break@prices
+        }
+        if (incomingOrder.qtyOnMarket > 0) {
+            pricePoints.getOrPut(incomingOrder.price, {mutableListOf()}).add(incomingOrder)
             orderArena.put(incomingOrder.id, incomingOrder)
         }
-
     }
 
+
     fun submit(incomingOrder: Order) {
-        if (incomingOrder.isBuy){
+        if (incomingOrder.isBuy) {
             handleBuy((incomingOrder))
-        }else {
+        } else {
             handleSell(incomingOrder)
         }
     }
