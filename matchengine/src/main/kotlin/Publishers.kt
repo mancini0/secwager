@@ -13,7 +13,7 @@ interface DepthPublisher {
 
 
 interface OrderEventPublisher{
-    fun onFill(order:Order, matchedOrder:Order, qty: Int, price:Int)
+    fun onFill(order:Order, matchedOrder:Order, size: Int, price:Int)
     fun onAccept(order:Order)
     fun onReject(order:Order, reason:RejectReason)
     fun onCancel(order:Order)

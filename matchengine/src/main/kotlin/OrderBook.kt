@@ -15,6 +15,7 @@ class OrderBook {
     private var maxBid = 0
     private var minAsk = 0
     private val minTick = 1
+    private val orderEventPublisher: OrderEventPublisher
 
 
     constructor(symbol: String, maxPrice: Int,
@@ -26,6 +27,7 @@ class OrderBook {
         this.maxBid = 0
         this.orderArena = mutableMapOf()
         this.minAsk = 0
+        this.orderEventPublisher = orderEventPublisher
     }
 
 
@@ -40,6 +42,8 @@ class OrderBook {
         sell.qtyOnMarket -= size
         buy.qtyFilled += size
         sell.qtyFilled += size
+        orderEventPublisher.onFill(order=buy, matchedOrder=sell, price=price, size=size)
+
     }
 
     private fun handleBuy(incomingOrder: Order) {
