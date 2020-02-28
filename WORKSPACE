@@ -35,6 +35,7 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
         "javax.inject:javax.inject:1",
         "com.squareup.okhttp3:mockwebserver:4.3.1",

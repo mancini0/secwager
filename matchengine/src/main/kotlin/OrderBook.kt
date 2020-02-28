@@ -5,22 +5,29 @@ import java.util.*
 
 data class Order(val id: String, val isBuy: Boolean, var qtyOnMarket: Int, var qtyFilled: Int = 0, val price: Int, val traderId: String)
 data class Level(val price: Int, val restingBids: MutableList<Order> = mutableListOf(), val restingAsks: MutableList<Order> = mutableListOf())
+
+
 class OrderBook {
 
     private val symbol: String
     private val pricePoints: TreeMap<Int, MutableList<Order>>
-    private var orderArena = mutableMapOf<String, Order>()
+    private var orderArena: MutableMap<String, Order>
     private var maxBid = 0
     private var minAsk = 0
     private val minTick = 1
 
 
-    constructor(symbol: String, maxPrice: Int) {
+    constructor(symbol: String, maxPrice: Int,
+                depthPublisher: DepthPublisher,
+                tradePublisher: TradePublisher,
+                orderEventPublisher: OrderEventPublisher) {
         this.symbol = symbol
         this.pricePoints = TreeMap()
         this.maxBid = 0
+        this.orderArena = mutableMapOf()
         this.minAsk = 0
     }
+
 
 
     fun getPricePoints(): Map<Int, List<Order>> {
@@ -47,12 +54,14 @@ class OrderBook {
                         executeTrade(buy = incomingOrder,
                                 sell = restingOrder, price = price, size = incomingOrder.qtyOnMarket)
                         ordersThisLevel.remove()
+                        if (!ordersThisLevel.hasNext()) agreeableAsks.remove()
                         break@price
                     }
                     restingOrder.qtyOnMarket < incomingOrder.qtyOnMarket -> {
                         executeTrade(buy = incomingOrder,
                                 sell = restingOrder, price = price, size = restingOrder.qtyOnMarket)
                         ordersThisLevel.remove()
+                        if (!ordersThisLevel.hasNext()) agreeableAsks.remove()
                         continue@price
                     }
                     restingOrder.qtyOnMarket > incomingOrder.qtyOnMarket -> {
@@ -65,7 +74,7 @@ class OrderBook {
             if (incomingOrder.qtyOnMarket == 0) break@prices
         }
         if (incomingOrder.qtyOnMarket > 0) {
-            pricePoints.getOrPut(incomingOrder.price, {mutableListOf()}).add(incomingOrder)
+            pricePoints.getOrPut(incomingOrder.price, { mutableListOf() }).add(incomingOrder)
             orderArena.put(incomingOrder.id, incomingOrder)
         }
     }
@@ -82,12 +91,14 @@ class OrderBook {
                         executeTrade(buy = restingOrder,
                                 sell = incomingOrder, price = price, size = incomingOrder.qtyOnMarket)
                         ordersThisLevel.remove()
+                        if (!ordersThisLevel.hasNext()) agreeableBids.remove()
                         break@price
                     }
                     restingOrder.qtyOnMarket < incomingOrder.qtyOnMarket -> {
                         executeTrade(buy = restingOrder,
                                 sell = incomingOrder, price = price, size = restingOrder.qtyOnMarket)
                         ordersThisLevel.remove()
+                        if (!ordersThisLevel.hasNext()) agreeableBids.remove()
                         continue@price
                     }
                     restingOrder.qtyOnMarket > incomingOrder.qtyOnMarket -> {
@@ -100,7 +111,7 @@ class OrderBook {
             if (incomingOrder.qtyOnMarket == 0) break@prices
         }
         if (incomingOrder.qtyOnMarket > 0) {
-            pricePoints.getOrPut(incomingOrder.price, {mutableListOf()}).add(incomingOrder)
+            pricePoints.getOrPut(incomingOrder.price, { mutableListOf() }).add(incomingOrder)
             orderArena.put(incomingOrder.id, incomingOrder)
         }
     }

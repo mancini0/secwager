@@ -9,6 +9,7 @@ kt_jvm_test(
     deps = [
         ":orderbook-lib",
         "@maven//:junit_junit",
+        "@maven//:org_mockito_mockito_core",
     ],
 )
 
@@ -16,6 +17,7 @@ kt_jvm_library(
     name = "orderbook-lib",
     srcs = [
         "src/main/kotlin/OrderBook.kt",
+        "src/main/kotlin/Publishers.kt",
     ],
     deps = [],
 )

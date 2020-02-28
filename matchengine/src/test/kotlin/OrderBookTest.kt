@@ -1,10 +1,13 @@
 package com.secwager.matchengine
 
 import org.junit.Test
+import org.mockito.Mockito.*
 
 
 class OrderBookTest {
 
+
+    val orderPublisher = mock(OrderEventPublisher::class.java)
 
 
 
@@ -35,13 +38,13 @@ class OrderBookTest {
 
     @Test
     fun matchAgainstRestingSellAtAgreeablePrice() {
-        val ob = OrderBook("IBM", 10)
-        ob.submit(Order("a", isBuy = false, qtyOnMarket = 50, traderId = "me", price = 5))
-        println(ob.getPricePoints())
-        ob.submit(Order("b", isBuy = true, qtyOnMarket = 75, traderId = "you", price = 10))
-        println(ob.getPricePoints())
-        ob.submit(Order("c", isBuy = false, qtyOnMarket = 24, traderId = "you", price = 10))
-        println(ob.getPricePoints())
+//        val ob = OrderBook("IBM", 10, !null, !null, !null)
+//        ob.submit(Order("a", isBuy = false, qtyOnMarket = 50, traderId = "me", price = 5))
+//        println(ob.getPricePoints())
+//        ob.submit(Order("b", isBuy = true, qtyOnMarket = 75, traderId = "you", price = 10))
+//        println(ob.getPricePoints())
+//        ob.submit(Order("c", isBuy = false, qtyOnMarket = 24, traderId = "you", price = 10))
+//        println(ob.getPricePoints())
     }
 
 //    @Test
