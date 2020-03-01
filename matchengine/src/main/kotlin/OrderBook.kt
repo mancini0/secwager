@@ -12,7 +12,6 @@ class OrderBook {
     private var orderArena: MutableMap<String, Order>
     private var maxBid = 0
     private var minAsk = 0
-    private val minTick = 1
     private val orderEventPublisher: OrderEventPublisher
     private val tradePublisher: TradePublisher
     private val depthPublisher: DepthPublisher

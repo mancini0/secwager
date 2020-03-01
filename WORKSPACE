@@ -64,6 +64,12 @@ maven_install(
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
         "com.google.code.findbugs:jsr305:3.0.2",
         maven.artifact(
+            group = "com.nhaarman.mockitokotlin2",
+            artifact = "mockito-kotlin",
+            version = "2.2.0",
+            exclusions = ["org.mockito:mockito-core"],
+        ),
+        maven.artifact(
             group = "com.google.firebase",
             artifact = "firebase-admin",
             version = "6.12.0",

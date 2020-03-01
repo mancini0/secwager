@@ -8,6 +8,8 @@ kt_jvm_test(
     test_class = "com.secwager.matchengine.OrderBookTest",
     deps = [
         ":orderbook-lib",
+        "@maven//:com_google_truth_truth",
+        "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
         "@maven//:junit_junit",
         "@maven//:org_mockito_mockito_core",
     ],
