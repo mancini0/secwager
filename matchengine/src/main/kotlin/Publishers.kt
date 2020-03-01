@@ -1,23 +1,24 @@
 package com.secwager.matchengine
 
-class RejectReason{}
+import com.secwager.dto.Order
+import com.secwager.dto.RejectReason
+import com.secwager.proto.Market.Depth
+import com.secwager.proto.Market.LastTrade
 
 interface TradePublisher {
-    fun onTrade(symbol:String, qty: Int, price:Int)
+    fun onTrade(lastTrade: LastTrade)
 }
 
 
 interface DepthPublisher {
-   fun  onDepthChange(symbol:String, bidPrices: List<Int>, bidQtys: List<Int>)
+   fun  onDepthChange(depth: Depth)
 }
 
 
 interface OrderEventPublisher{
-    fun onFill(order:Order, matchedOrder:Order, size: Int, price:Int)
-    fun onAccept(order:Order)
-    fun onReject(order:Order, reason:RejectReason)
+    fun onFill(order:Order, matchedOrder:Order, price:Int,  size: Int)
+    fun onAccept(order:Order) //handled by orderEntry service
+    fun onReject(order:Order, reason: RejectReason)
     fun onCancel(order:Order)
     fun onCancelReject(order:Order, reason : RejectReason)
-    fun onReplace(order:Order)
-    fun onReplaceReject(order:Order, reason: RejectReason)
 }

@@ -19,5 +19,8 @@ kt_jvm_library(
         "src/main/kotlin/OrderBook.kt",
         "src/main/kotlin/Publishers.kt",
     ],
-    deps = [],
+    deps = [
+        "//jvm-common:dto",
+        "//proto:market_java_proto",
+    ],
 )

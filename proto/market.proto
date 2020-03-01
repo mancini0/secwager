@@ -1,6 +1,6 @@
 syntax = "proto3";
 package secwager;
-option java_package = "com.secwager";
+option java_package = "com.secwager.proto";
 import "proto/ref_data.proto";
 
 message Order {
@@ -13,13 +13,7 @@ message Order {
   }
   OrderType order_type = 2;
   string isin = 3;
-  bool is_limit = 4;
   uint32 price = 5;
-  uint32 stop_price = 6;
-  uint32 order_qty = 7;
-  bool all_or_none = 8;
-  bool immediate_or_cancel = 9;
-
   enum State {
     SUBMITTED = 0;
     REJECTED = 1; // terminal state
@@ -39,7 +33,7 @@ message Order {
   uint32 qty_filled = 12;
   uint32 fill_cost = 13;
   uint32 qty_on_market = 14;
-  string originating_user_id = 15;
+  string trader_id = 15;
   repeated string matched_against = 16;
   bool is_buy = 17;
   Instrument instrument=18;
@@ -52,7 +46,7 @@ message LastTrade {
 }
 
 
-message DepthBook {
+message Depth {
   string  isin = 1;
   repeated uint32 bid_prices = 2;
   repeated uint32 bid_qtys = 3;
@@ -63,5 +57,5 @@ message DepthBook {
 message Quote {
   string  isin = 1;
   LastTrade last_trade =2;
-  DepthBook depth = 3;
+  Depth depth = 3;
 }
