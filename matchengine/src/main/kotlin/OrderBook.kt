@@ -1,8 +1,10 @@
 package com.secwager.matchengine
 
 import com.secwager.dto.*
+import com.secwager.dto.Order
 import com.secwager.dto.OrderStatus.*
 import com.secwager.proto.Market
+import com.secwager.proto.Market.*
 import java.util.*
 
 class OrderBook {
@@ -33,15 +35,34 @@ class OrderBook {
         this.callBacks = mutableListOf()
     }
 
-    private fun executeTrade(buy: Order, sell: Order, price: Int, size: Int) {
+    private fun executeTrade(buy: com.secwager.dto.Order, sell: com.secwager.dto.Order, price: Int, size: Int) {
         if (size == 0) return
         for (order in listOf(buy, sell)) {
             order.qtyOnMarket -= size
             order.qtyFilled += size
             order.status = if (order.qtyOnMarket > 0) OPEN else FILLED
         }
-        callBacks.add { orderEventPublisher.onFill(order = buy, matchedOrder = sell, price = price, size = size) }
-        callBacks.add { tradePublisher.onTrade(Market.LastTrade.newBuilder().setIsin(this.symbol).setPrice(price).setQty(size).build())}
+        buy.fills.add(Match(orderId = sell.id,traderId = sell.traderId,price=price, qty=size))
+        sell.fills.add(Match(orderId = buy.id,traderId = buy.traderId,price=price, qty=size))
+
+        val buyProto = Market.Order.newBuilder().setOrderId(buy.id)
+                .setOrderType(Market.Order.OrderType.BUY)
+                .setIsin(this.symbol)
+                .setQtyOnMarket(buy.qtyOnMarket)
+                .setQtyFilled(buy.qtyFilled)
+                .addAllMatches(buy.fills.map{Market.Order.Match.newBuilder().setPrice(it.price).setQty(it.qty).setOrderId(it.orderId).setTraderId(it.traderId).build()})
+                .build()
+
+        val sellProto = Market.Order.newBuilder().setOrderId(sell.id)
+                .setOrderType(Market.Order.OrderType.SELL)
+                .setIsin(this.symbol)
+                .setQtyOnMarket(sell.qtyOnMarket)
+                .setQtyFilled((sell.qtyFilled))
+                .addAllMatches(sell.fills.map{Market.Order.Match.newBuilder().setPrice(it.price).setQty(it.qty).setOrderId(it.orderId).setTraderId(it.traderId).build()})
+                .build()
+
+        callBacks.add { orderEventPublisher.onFill(buy = buyProto, sell = sellProto, price = price, size = size) }
+        //callBacks.add { tradePublisher.onTrade(Market.LastTrade.newBuilder().setIsin(this.symbol).setPrice(price).setQty(size).build())}
     }
 
     private fun handleBuy(incomingOrder: Order) {
@@ -134,18 +155,18 @@ class OrderBook {
                     val resting = if (order.side == OrderSide.BUY) restingBuys else restingSells
                     resting.get(order.price)?.removeIf { it.id == order.id }
                     resting.get(order.price)?.run { if (this.isEmpty()) resting.remove(order.price) }
-                    callBacks.add { orderEventPublisher.onCancel(order) }
+                   // callBacks.add { orderEventPublisher.onCancel(order) }
                 }
                 FILLED -> {
-                    callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ALREADY_FILLED) }
+                   // callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ALREADY_FILLED) }
                 }
                 CANCELLED -> {
-                    callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ALREADY_CANCELLED) }
+                    //callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ALREADY_CANCELLED) }
                 }
             }
             return
         }
-        callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ORDER_NOT_FOUND) }
+        //callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ORDER_NOT_FOUND) }
     }
 
     fun submit(order: Order) {
@@ -154,8 +175,8 @@ class OrderBook {
             OrderType.SELL -> handleSell(order)
             OrderType.CANCEL -> handleCancel(order)
         }
-        if(!restingSells.isEmpty()) minAsk = restingSells.firstKey()
-        if(!restingBuys.isEmpty()) maxBid = restingBuys.firstKey()
+        if(!restingSells.isEmpty()) minAsk = restingSells.firstKey() else minAsk=0
+        if(!restingBuys.isEmpty()) maxBid = restingBuys.firstKey() else maxBid=0
         callBacks.add{depthPublisher.onDepthChange(measureDepth())}
         callBacks.forEach { it.invoke() }
         callBacks.clear()

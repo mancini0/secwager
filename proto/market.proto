@@ -9,33 +9,38 @@ message Order {
     BUY = 0;
     SELL = 1;
     CANCEL = 2;
-    MODIFY = 3;
   }
+  bool isBuy=8;
   OrderType order_type = 2;
   string isin = 3;
   uint32 price = 5;
   enum State {
-    SUBMITTED = 0;
+    OPEN = 0;
     REJECTED = 1; // terminal state
-    ACCEPTED = 2;
-    MODIFY_REQUESTED = 3;
-    MODIFY_REJECTED = 4;
-    MODIFIED = 5;
-    PARTIAL_FILLED = 6;
     FILLED = 7; // terminal state
     CANCEL_REQUESTED = 8;
     CANCEL_REJECTED = 9;
     CANCELLED = 10; // terminal state
     UNKNOWN = 11;
   }
+  enum RejectedReason {
+    UNKNOWN_ORDER=0;
+    ALREADY_CANCELLED=1;
+    ALREADY_FILLED=2;
+
+  }
+  message Match {
+    string order_id = 1;
+    string trader_id =2;
+    uint32 qty = 3;
+    uint32 price=4;
+  }
   State state = 10;
-  string rejected_reason = 11;
+  RejectedReason rejected_reason = 11;
   uint32 qty_filled = 12;
-  uint32 fill_cost = 13;
   uint32 qty_on_market = 14;
   string trader_id = 15;
-  repeated string matched_against = 16;
-  bool is_buy = 17;
+  repeated Match matches = 16;
   Instrument instrument=18;
 }
 
