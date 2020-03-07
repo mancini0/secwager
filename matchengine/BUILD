@@ -7,7 +7,7 @@ kt_jvm_test(
     ],
     test_class = "com.secwager.matchengine.OrderBookTest",
     deps = [
-        ":orderbook-lib",
+        ":orderbook",
         "@maven//:com_google_truth_truth",
         "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
         "@maven//:junit_junit",
@@ -16,7 +16,7 @@ kt_jvm_test(
 )
 
 kt_jvm_library(
-    name = "orderbook-lib",
+    name = "orderbook",
     srcs = [
         "src/main/kotlin/OrderBook.kt",
         "src/main/kotlin/Publishers.kt",

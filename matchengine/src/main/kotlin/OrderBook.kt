@@ -20,11 +20,13 @@ class OrderBook {
     private val tradePublisher: TradePublisher
     private val depthPublisher: DepthPublisher
     private var callBacks: MutableList<() -> Any>
+    private val callbackExecutor: CallbackExecutor
 
     constructor(symbol: String,
                 depthPublisher: DepthPublisher,
                 tradePublisher: TradePublisher,
-                orderEventPublisher: OrderEventPublisher) {
+                orderEventPublisher: OrderEventPublisher,
+                callbackExecutor: CallbackExecutor) {
         this.symbol = symbol
         this.restingBuys = TreeMap(Collections.reverseOrder())
         this.restingSells = TreeMap()
@@ -35,6 +37,7 @@ class OrderBook {
         this.tradePublisher = tradePublisher
         this.depthPublisher = depthPublisher
         this.callBacks = mutableListOf()
+        this.callbackExecutor=callbackExecutor
     }
 
     private fun executeTrade(buy: com.secwager.dto.Order, sell: com.secwager.dto.Order, price: Int, size: Int) {
@@ -166,8 +169,7 @@ class OrderBook {
         if(!restingSells.isEmpty()) minAsk = restingSells.firstKey() else minAsk=0
         if(!restingBuys.isEmpty()) maxBid = restingBuys.firstKey() else maxBid=0
         callBacks.add{depthPublisher.onDepthChange(measureDepth())}
-        callBacks.forEach { it.invoke() }
-        callBacks.clear()
+        callbackExecutor.executeCallbacks(callBacks)
     }
 
 }
