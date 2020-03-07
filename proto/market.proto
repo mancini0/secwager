@@ -15,10 +15,11 @@ message Order {
   string isin = 3;
   uint32 price = 5;
   enum State {
-    OPEN = 0;
-    REJECTED = 1; // terminal state
-    FILLED = 7; // terminal state
-    CANCELLED = 10; // terminal state
+    UNKNOWN=0;
+    OPEN = 1;
+    REJECTED = 2; // terminal state
+    FILLED = 3; // terminal state
+    CANCELLED = 4; // terminal state
   }
   enum RejectedReason {
     NOT_APPLICABLE=0;

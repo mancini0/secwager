@@ -4,10 +4,9 @@ import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.secwager.dto.Order
 import com.secwager.proto.Market
-import com.secwager.proto.Market.Order.OrderType
+import com.secwager.proto.Market.Order.*
 import com.secwager.proto.Market.Depth
 
-import com.secwager.proto.Market.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
@@ -33,8 +32,6 @@ class OrderBookTest {
         val depthCaptor = argumentCaptor<Depth>()
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()
-        val priceCaptor = argumentCaptor<Int>()
-        val qtyCaptor = argumentCaptor<Int>()
         book.submit(Order("bid6", type = OrderType.BUY, isBuy = true, qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
         book.submit(Order("bid6Later", type = OrderType.BUY, isBuy =true, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM"))
         book.submit(Order("bid7", type = OrderType.BUY, isBuy = true, qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM"))
@@ -50,22 +47,86 @@ class OrderBookTest {
                 )
                 .inOrder()
 
- //       assertThat(filledSellCaptor.allValues).isEmpty()
-//
-//        assertThat(filledBuyCaptor.allValues)
-//                .containsExactly(
-//                        Order("bid7", type = OrderType.BUY, side = OrderSide.BUY, qtyOnMarket = 0, qtyFilled = 25, traderId = "buyer3", price = 7, status = OrderStatus.FILLED),
-//                        Order("bid6", type = OrderType.BUY, side = OrderSide.BUY, qtyOnMarket = 0, qtyFilled = 50, traderId = "buyer1", price = 6, status = OrderStatus.FILLED),
-//                        Order("bid6Later", type = OrderType.BUY, side = OrderSide.BUY, qtyOnMarket = 0, qtyFilled = 150, traderId = "buyer2", price = 6, status = OrderStatus.FILLED)
-//                )
-//                .inOrder()
-//
-//        assertThat(filledSellCaptor.allValues)
-//                .containsExactly(
-//                        Order("sell", type = OrderType.SELL, side = OrderSide.SELL, qtyOnMarket = 200, qtyFilled = 25, traderId = "seller", price = 7, status = OrderStatus.OPEN),
-//                        Order("sell", type = OrderType.SELL, side = OrderSide.SELL, qtyOnMarket = 150, qtyFilled = 75, traderId = "seller", price = 6, status = OrderStatus.OPEN),
-//                        Order("sell", type = OrderType.SELL, side = OrderSide.SELL, qtyOnMarket = 0, qtyFilled = 225, traderId = "seller", price = 6, status = OrderStatus.FILLED)
-//                )
-//                .inOrder()
+        assertThat(filledBuyCaptor.allValues)
+                .containsExactly(
+                        Market.Order.newBuilder().setOrderId("bid7")
+                                .setIsin("IBM")
+                                .setOrderType(OrderType.BUY)
+                                .setIsBuy(true)
+                                .setQtyOnMarket(0)
+                                .setQtyFilled(25)
+                                .setTraderId("buyer3")
+                                .setPrice(7)
+                                .setState(State.FILLED)
+                                .addMatches(Match.newBuilder().setOrderId("sell").setPrice(7).setQty(25).setTraderId("seller").build())
+                                .build(),
+
+                        Market.Order.newBuilder().setOrderId("bid6")
+                                .setIsin("IBM")
+                                .setOrderType(OrderType.BUY)
+                                .setIsBuy(true)
+                                .setQtyOnMarket(0)
+                                .setQtyFilled(50)
+                                .setTraderId("buyer1")
+                                .setPrice(6)
+                                .setState(State.FILLED)
+                                .addMatches(Match.newBuilder().setOrderId("sell").setPrice(6).setQty(50).setTraderId("seller").build())
+                                .build(),
+
+                        Market.Order.newBuilder().setOrderId("bid6Later")
+                                .setIsin("IBM")
+                                .setOrderType(OrderType.BUY)
+                                .setIsBuy(true)
+                                .setQtyOnMarket(0)
+                                .setQtyFilled(150)
+                                .setTraderId("buyer2")
+                                .setPrice(6)
+                                .setState(State.FILLED)
+                                .addMatches(Match.newBuilder().setOrderId("sell").setPrice(6).setQty(150).setTraderId("seller").build())
+                                .build()
+                )
+                .inOrder()
+
+
+        assertThat(filledSellCaptor.allValues)
+                .containsExactly(
+                        Market.Order.newBuilder().setOrderId("sell")
+                                .setIsin("IBM")
+                                .setOrderType(OrderType.SELL)
+                                .setIsBuy(false)
+                                .setQtyOnMarket(200)
+                                .setQtyFilled(25)
+                                .setTraderId("seller")
+                                .setPrice(4)
+                                .setState(State.OPEN)
+                                .addMatches(Match.newBuilder().setOrderId("bid7").setPrice(7).setQty(25).setTraderId("buyer3").build())
+                                .build(),
+                        Market.Order.newBuilder().setOrderId("sell")
+                                .setIsin("IBM")
+                                .setOrderType(OrderType.SELL)
+                                .setIsBuy(false)
+                                .setQtyOnMarket(150)
+                                .setQtyFilled(75)
+                                .setTraderId("seller")
+                                .setPrice(4)
+                                .setState(State.OPEN)
+                                .addMatches(Match.newBuilder().setOrderId("bid7").setPrice(7).setQty(25).setTraderId("buyer3").build())
+                                .addMatches(Match.newBuilder().setOrderId("bid6").setPrice(6).setQty(50).setTraderId("buyer1").build())
+                                .build(),
+                        Market.Order.newBuilder().setOrderId("sell")
+                                .setIsin("IBM")
+                                .setOrderType(OrderType.SELL)
+                                .setIsBuy(false)
+                                .setQtyOnMarket(0)
+                                .setQtyFilled(225)
+                                .setTraderId("seller")
+                                .setPrice(4)
+                                .setState(State.FILLED)
+                                .addMatches(Match.newBuilder().setOrderId("bid7").setPrice(7).setQty(25).setTraderId("buyer3").build())
+                                .addMatches(Match.newBuilder().setOrderId("bid6").setPrice(6).setQty(50).setTraderId("buyer1").build())
+                                .addMatches(Match.newBuilder().setOrderId("bid6Later").setPrice(6).setQty(150).setTraderId("buyer2").build())
+                                .build()
+                )
+                .inOrder()
     }
 }

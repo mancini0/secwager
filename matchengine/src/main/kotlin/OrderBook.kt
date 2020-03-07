@@ -47,8 +47,9 @@ class OrderBook {
         buy.fills.add(Match(orderId = sell.id,traderId = sell.traderId,price=price, qty=size))
         sell.fills.add(Match(orderId = buy.id,traderId = buy.traderId,price=price, qty=size))
 
-
-        callBacks.add { orderEventPublisher.onFill(buy = orderToProto(buy), sell = orderToProto(sell)) }
+        val buyProto = orderToProto(buy)
+        val sellProto = orderToProto(sell)
+        callBacks.add { orderEventPublisher.onFill(buy = buyProto, sell = sellProto) }
         //callBacks.add { tradePublisher.onTrade(Market.LastTrade.newBuilder().setIsin(this.symbol).setPrice(price).setQty(size).build())}
     }
 
