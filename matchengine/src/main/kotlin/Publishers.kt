@@ -1,7 +1,6 @@
 package com.secwager.matchengine
 
 import com.secwager.proto.Market.Order
-import com.secwager.dto.RejectReason
 import com.secwager.proto.Market.Depth
 import com.secwager.proto.Market.LastTrade
 
@@ -19,9 +18,9 @@ interface CallbackExecutor {
 }
 
 interface OrderEventPublisher{
-    fun onFill(buy:Order, sell:Order, price:Int,  size: Int)
+    fun onFill(buy:Order, sell:Order)
     fun onAccept(order:Order) //handled by orderEntry service
-    fun onReject(order:Order, reason: RejectReason)
+    fun onReject(order:Order, reason: Order.RejectedReason)
     fun onCancel(order:Order)
-    fun onCancelReject(order:Order, reason : RejectReason)
+    fun onCancelReject(order:Order, reason: Order.RejectedReason)
 }

@@ -18,15 +18,13 @@ message Order {
     OPEN = 0;
     REJECTED = 1; // terminal state
     FILLED = 7; // terminal state
-    CANCEL_REQUESTED = 8;
-    CANCEL_REJECTED = 9;
     CANCELLED = 10; // terminal state
-    UNKNOWN = 11;
   }
   enum RejectedReason {
-    UNKNOWN_ORDER=0;
-    ALREADY_CANCELLED=1;
-    ALREADY_FILLED=2;
+    NOT_APPLICABLE=0;
+    ORDER_NOT_FOUND=1;
+    ALREADY_CANCELLED=2;
+    ALREADY_FILLED=3;
 
   }
   message Match {

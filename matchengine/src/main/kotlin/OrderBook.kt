@@ -2,9 +2,11 @@ package com.secwager.matchengine
 
 import com.secwager.dto.*
 import com.secwager.dto.Order
-import com.secwager.dto.OrderStatus.*
-import com.secwager.proto.Market
-import com.secwager.proto.Market.*
+import com.secwager.proto.Market.Order.OrderType.*
+import com.secwager.proto.Market.Order.RejectedReason.*
+import com.secwager.proto.Market.Order.State.*
+import com.secwager.proto.Market.Depth
+import com.secwager.utils.ConversionUtils.Companion.orderToProto
 import java.util.*
 
 class OrderBook {
@@ -45,23 +47,8 @@ class OrderBook {
         buy.fills.add(Match(orderId = sell.id,traderId = sell.traderId,price=price, qty=size))
         sell.fills.add(Match(orderId = buy.id,traderId = buy.traderId,price=price, qty=size))
 
-        val buyProto = Market.Order.newBuilder().setOrderId(buy.id)
-                .setOrderType(Market.Order.OrderType.BUY)
-                .setIsin(this.symbol)
-                .setQtyOnMarket(buy.qtyOnMarket)
-                .setQtyFilled(buy.qtyFilled)
-                .addAllMatches(buy.fills.map{Market.Order.Match.newBuilder().setPrice(it.price).setQty(it.qty).setOrderId(it.orderId).setTraderId(it.traderId).build()})
-                .build()
 
-        val sellProto = Market.Order.newBuilder().setOrderId(sell.id)
-                .setOrderType(Market.Order.OrderType.SELL)
-                .setIsin(this.symbol)
-                .setQtyOnMarket(sell.qtyOnMarket)
-                .setQtyFilled((sell.qtyFilled))
-                .addAllMatches(sell.fills.map{Market.Order.Match.newBuilder().setPrice(it.price).setQty(it.qty).setOrderId(it.orderId).setTraderId(it.traderId).build()})
-                .build()
-
-        callBacks.add { orderEventPublisher.onFill(buy = buyProto, sell = sellProto, price = price, size = size) }
+        callBacks.add { orderEventPublisher.onFill(buy = orderToProto(buy), sell = orderToProto(sell)) }
         //callBacks.add { tradePublisher.onTrade(Market.LastTrade.newBuilder().setIsin(this.symbol).setPrice(price).setQty(size).build())}
     }
 
@@ -137,8 +124,8 @@ class OrderBook {
         orderArena.put(incomingOrder.id, incomingOrder)
     }
 
-    private fun measureDepth() : Market.Depth {
-        val depthBuilder = Market.Depth.newBuilder().setIsin(this.symbol)
+    private fun measureDepth() : Depth {
+        val depthBuilder = Depth.newBuilder().setIsin(this.symbol)
         restingBuys.entries.forEach{depthBuilder.addBidPrices(it.key); depthBuilder.addBidQtys(it.value.sumBy { it.qtyOnMarket})}
         restingSells.entries.forEach{depthBuilder.addAskPrices(it.key); depthBuilder.addAskQtys(it.value.sumBy { it.qtyOnMarket})}
         return depthBuilder.build()
@@ -152,28 +139,28 @@ class OrderBook {
                 OPEN -> {
                     order.status = CANCELLED
                     order.qtyOnMarket = 0
-                    val resting = if (order.side == OrderSide.BUY) restingBuys else restingSells
+                    val resting = if (order.isBuy) restingBuys else restingSells
                     resting.get(order.price)?.removeIf { it.id == order.id }
                     resting.get(order.price)?.run { if (this.isEmpty()) resting.remove(order.price) }
                    // callBacks.add { orderEventPublisher.onCancel(order) }
                 }
                 FILLED -> {
-                   // callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ALREADY_FILLED) }
+                    callBacks.add { orderEventPublisher.onCancelReject(orderToProto(order), ALREADY_FILLED)}
                 }
                 CANCELLED -> {
-                    //callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ALREADY_CANCELLED) }
+                    callBacks.add { orderEventPublisher.onCancelReject(orderToProto(order), ALREADY_CANCELLED) }
                 }
             }
             return
         }
-        //callBacks.add { orderEventPublisher.onCancelReject(order, RejectReason.ORDER_NOT_FOUND) }
+        callBacks.add { orderEventPublisher.onCancelReject(orderToProto(order), ORDER_NOT_FOUND) }
     }
 
     fun submit(order: Order) {
         when (order.type) {
-            OrderType.BUY -> handleBuy(order)
-            OrderType.SELL -> handleSell(order)
-            OrderType.CANCEL -> handleCancel(order)
+            BUY -> handleBuy(order)
+            SELL -> handleSell(order)
+            CANCEL -> handleCancel(order)
         }
         if(!restingSells.isEmpty()) minAsk = restingSells.firstKey() else minAsk=0
         if(!restingBuys.isEmpty()) maxBid = restingBuys.firstKey() else maxBid=0

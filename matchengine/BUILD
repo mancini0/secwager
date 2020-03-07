@@ -22,7 +22,8 @@ kt_jvm_library(
         "src/main/kotlin/Publishers.kt",
     ],
     deps = [
-        "//jvm-common:dto",
+        "//entity-common:dto",
+        "//entity-common:proto-conversion-utils",
         "//proto:market_java_proto",
     ],
 )
