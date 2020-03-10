@@ -8,7 +8,7 @@ kt_jvm_binary(
     main_class = "secwager.posttrade.quotes.TradeDepthJoinerKt",
     resources = [],
     deps = [
-        "//jvm-common:serdes",
+        "//entity-common:serdes",
         "//proto:market_java_proto",
         "//proto:refdata_java_proto",
         "@maven//:ch_qos_logback_logback_classic",
@@ -24,7 +24,7 @@ kt_jvm_test(
     test_class = "secwager.posttrade.quotes.TradeDepthJoinerTest",
     deps = [
         ":trade-depth-joiner",
-        "//jvm-common:serdes",
+        "//entity-common:serdes",
         "//proto:market_java_proto",
         "//proto:refdata_java_proto",
         "@maven//:junit_junit",

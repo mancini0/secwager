@@ -1,23 +1,15 @@
-load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library", "kt_jvm_test")
+#load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_library")
+load("@io_bazel_rules_docker//kotlin:image.bzl", "kt_jvm_image")
 
-#kt_jvm_test(
-#    name = "test",
-#    srcs = [
-#        "src/test/kotlin/OrderBookTest.kt",
-#    ],
-#    test_class = "com.secwager.matchengine.OrderBookTest",
-#    deps = [
-#        "@maven//:com_google_truth_truth",
-#        "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
-#        "@maven//:junit_junit",
-#        "@maven//:org_mockito_mockito_core",
-#    ],
-#)
-
-kt_jvm_library(
+kt_jvm_image(
     name = "market",
-    srcs = [],
+    srcs = ["App.kt"],
+    main_class = "com.secwager.market.AppKt",
     deps = [
+        "//entity-common:proto-conversion-utils",
+        "//entity-common:serdes",
         "//matchengine:orderbook",
+        "@maven//:com_google_guava_guava",
+        "@maven//:org_apache_kafka_kafka_clients",
     ],
 )

@@ -86,32 +86,34 @@ maven_install(
     ],
 )
 
-http_archive(
+git_repository(
     name = "io_bazel_rules_docker",
-    #sha256 = "e513c0ac6534810eb7a14bf025a0f159726753f97f74ab7863c650d26e01d677",
-    strip_prefix = "rules_docker-0.12.1",
-    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.12.1/rules_docker-v0.12.1.tar.gz"],
+    #sha256 = "dc97fccceacd4c6be14e800b2a00693d5e8d07f69ee187babfd04a80a9f8e250",
+    #strip_prefix = "rules_docker-0.14.1",
+    branch = "master",
+    remote = "https://github.com/bazelbuild/rules_docker.git",
 )
 
-http_archive(
-    name = "rules_foreign_cc",
-    #sha256 = "045a24ac29402074fd20cba3fd472578cf1861e0b3d5585652e4b0dd249e92d6",
-    strip_prefix = "rules_foreign_cc-master",
-    url = "https://github.com/bazelbuild/rules_foreign_cc/archive/master.zip",
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
 )
 
-http_archive(
-    name = "cmake",
-    build_file_content = all_content,
-    strip_prefix = "CMake-3.12.1",
-    urls = [
-        "https://github.com/Kitware/CMake/archive/v3.12.1.tar.gz",
-    ],
+container_repositories()
+
+load(
+    "@io_bazel_rules_docker//java:image.bzl",
+    _java_image_repos = "repositories",
 )
 
-load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
+_java_image_repos()
 
-rules_foreign_cc_dependencies(["//:built_cmake_toolchain"])
+#load(
+#    "@io_bazel_rules_docker//kotlin:image.bzl",
+#    _kotlin_image_repos = "repositories",
+#)
+#
+#_kotlin_image_repos()
 
 http_archive(
     name = "io_grpc_grpc_java",
@@ -132,91 +134,6 @@ protobuf_deps()
 load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
 
 grpc_java_repositories(omit_com_google_protobuf = True)
-
-http_archive(
-    name = "kafka",
-    build_file_content = all_content,
-    #sha256 = "123b47404c16bcde194b4bd1221c21fdce832ad12912bd8074f88f64b2b86f2b",
-    strip_prefix = "librdkafka-1.3.0",
-    urls = [
-        "https://github.com/edenhill/librdkafka/archive/v1.3.0.tar.gz",
-    ],
-)
-
-http_archive(
-    name = "spdlog",
-    build_file_content = all_content,
-    sha256 = "160845266e94db1d4922ef755637f6901266731c4cb3b30b45bf41efa0e6ab70",
-    strip_prefix = "spdlog-1.3.1",
-    urls = [
-        "https://github.com/gabime/spdlog/archive/v1.3.1.tar.gz",
-    ],
-)
-
-http_archive(
-    name = "rules_cc",
-    strip_prefix = "rules_cc-master",
-    urls = ["https://github.com/bazelbuild/rules_cc/archive/master.zip"],
-)
-
-git_repository(
-    name = "gtest",
-    #tag = "release-1.8.1",
-    commit = "ed2eef654373c17b96bf5a007bb481a6e96ba629",
-    remote = "https://github.com/google/googletest.git",
-)
-
-new_git_repository(
-    name = "liquibook",
-    build_file_content = """cc_library(
-                                name = "liquibook",
-                                hdrs = glob(["src/book/*.h"]),
-                                strip_include_prefix ="src/book",
-                                include_prefix="liquibook",
-                                visibility = ["//visibility:public"],
-                            )""",
-    commit = "828a771d715438f487db15bbc6d6c310a952e26d",
-    remote = "https://github.com/objectcomputing/liquibook.git",
-    shallow_since = "1562647708 -0500",
-)
-
-load(
-    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
-    docker_toolchain_configure = "toolchain_configure",
-)
-
-#I shouldn't need this call.00 - defaults should be sufficient, but docker is not found on ubuntu 18.04 for some reason.
-docker_toolchain_configure(
-    name = "docker_config",
-    docker_path = "/snap/bin/docker",
-)
-
-load(
-    "@io_bazel_rules_docker//repositories:repositories.bzl",
-    container_repositories = "repositories",
-)
-
-container_repositories()
-
-load(
-    "@io_bazel_rules_docker//java:image.bzl",
-    _java_image_repos = "repositories",
-)
-load(
-    "@io_bazel_rules_docker//cc:image.bzl",
-    _cc_image_repos = "repositories",
-)
-
-_java_image_repos()
-
-_cc_image_repos()
-
-http_archive(
-    name = "boost",
-    build_file_content = all_content,
-    strip_prefix = "boost_1_71_0",
-    urls = ["https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz"],
-)
 
 rules_kotlin_version = "legacy-1.3.0-rc4"
 

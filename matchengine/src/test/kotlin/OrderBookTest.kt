@@ -32,6 +32,23 @@ class OrderBookTest {
     }
 
 
+    @Test
+    fun cancelBuy(){
+        val depthCaptor = argumentCaptor<Depth>()
+        book.submit(Order("buy", type = OrderType.BUY, isBuy = true, qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
+        book.submit(Order("buy", type = OrderType.CANCEL, isBuy = true, qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
+        book.submit(Order("sell",type =OrderType.SELL, isBuy=false, qtyOnMarket = 100, traderId="seller",price=2, symbol = "IBM"))
+        verify(depthPublisher, times(3)).onDepthChange(depthCaptor.capture())
+        assertThat(depthCaptor.allValues)
+                .containsExactly(
+                        Depth.newBuilder().setIsin("IBM").addBidPrices(5).addBidQtys(50).build(),
+                        Depth.newBuilder().setIsin("IBM").build(),
+                        Depth.newBuilder().setIsin("IBM").addAskPrices(2).addAskQtys(100).build()
+                )
+                .inOrder()
+        verifyNoInteractions(tradePublisher)
+    }
+
 
     @Test
     fun fillIncomingSellAgainstRestingOrdersAtMultipleLevels(){
@@ -244,7 +261,7 @@ class OrderBookTest {
 
 
     @Test
-    fun fillPartiallyFilledIncomingSell(){
+    fun fillPartiallyFilledSell(){
         val depthCaptor = argumentCaptor<Depth>()
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()

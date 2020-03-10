@@ -2,6 +2,7 @@ package com.secwager.matchengine
 
 import com.secwager.dto.*
 import com.secwager.dto.Order
+import com.secwager.proto.Market
 import com.secwager.proto.Market.Order.OrderType.*
 import com.secwager.proto.Market.Order.RejectedReason.*
 import com.secwager.proto.Market.Order.State.*
@@ -21,6 +22,7 @@ class OrderBook {
     private val depthPublisher: DepthPublisher
     private var callBacks: MutableList<() -> Any>
     private val callbackExecutor: CallbackExecutor
+    private var needsDepthPublish: Boolean = false;
 
     constructor(symbol: String,
                 depthPublisher: DepthPublisher,
@@ -53,7 +55,8 @@ class OrderBook {
         val buyProto = orderToProto(buy)
         val sellProto = orderToProto(sell)
         callBacks.add { orderEventPublisher.onFill(buy = buyProto, sell = sellProto) }
-        //callBacks.add { tradePublisher.onTrade(Market.LastTrade.newBuilder().setIsin(this.symbol).setPrice(price).setQty(size).build())}
+        needsDepthPublish=true
+        callBacks.add { tradePublisher.onTrade(Market.LastTrade.newBuilder().setIsin(this.symbol).setPrice(price).setQty(size).build())}
     }
 
     private fun handleBuy(incomingOrder: Order) {
@@ -88,6 +91,7 @@ class OrderBook {
         }
         if (incomingOrder.qtyOnMarket > 0) {
             restingBuys.getOrPut(incomingOrder.price, { mutableListOf() }).add(incomingOrder)
+            needsDepthPublish=true;
         }
         orderArena.put(incomingOrder.id, incomingOrder)
     }
@@ -124,6 +128,7 @@ class OrderBook {
         }
         if (incomingOrder.qtyOnMarket > 0) {
             restingSells.getOrPut(incomingOrder.price, { mutableListOf() }).add(incomingOrder)
+            needsDepthPublish=true
         }
         orderArena.put(incomingOrder.id, incomingOrder)
     }
@@ -144,9 +149,11 @@ class OrderBook {
                     order.status = CANCELLED
                     order.qtyOnMarket = 0
                     val resting = if (order.isBuy) restingBuys else restingSells
-                    resting.get(order.price)?.removeIf { it.id == order.id }
-                    resting.get(order.price)?.run { if (this.isEmpty()) resting.remove(order.price) }
-                   // callBacks.add { orderEventPublisher.onCancel(order) }
+                    resting.get(it.price)?.removeIf { it.id == order.id }
+                    resting.get(it.price)?.run { if (this.isEmpty()) resting.remove(order.price) }
+                    val cancelledProto = orderToProto(it);
+                    callBacks.add { orderEventPublisher.onCancel(cancelledProto) }
+                    needsDepthPublish=true
                 }
                 FILLED -> {
                     callBacks.add { orderEventPublisher.onCancelReject(orderToProto(order), ALREADY_FILLED)}
@@ -161,6 +168,7 @@ class OrderBook {
     }
 
     fun submit(order: Order) {
+        needsDepthPublish=false;
         when (order.type) {
             BUY -> handleBuy(order)
             SELL -> handleSell(order)
@@ -168,8 +176,9 @@ class OrderBook {
         }
         if(!restingSells.isEmpty()) minAsk = restingSells.firstKey() else minAsk=0
         if(!restingBuys.isEmpty()) maxBid = restingBuys.firstKey() else maxBid=0
-        callBacks.add{depthPublisher.onDepthChange(measureDepth())}
-        callbackExecutor.executeCallbacks(callBacks)
+        if(needsDepthPublish) callBacks.add{depthPublisher.onDepthChange(measureDepth())}
+        callbackExecutor.executeCallbacks(callBacks) //TODO  make defensive copy here instead
+        callBacks.clear() //TODO remember callback executor might be async, hence need defensive copy
     }
 
 }

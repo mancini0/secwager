@@ -1,6 +1,6 @@
 package `quote-maker`
 
-import com.secwager.Market
+import com.secwager.proto.Market
 import com.secwager.serdes.*
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
@@ -30,9 +30,9 @@ fun props(): Properties {
 fun topology(): Topology {
     val streamsBuilder = StreamsBuilder()
 
-    val depth: KTable<String, Market.DepthBook> = streamsBuilder
-            .table<String, Market.DepthBook>("depth", Consumed.with(Serdes.String(),
-                    Serdes.serdeFrom(DepthBookProtoSerializer(), DepthBookProtoDeserializer())))
+    val depth: KTable<String, Market.Depth> = streamsBuilder
+            .table<String, Market.Depth>("depth", Consumed.with(Serdes.String(),
+                    Serdes.serdeFrom(DepthProtoSerializer(), DepthProtoDeserializer())))
 
     val trades: KTable<String, Market.LastTrade> = streamsBuilder
             .table<String, Market.LastTrade>("trades", Consumed.with(Serdes.String(),

@@ -1,6 +1,6 @@
 package com.secwager.orderentry;
 
-import com.secwager.Market.Order;
+import com.secwager.proto.Market.Order;
 import com.secwager.cashier.CashierGrpc.CashierBlockingStub;
 import com.secwager.cashier.CashierOuterClass.EscrowRequest;
 import com.secwager.cashier.CashierOuterClass.CashierActionResult;
@@ -31,7 +31,7 @@ public class OrderEntryServiceImpl extends OrderEntryServiceGrpc.OrderEntryServi
     log.info("order submission: {}", o.toString());
     int maxPrice =
         100 * 100;
-    int escrowAmount =  o.getOrderQty() * maxPrice;
+    int escrowAmount =  o.getQtyOnMarket() * maxPrice;
     EscrowRequest req = EscrowRequest.newBuilder().setAmount(escrowAmount)
         .setUserId("todo-derive-from-token").build();
     try {

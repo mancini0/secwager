@@ -1,7 +1,7 @@
 package `quote-maker`
 
-import com.secwager.Market.*
-import com.secwager.serdes.DepthBookProtoSerializer
+import com.secwager.proto.Market.*
+import com.secwager.serdes.DepthProtoSerializer
 import com.secwager.serdes.LastTradeProtoSerializer
 import com.secwager.serdes.QuoteProtoDeserializer
 import org.apache.kafka.common.serialization.Serdes
@@ -16,7 +16,7 @@ class TradeDepthJoinerTest {
         val tradesTopic = testDriver.createInputTopic("trades", Serdes.String().serializer(),
                 LastTradeProtoSerializer());
         val depthTopic = testDriver.createInputTopic("depth", Serdes.String().serializer(),
-                DepthBookProtoSerializer());
+                DepthProtoSerializer());
 
         val outputTopic = testDriver.createOutputTopic("quotes", Serdes.String().deserializer(),
                 QuoteProtoDeserializer());
@@ -27,7 +27,7 @@ class TradeDepthJoinerTest {
     fun latestTradeShouldJoinToDepth() {
         val earlierTrade = LastTrade.newBuilder().setIsin("IBM").setPrice(135).setQty(7).build()
         val latestTrade = LastTrade.newBuilder().setIsin("IBM").setPrice(137).setQty(10).build()
-        val currentDepth = DepthBook.newBuilder().setIsin("IBM")
+        val currentDepth = Depth.newBuilder().setIsin("IBM")
                 .addAllAskPrices(listOf(100,101,102)).addAllAskQtys(listOf(500,250,1000)).build()
 
         tradesTopic.pipeInput("IBM", earlierTrade )
