@@ -3,7 +3,7 @@ package com.secwager.matchengine
 import com.secwager.dto.*
 import com.secwager.dto.Order
 import com.secwager.proto.Market
-import com.secwager.proto.Market.Order.OrderSide.*
+import com.secwager.proto.Market.Order.OrderType.*
 import com.secwager.proto.Market.Order.RejectedReason.*
 import com.secwager.proto.Market.Order.State.*
 import com.secwager.proto.Market.Depth
@@ -142,14 +142,13 @@ class OrderBook {
 
 
 
-    fun cancel(orderId: String) {
-        needsMarketDataPublish=false;
+    private fun handleCancel(orderId: String) {
         orderArena.get(orderId)?.let {
             when (it.status) {
                 OPEN -> {
                     it.status = CANCELLED
                     it.qtyOnMarket = 0
-                    val resting = if (it.side==BUY) restingBuys else restingSells
+                    val resting = if (it.orderType==BUY) restingBuys else restingSells
                     resting.get(it.price)?.removeIf { it.id == orderId }
                     resting.get(it.price)?.run { if (this.isEmpty()) resting.remove(it.price) }
                     val cancelledProto = orderToProto(it);
@@ -163,19 +162,18 @@ class OrderBook {
                     callBacks.add { orderEventPublisher.onCancelReject(orderId, ALREADY_CANCELLED) }
                 }
             }
-            doHousekeeping()
             return
         }
         callBacks.add { orderEventPublisher.onCancelReject(orderId, ORDER_NOT_FOUND) }
-        doHousekeeping()
     }
 
 
     fun submit(order: Order) {
         needsMarketDataPublish=false;
-        when (order.side) {
+        when (order.orderType) {
             BUY -> handleBuy(order)
             SELL -> handleSell(order)
+            CANCEL -> handleCancel(order.id)
         }
         doHousekeeping()
     }

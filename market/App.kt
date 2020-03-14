@@ -45,7 +45,7 @@ fun main() {
                     {OrderBook(callbackExecutor = CallbackExecutorImpl(), tradePublisher =marketDataPublisher,
                             depthPublisher = marketDataPublisher, orderEventPublisher =orderEventPublisher, symbol=o.key())})
             val orderProto = o.value()
-            val orderDto = Order( id=orderProto.orderId, side=orderProto.side, symbol=orderProto.isin, qtyOnMarket=orderProto.qtyOnMarket, price=orderProto.price, traderId=orderProto.traderId)
+            val orderDto = Order( id=orderProto.orderId, orderType= orderProto.orderType, symbol=orderProto.isin, qtyOnMarket=orderProto.qtyOnMarket, price=orderProto.price, traderId=orderProto.traderId)
 
             book.submit(orderDto)
         }

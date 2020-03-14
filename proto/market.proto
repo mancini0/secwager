@@ -5,11 +5,12 @@ import "proto/ref_data.proto";
 
 message Order {
   string order_id = 1;
-  enum OrderSide {
+  enum OrderType {
     BUY = 0;
     SELL = 1;
+    CANCEL=2;
   }
-  OrderSide side = 2;
+  OrderType orderType = 2;
   string isin = 3;
   uint32 price = 5;
   enum State {

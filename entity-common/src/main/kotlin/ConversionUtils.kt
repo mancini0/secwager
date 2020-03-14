@@ -9,7 +9,7 @@ class ConversionUtils {
 
         fun orderToProto(order: Order) : Market.Order {
             return Market.Order.newBuilder().setOrderId(order.id)
-                    .setSide(order.side)
+                    .setOrderType(order.orderType)
                     .setIsin(order.symbol)
                     .setTraderId(order.traderId)
                     .setPrice(order.price)
