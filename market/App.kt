@@ -2,7 +2,6 @@ package com.secwager.market
 
 import com.secwager.dto.Order
 import com.secwager.matchengine.OrderBook
-import com.secwager.matchengine.OrderEventPublisher
 import com.secwager.proto.Market
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -26,7 +25,7 @@ fun main() {
     val orderEventProducerProps = Properties()
     orderEventProducerProps.put("bootstrap.servers", "localhost:9092");
     orderEventProducerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-    orderEventProducerProps.put("value.serializer", "com.secwager.serdes.QuoteProtoSerializer");
+    orderEventProducerProps.put("value.serializer", "com.secwager.serdes.OrderProtoSerializer");
 
 
     val orderConsumer = KafkaConsumer<String, Market.Order>(props)
@@ -46,11 +45,10 @@ fun main() {
                     {OrderBook(callbackExecutor = CallbackExecutorImpl(), tradePublisher =marketDataPublisher,
                             depthPublisher = marketDataPublisher, orderEventPublisher =orderEventPublisher, symbol=o.key())})
             val orderProto = o.value()
-            val orderDto = Order( id=orderProto.orderId, type=orderProto.orderType, symbol=orderProto.isin, qtyOnMarket=orderProto.qtyOnMarket, price=orderProto.price, traderId=orderProto.traderId)
+            val orderDto = Order( id=orderProto.orderId, side=orderProto.side, symbol=orderProto.isin, qtyOnMarket=orderProto.qtyOnMarket, price=orderProto.price, traderId=orderProto.traderId)
 
             book.submit(orderDto)
         }
     }
-}
 
 

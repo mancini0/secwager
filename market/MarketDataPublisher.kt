@@ -19,19 +19,18 @@ class MarketDataPublisher : DepthPublisher, TradePublisher {
 
 
     override fun onTrade(lastTrade: Market.LastTrade) {
-        marketData.put(lastTrade.isin,marketData.get(lastTrade.isin)?.toBuilder().setLastTrade(lastTrade).build() ?:
+        marketData.put(lastTrade.isin,marketData.get(lastTrade.isin)?.toBuilder()?.setLastTrade(lastTrade)?.build() ?:
         Market.Quote.newBuilder().setIsin(lastTrade.isin).setLastTrade(lastTrade).build())
     }
 
     override fun onDepthChange(depth: Market.Depth) {
-        marketData.put(depth.isin,marketData.get(depth.isin)?.toBuilder().setDepth(depth).build() ?:
+        marketData.put(depth.isin, marketData.get(depth.isin)?.toBuilder()?.setDepth(depth)?.build() ?:
         Market.Quote.newBuilder().setIsin(depth.isin).setDepth(depth).build())
     }
 
-    @SkipOnBookReconstruction
-    @RewindStateOnFailure
+
     override fun onMarketDataChange(symbol: String) {
-        kafkaProducer.send(ProducerRecord("market-data", marketData[symbol].toByteArray())
+        kafkaProducer.send(ProducerRecord("market-data", marketData[symbol]))
     }
 
 

@@ -22,7 +22,7 @@ class OrderEventPublisherImpl : OrderEventPublisher {
         TODO("Not yet implemented")
     }
 
-    override fun onCancelReject(order: Market.Order, reason: Market.Order.RejectedReason) {
+    override fun onCancelReject(orderId: String, reason: Market.Order.RejectedReason) {
         TODO("Not yet implemented")
     }
 }
