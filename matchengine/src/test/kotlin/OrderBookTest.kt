@@ -35,9 +35,9 @@ class OrderBookTest {
     @Test
     fun cancelBuy(){
         val depthCaptor = argumentCaptor<Depth>()
-        book.submit(Order("buy", type = OrderType.BUY, isBuy = true, qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
-        book.submit(Order("buy", type = OrderType.CANCEL, isBuy = true, qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
-        book.submit(Order("sell",type =OrderType.SELL, isBuy=false, qtyOnMarket = 100, traderId="seller",price=2, symbol = "IBM"))
+        book.submit(Order("buy", side =  OrderSide.BUY,  qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
+        book.cancel("buy")
+        book.submit(Order("sell",side = OrderSide.SELL,  qtyOnMarket = 100, traderId="seller",price=2, symbol = "IBM"))
         verify(depthPublisher, times(3)).onDepthChange(depthCaptor.capture())
         assertThat(depthCaptor.allValues)
                 .containsExactly(
@@ -55,10 +55,10 @@ class OrderBookTest {
         val depthCaptor = argumentCaptor<Depth>()
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()
-        book.submit(Order("bid6", type = OrderType.BUY, isBuy = true, qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
-        book.submit(Order("bid6Later", type = OrderType.BUY, isBuy =true, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM"))
-        book.submit(Order("bid7", type = OrderType.BUY, isBuy = true, qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM"))
-        book.submit(Order("sell", type = OrderType.SELL, isBuy = false, qtyOnMarket = 225, traderId = "seller", price = 4, symbol = "IBM"))
+        book.submit(Order("bid6", side =  OrderSide.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
+        book.submit(Order("bid6Later", side =  OrderSide.BUY, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM"))
+        book.submit(Order("bid7", side =  OrderSide.BUY,  qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM"))
+        book.submit(Order("sell", side =  OrderSide.SELL,  qtyOnMarket = 225, traderId = "seller", price = 4, symbol = "IBM"))
         verify(depthPublisher, times(4)).onDepthChange(depthCaptor.capture())
         verify(orderPublisher, times(3)).onFill(filledBuyCaptor.capture(), filledSellCaptor.capture())
         assertThat(depthCaptor.allValues)
@@ -74,8 +74,8 @@ class OrderBookTest {
                 .containsExactly(
                         Market.Order.newBuilder().setOrderId("bid7")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(25)
                                 .setTraderId("buyer3")
@@ -86,8 +86,8 @@ class OrderBookTest {
 
                         Market.Order.newBuilder().setOrderId("bid6")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(50)
                                 .setTraderId("buyer1")
@@ -98,8 +98,8 @@ class OrderBookTest {
 
                         Market.Order.newBuilder().setOrderId("bid6Later")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(150)
                                 .setTraderId("buyer2")
@@ -115,8 +115,7 @@ class OrderBookTest {
                 .containsExactly(
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
                                 .setQtyOnMarket(200)
                                 .setQtyFilled(25)
                                 .setTraderId("seller")
@@ -126,8 +125,7 @@ class OrderBookTest {
                                 .build(),
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
                                 .setQtyOnMarket(150)
                                 .setQtyFilled(75)
                                 .setTraderId("seller")
@@ -138,8 +136,7 @@ class OrderBookTest {
                                 .build(),
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(225)
                                 .setTraderId("seller")
@@ -160,10 +157,10 @@ class OrderBookTest {
         val depthCaptor = argumentCaptor<Depth>()
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()
-        book.submit(Order("bid6", type = OrderType.BUY, isBuy = true, qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
-        book.submit(Order("bid6Later", type = OrderType.BUY, isBuy =true, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM"))
-        book.submit(Order("bid7", type = OrderType.BUY, isBuy = true, qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM"))
-        book.submit(Order("sell", type = OrderType.SELL, isBuy = false, qtyOnMarket = 226, traderId = "seller", price = 4, symbol = "IBM"))
+        book.submit(Order("bid6", side =  OrderSide.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
+        book.submit(Order("bid6Later", side =  OrderSide.BUY, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM"))
+        book.submit(Order("bid7", side =  OrderSide.BUY,  qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM"))
+        book.submit(Order("sell", side =  OrderSide.SELL,  qtyOnMarket = 226, traderId = "seller", price = 4, symbol = "IBM"))
         verify(depthPublisher, times(4)).onDepthChange(depthCaptor.capture())
         verify(orderPublisher, times(3)).onFill(filledBuyCaptor.capture(), filledSellCaptor.capture())
         assertThat(depthCaptor.allValues)
@@ -179,8 +176,8 @@ class OrderBookTest {
                 .containsExactly(
                         Market.Order.newBuilder().setOrderId("bid7")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(25)
                                 .setTraderId("buyer3")
@@ -191,8 +188,8 @@ class OrderBookTest {
 
                         Market.Order.newBuilder().setOrderId("bid6")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(50)
                                 .setTraderId("buyer1")
@@ -203,8 +200,8 @@ class OrderBookTest {
 
                         Market.Order.newBuilder().setOrderId("bid6Later")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(150)
                                 .setTraderId("buyer2")
@@ -220,8 +217,8 @@ class OrderBookTest {
                 .containsExactly(
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
+                                
                                 .setQtyOnMarket(201)
                                 .setQtyFilled(25)
                                 .setTraderId("seller")
@@ -231,8 +228,8 @@ class OrderBookTest {
                                 .build(),
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
+                                
                                 .setQtyOnMarket(151)
                                 .setQtyFilled(75)
                                 .setTraderId("seller")
@@ -243,8 +240,8 @@ class OrderBookTest {
                                 .build(),
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
+                                
                                 .setQtyOnMarket(1)
                                 .setQtyFilled(225)
                                 .setTraderId("seller")
@@ -265,9 +262,9 @@ class OrderBookTest {
         val depthCaptor = argumentCaptor<Depth>()
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()
-        book.submit(Order("firstBuy", type = OrderType.BUY, isBuy = true, qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
-        book.submit(Order("sell", type = OrderType.SELL, isBuy = false, qtyOnMarket = 55, traderId = "seller", price = 4, symbol = "IBM"))
-        book.submit(Order("secondBuy", type = OrderType.BUY, isBuy = true, qtyOnMarket = 35, traderId = "buyer2", price = 8, symbol = "IBM"))
+        book.submit(Order("firstBuy", side =  OrderSide.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
+        book.submit(Order("sell", side =  OrderSide.SELL,  qtyOnMarket = 55, traderId = "seller", price = 4, symbol = "IBM"))
+        book.submit(Order("secondBuy", side =  OrderSide.BUY,  qtyOnMarket = 35, traderId = "buyer2", price = 8, symbol = "IBM"))
         verify(depthPublisher, times(3)).onDepthChange(depthCaptor.capture())
         verify(orderPublisher, times(2)).onFill(filledBuyCaptor.capture(), filledSellCaptor.capture())
         assertThat(depthCaptor.allValues)
@@ -282,8 +279,8 @@ class OrderBookTest {
                 .containsExactly(
                         Market.Order.newBuilder().setOrderId("firstBuy")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(50)
                                 .setTraderId("buyer1")
@@ -294,8 +291,8 @@ class OrderBookTest {
 
                         Market.Order.newBuilder().setOrderId("secondBuy")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.BUY)
-                                .setIsBuy(true)
+                                .setSide(OrderSide.BUY)
+                                
                                 .setQtyOnMarket(30)
                                 .setQtyFilled(5)
                                 .setTraderId("buyer2")
@@ -310,8 +307,8 @@ class OrderBookTest {
                 .containsExactly(
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
+                                
                                 .setQtyOnMarket(5)
                                 .setQtyFilled(50)
                                 .setTraderId("seller")
@@ -322,8 +319,8 @@ class OrderBookTest {
 
                         Market.Order.newBuilder().setOrderId("sell")
                                 .setIsin("IBM")
-                                .setOrderType(OrderType.SELL)
-                                .setIsBuy(false)
+                                .setSide(OrderSide.SELL)
+                                
                                 .setQtyOnMarket(0)
                                 .setQtyFilled(55)
                                 .setTraderId("seller")

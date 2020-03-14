@@ -8,9 +8,9 @@ interface TradePublisher {
     fun onTrade(lastTrade: LastTrade)
 }
 
-
 interface DepthPublisher {
    fun  onDepthChange(depth: Depth)
+   fun  onMarketDataChange(symbol: String)
 }
 
 interface CallbackExecutor {
@@ -20,8 +20,8 @@ interface CallbackExecutor {
 
 interface OrderEventPublisher{
     fun onFill(buy:Order, sell:Order)
-    fun onAccept(order:Order) //handled by orderEntry service
+    fun onAccept(order:Order)
     fun onReject(order:Order, reason: Order.RejectedReason)
     fun onCancel(order:Order)
-    fun onCancelReject(order:Order, reason: Order.RejectedReason)
+    fun onCancelReject(orderId :String, reason: Order.RejectedReason)
 }

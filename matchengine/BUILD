@@ -27,5 +27,6 @@ kt_jvm_library(
         "//entity-common:dto",
         "//entity-common:proto-conversion-utils",
         "//proto:market_java_proto",
+        "@maven//:org_slf4j_slf4j_api",
     ],
 )

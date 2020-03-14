@@ -1,6 +1,9 @@
 #load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_library")
 load("@io_bazel_rules_docker//kotlin:image.bzl", "kt_jvm_image")
 
+kt_jvm_library(
+)
+
 kt_jvm_image(
     name = "market",
     srcs = ["App.kt"],
