@@ -10,43 +10,53 @@ import java.time.Duration
 import java.util.*
 
 fun main() {
-    val props = Properties()
-    props.put("bootstrap.servers", System.getenv("bootstrap.servers") ?: "localhost:9092");
-    props.put("group.id", "secwager-market");
-    props.put("enable.auto.commit", "false");
-    props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-    props.put("value.deserializer", "com.secwager.serdes.OrderProtoDeserializer");
+    val instanceNumber = Integer.parseInt(System.getenv("instance.number"))
+    val bootstrapServers =System.getenv("bootstrap.servers") ?: "localhost:9092";
+
+    val orderConsumerProps = Properties()
+    orderConsumerProps.put("bootstrap.servers", bootstrapServers);
+    orderConsumerProps.put("group.id", "secwager-market")
+    orderConsumerProps.put("enable.auto.commit", "false");
+    orderConsumerProps.put("isolation.level", "read_committed");
+    orderConsumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+    orderConsumerProps.put("value.deserializer", "com.secwager.serdes.OrderProtoDeserializer");
 
     val marketDataProducerProps = Properties()
-    marketDataProducerProps.put("bootstrap.servers", "localhost:9092");
+    marketDataProducerProps.put("bootstrap.servers", bootstrapServers);
     marketDataProducerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     marketDataProducerProps.put("value.serializer", "com.secwager.serdes.QuoteProtoSerializer");
+    marketDataProducerProps.put("acks",0)
+    marketDataProducerProps.put("linger.ms",250)
 
     val orderEventProducerProps = Properties()
-    orderEventProducerProps.put("bootstrap.servers", "localhost:9092");
+    orderEventProducerProps.put("bootstrap.servers", bootstrapServers);
+    orderEventProducerProps.put("transactional.id", "secwager-ordereventproducer-${instanceNumber}")
     orderEventProducerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     orderEventProducerProps.put("value.serializer", "com.secwager.serdes.OrderProtoSerializer");
+    marketDataProducerProps.put("linger.ms",250)
 
 
-    val orderConsumer = KafkaConsumer<String, Market.Order>(props)
-
-    val marketDataProducer = KafkaProducer<String,Market.Quote>(marketDataProducerProps)
-    val orderEventProducer = KafkaProducer<String,Market.Quote>(orderEventProducerProps)
-
-    val instanceNumber = Integer.parseInt(System.getenv("instance.number"))
+    val orderKafkaConsumer = KafkaConsumer<String, Market.Order>(orderConsumerProps)
     val orderTopic = TopicPartition("order-inbound", instanceNumber)
-    orderConsumer.assign(setOf(orderTopic))
-    val lastCommit = orderConsumer.committed(setOf(orderTopic))[orderTopic]?.offset() ?: -1
+    orderKafkaConsumer.assign(setOf(orderTopic))
+
+    val marketDataKafkaProducer = KafkaProducer<String,Market.Quote>(marketDataProducerProps)
+    val orderEventKafkaProducer = KafkaProducer<String,Market.Order>(orderEventProducerProps)
+    orderEventKafkaProducer.initTransactions();
+
+    val lastCommit = orderKafkaConsumer.committed(setOf(orderTopic))[orderTopic]?.offset() ?: -1
     val booksBySymbol = mutableMapOf<String,OrderBook>()
-    val marketDataPublisher = MarketDataPublisher(marketDataProducer)
-    val orderEventPublisher = OrderEventPublisherImpl()
-        for(o in orderConsumer.poll(Duration.ofSeconds(1))){
+    val marketDataPublisher = MarketDataPublisher(marketDataKafkaProducer)
+    val orderEventPublisher = OrderEventPublisherImpl(orderEventKafkaProducer)
+    val callbackExecutor = CallbackExecutorImpl(lastCommit)
+
+        for(o in orderKafkaConsumer.poll(Duration.ofSeconds(1))){
+            callbackExecutor.currentOffset=o.offset();
             val book = booksBySymbol.getOrPut(o.key(),
-                    {OrderBook(callbackExecutor = CallbackExecutorImpl(), tradePublisher =marketDataPublisher,
+                    {OrderBook(callbackExecutor = callbackExecutor, tradePublisher =marketDataPublisher,
                             depthPublisher = marketDataPublisher, orderEventPublisher =orderEventPublisher, symbol=o.key())})
             val orderProto = o.value()
             val orderDto = Order( id=orderProto.orderId, orderType= orderProto.orderType, symbol=orderProto.isin, qtyOnMarket=orderProto.qtyOnMarket, price=orderProto.price, traderId=orderProto.traderId)
-
             book.submit(orderDto)
         }
     }
