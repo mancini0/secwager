@@ -11,17 +11,24 @@ spec:
   selector:
     app: orderentry
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: orderentry
+  labels:
+    app: orderentry
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: orderentry
   template:
     metadata:
       labels:
         app: orderentry
     spec:
+      imagePullSecrets:
+      - name: gcr-key
       containers:
         - name: orderentry
           image: us.gcr.io/secwager/orderentry:dev

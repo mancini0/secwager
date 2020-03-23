@@ -5,6 +5,7 @@ workspace(
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
 all_content = """filegroup(name = "all", srcs = glob(["**"],exclude = ["libs/wave/test/**/*"]), visibility = ["//visibility:public"])"""
 
@@ -35,6 +36,8 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "org.jetbrains.kotlin:kotlin-compiler:1.3.70",
+        "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0",
         "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
         "javax.inject:javax.inject:1",
@@ -135,9 +138,7 @@ load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
 
 grpc_java_repositories(omit_com_google_protobuf = True)
 
-rules_kotlin_version = "legacy-1.3.0-rc4"
-
-#rules_kotlin_sha = "9de078258235ea48021830b1669bbbb678d7c3bdffd3435f4c0817c921a88e42"
+rules_kotlin_version = "legacy-1.3.0"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
@@ -149,6 +150,32 @@ http_archive(
 
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_register_toolchains")
 
-kotlin_repositories()
+KOTLIN_VERSION = "1.3.70"
+
+KOTLINC_RELEASE_SHA = "709d782ff707a633278bac4c63bab3026b768e717f8aaf62de1036c994bc89c7"
+
+KOTLINC_RELEASE = {
+    "urls": [
+        "https://github.com/JetBrains/kotlin/releases/download/v{v}/kotlin-compiler-{v}.zip".format(v = KOTLIN_VERSION),
+    ],
+    "sha256": KOTLINC_RELEASE_SHA,
+}
+
+kotlin_repositories(compiler_release = KOTLINC_RELEASE)
 
 kt_register_toolchains()
+
+http_archive(
+    name = "io_bazel_rules_k8s",
+    sha256 = "cc75cf0d86312e1327d226e980efd3599704e01099b58b3c2fc4efe5e321fcd9",
+    strip_prefix = "rules_k8s-0.3.1",
+    urls = ["https://github.com/bazelbuild/rules_k8s/releases/download/v0.3.1/rules_k8s-v0.3.1.tar.gz"],
+)
+
+load("@io_bazel_rules_k8s//k8s:k8s.bzl", "k8s_repositories")
+
+k8s_repositories()
+
+load("@io_bazel_rules_k8s//k8s:k8s_go_deps.bzl", k8s_go_deps = "deps")
+
+k8s_go_deps()

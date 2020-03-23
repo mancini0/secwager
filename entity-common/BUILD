@@ -2,10 +2,20 @@ load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library", "kt_jvm_test
 
 package(default_visibility = ["//visibility:public"])
 
+java_plugin(
+    name = "grrr_plugin",
+    processor_class = "org.jetbrains.kotlinx.serialization.compiler.backend.jvm.SerializableCodegenImpl",
+    deps = ["@maven//:org_jetbrains_kotlin_kotlin_compiler"],
+)
+
 kt_jvm_library(
     name = "dto",
     srcs = ["src/main/kotlin/Dto.kt"],
-    deps = ["//proto:market_java_proto"],
+    plugins = [":grrr_plugin"],
+    deps = [
+        "//proto:market_java_proto",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_runtime",
+    ],
 )
 
 kt_jvm_library(

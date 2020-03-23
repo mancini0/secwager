@@ -1,6 +1,18 @@
 load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("//:defs.bzl", "K8S_CLUSTER")
+
+k8s_object(
+    name = "k8s",
+    cluster = K8S_CLUSTER,
+    images = {
+        "us.gcr.io/secwager/orderentry:dev": ":orderentry",
+    },
+    template = ":k8s.yaml",
+    visibility = ["//infra:__pkg__"],
+)
 
 java_grpc_library(
     name = "orderentry-grpc",

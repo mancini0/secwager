@@ -3,11 +3,14 @@ package com.secwager.matchengine
 import com.secwager.dto.*
 import com.secwager.dto.Order
 import com.secwager.proto.Market
+import com.secwager.proto.Market.BookState
 import com.secwager.proto.Market.Order.OrderType.*
 import com.secwager.proto.Market.Order.RejectedReason.*
 import com.secwager.proto.Market.Order.State.*
 import com.secwager.proto.Market.Depth
+import com.secwager.utils.ConversionUtils
 import com.secwager.utils.ConversionUtils.Companion.orderToProto
+import java.awt.print.Book
 import java.util.*
 
 class OrderBook {
@@ -23,6 +26,7 @@ class OrderBook {
     private var callBacks: MutableList<() -> Any>
     private val callbackExecutor: CallbackExecutor
     private var needsMarketDataPublish: Boolean = false;
+    var reconstructing = true;
 
     constructor(symbol: String,
                 depthPublisher: DepthPublisher,
@@ -169,25 +173,53 @@ class OrderBook {
 
 
     fun submit(order: Order) {
-        needsMarketDataPublish=false;
+        needsMarketDataPublish=false
+        val backupState = serializeCurrentState()
         when (order.orderType) {
             BUY -> handleBuy(order)
             SELL -> handleSell(order)
             CANCEL -> handleCancel(order.id)
         }
-        doHousekeeping()
+        val success = doHousekeeping()
+        if(!success){
+            restoreBookState(backupState)
+        }
     }
 
 
-    private fun doHousekeeping(){
+
+    /**TODO to improve performance, I don't need to copy the entire state here.
+    I could instead only copy the pieces that are about to change**/
+    fun serializeCurrentState(): BookState{
+        return BookState.newBuilder().setMinAsk(this.minAsk)
+        .setMaxBid(this.maxBid)
+        .putAllArena(this.orderArena.mapValues{ orderToProto(it.value)})
+        .putAllBids(this.restingBuys.mapValues{
+            BookState.RestingOrders.newBuilder().addAllOrder(it.value.map{orderToProto(it)}).build()
+            })
+        .putAllAsks(this.restingSells.mapValues{
+            BookState.RestingOrders.newBuilder().addAllOrder(it.value.map{orderToProto(it)}).build()
+        }).build()
+    }
+
+
+    private fun restoreBookState(bookState: BookState){
+           //TODO maybe
+
+
+    }
+
+
+    private fun doHousekeeping() : Boolean{
         if(!restingSells.isEmpty()) minAsk = restingSells.firstKey() else minAsk=0
         if(!restingBuys.isEmpty()) maxBid = restingBuys.firstKey() else maxBid=0
         if(needsMarketDataPublish){
             callBacks.add{depthPublisher.onDepthChange(measureDepth())}
             callBacks.add{depthPublisher.onMarketDataChange(this.symbol)}
         }
-        callbackExecutor.executeCallbacks(callBacks)
+        val success = callbackExecutor.executeCallbacks(callBacks)
         callBacks.clear()
+        return success;
     }
 
 }

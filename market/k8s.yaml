@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: market
+  labels:
+    app: market
+spec:
+  clusterIP: None
+  selector:
+    app: market
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: market
+spec:
+  serviceName: "market"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: market
+  template:
+    metadata:
+      labels:
+        app: market
+    spec:
+      imagePullSecrets:
+      - name: gcr-key
+      containers:
+        - name: market
+          image: us.gcr.io/secwager/market:dev
+          env:
+            - name: POD_NAME_WITH_ORDINAL
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: secwager-kafka-bootstrap

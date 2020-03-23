@@ -12,9 +12,9 @@ class CallbackExecutorImpl : CallbackExecutor {
 
 
     var currentOffset: Long = 0;
-    override fun executeCallbacks(callbacks: MutableCollection<() -> Any>) {
+    override fun executeCallbacks(callbacks: MutableCollection<() -> Any>) : Boolean {
         callbacks.forEach { println("offset ${currentOffset} name: ${it.reflect()?.name}, annots: ${it.reflect()?.annotations}") }
-
+        return false
     }
 
 }

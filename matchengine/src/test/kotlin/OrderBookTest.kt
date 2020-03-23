@@ -14,9 +14,10 @@ import org.mockito.Mockito.*
 class OrderBookTest {
 
     class CallBackRunner : CallbackExecutor {
-        override fun executeCallbacks(callbacks: MutableCollection<() -> Any>) {
+        override fun executeCallbacks(callbacks: MutableCollection<() -> Any>) : Boolean {
             callbacks.forEach{it.invoke()}
             callbacks.clear()
+            return true
         }
     }
 

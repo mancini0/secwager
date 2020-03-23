@@ -35,7 +35,6 @@ public class OrderEntryServiceImpl extends OrderEntryServiceGrpc.OrderEntryServi
     EscrowRequest req = EscrowRequest.newBuilder().setAmount(escrowAmount)
         .setUserId("todo-derive-from-token").build();
     try {
-      log.info("cashier authority: {}", cashierBlockingStub.getChannel().authority());
       CashierActionResult cashierActionResult = cashierBlockingStub.escrow(req).getEscrowStatus();
       orderProducer.beginTransaction();
       orderProducer.send(new ProducerRecord<>(o.getIsin(), o.toByteArray()));

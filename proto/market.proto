@@ -62,3 +62,15 @@ message Quote {
   LastTrade last_trade =2;
   Depth depth = 3;
 }
+
+
+message BookState {
+  message RestingOrders {
+    repeated Order order =1;
+  }
+  map<uint32, RestingOrders> bids =1;
+  map<uint32, RestingOrders> asks =2;
+  map<string, Order> arena = 3;
+  uint32 minAsk = 4;
+  uint32 maxBid = 5;
+}

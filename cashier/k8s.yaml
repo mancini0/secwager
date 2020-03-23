@@ -11,17 +11,24 @@ spec:
   selector:
     app: cashier
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cashier
+  labels:
+    app: cashier
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: cashier
   template:
     metadata:
       labels:
         app: cashier
     spec:
+      imagePullSecrets:
+      - name: gcr-key
       containers:
         - name: cashier
           image: us.gcr.io/secwager/cashier:dev

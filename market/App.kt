@@ -10,7 +10,7 @@ import java.time.Duration
 import java.util.*
 
 fun main() {
-    val instanceNumber = Integer.parseInt(System.getenv("instance.number"))
+    val instanceNumber = Integer.parseInt(System.getenv("POD_NAME_WITH_ORDINAL")?.takeLast(1))
     val bootstrapServers =System.getenv("bootstrap.servers") ?: "localhost:9092";
 
     val orderConsumerProps = Properties()
@@ -60,5 +60,3 @@ fun main() {
             book.submit(orderDto)
         }
     }
-
-

@@ -14,7 +14,7 @@ interface DepthPublisher {
 }
 
 interface CallbackExecutor {
-    fun executeCallbacks(callbacks:MutableCollection<()->Any>)
+    fun executeCallbacks(callbacks:MutableCollection<()->Any>) : Boolean
 }
 
 
