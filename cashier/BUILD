@@ -68,16 +68,8 @@ java_image(
         ":dagger_lib",
         "//grpc-server",
         "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:com_zaxxer_HikariCP",
         "@maven//:commons_dbutils_commons_dbutils",
-        "@maven//:org_apache_ignite_ignite_core",
+        "@maven//:org_postgresql_postgresql",
     ],
-)
-
-container_push(
-    name = "push",
-    format = "Docker",
-    image = ":cashier",
-    registry = "us.gcr.io",
-    repository = "secwager/cashier",
-    tag = "dev",
 )

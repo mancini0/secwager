@@ -36,8 +36,6 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
-        "org.jetbrains.kotlin:kotlin-compiler:1.3.70",
-        "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0",
         "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
         "javax.inject:javax.inject:1",
@@ -51,7 +49,8 @@ maven_install(
         "org.apache.kafka:kafka-clients:%s" % kafka_version,
         "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
         "javax.annotation:javax.annotation-api:1.3.2",
-        "org.apache.ignite:ignite-core:2.7.6",
+        "org.postgresql:postgresql:42.2.11",
+        "com.zaxxer:HikariCP:3.4.2",
         "io.grpc:grpc-netty-shaded:%s" % grpc_version,
         "io.grpc:grpc-api:%s" % grpc_version,
         "io.grpc:grpc-testing:%s" % grpc_version,

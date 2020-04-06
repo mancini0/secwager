@@ -43,6 +43,7 @@ public class OrderEntryServiceImpl extends OrderEntryServiceGrpc.OrderEntryServi
       responseObserver.onCompleted();
       return;
     }catch (Exception e){
+      orderProducer.abortTransaction();
       log.error("oops: {}", e);
       responseObserver.onError(e);
     }

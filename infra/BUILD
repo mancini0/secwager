@@ -14,10 +14,14 @@ k8s_object(
     template = ":ingress.yaml",
 )
 
+
+
 k8s_objects(
-    name = "lfg",
+    name = "everything",
     objects = [
-        "//cashier:k8s",
+        #"//cashier:k8s",
+        ":kafka",
+        ":ingress",
         "//market:k8s",
         "//orderentry:k8s",
     ],

@@ -27,8 +27,6 @@ spec:
       labels:
         app: cashier
     spec:
-      imagePullSecrets:
-      - name: gcr-key
       containers:
         - name: cashier
           image: us.gcr.io/secwager/cashier:dev
