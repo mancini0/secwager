@@ -1,9 +1,9 @@
 package com.secwager.orderentry;
 
 import com.secwager.proto.Market.Order;
-import com.secwager.cashier.CashierGrpc.CashierBlockingStub;
-import com.secwager.cashier.CashierOuterClass.EscrowRequest;
-import com.secwager.cashier.CashierOuterClass.CashierActionResult;
+import com.secwager.proto.cashier.CashierGrpc.CashierBlockingStub;
+import com.secwager.proto.cashier.CashierOuterClass.EscrowRequest;
+import com.secwager.proto.cashier.CashierOuterClass.CashierActionResult;
 
 import javax.inject.Inject;
 import org.apache.kafka.clients.producer.KafkaProducer;

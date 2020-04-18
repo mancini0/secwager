@@ -1,8 +1,8 @@
 package com.secwager.orderentry.di;
 
-import static com.secwager.cashier.CashierGrpc.newBlockingStub;
+import static com.secwager.proto.cashier.CashierGrpc.newBlockingStub;
 
-import com.secwager.cashier.CashierGrpc.CashierBlockingStub;
+import com.secwager.proto.cashier.CashierGrpc.CashierBlockingStub;
 import dagger.Module;
 import dagger.Provides;
 import io.grpc.ManagedChannel;

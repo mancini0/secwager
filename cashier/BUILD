@@ -23,6 +23,22 @@ java_grpc_library(
 )
 
 kt_jvm_library(
+    name = "cashier-repository",
+    srcs = ["src/main/kotlin/CashierRepo.kt"],
+    deps = ["//proto:cashier_java_proto"],
+)
+
+kt_jvm_library(
+    name = "cashier-repository-jdbc",
+    srcs = ["src/main/kotlin/CashierRepoJdbcImpl.kt"],
+    deps = [
+        ":cashier-repository",
+        "@maven//:commons_dbutils_commons_dbutils",
+        "@maven//:javax_inject_javax_inject",
+    ],
+)
+
+kt_jvm_library(
     name = "cashier-service",
     srcs = [
         "src/main/kotlin/CashierServiceImpl.kt",

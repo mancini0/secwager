@@ -1,7 +1,7 @@
 package com.secwager.cashier
 
-import com.secwager.cashier.CashierGrpc.CashierImplBase
-import com.secwager.cashier.CashierOuterClass.*
+import com.secwager.proto.cashier.CashierGrpc.CashierImplBase
+import com.secwager.proto.cashier.CashierOuterClass.*
 import io.grpc.stub.StreamObserver
 import org.apache.commons.dbutils.QueryRunner
 import org.slf4j.LoggerFactory

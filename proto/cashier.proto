@@ -1,6 +1,6 @@
 syntax = "proto3";
 package secwager;
-option java_package = "com.secwager.cashier";
+option java_package = "com.secwager.proto.cashier";
 
 
 enum CashierActionResult {
@@ -41,12 +41,13 @@ message BalanceRequest {
   string user_id = 1;
 }
 
-message BalanceResponse {
- int32 balance = 1;
+message Balance {
+ int32 available_balance = 1;
+ int32 escrowed_balance = 2;
 }
 
 service Cashier {
-  rpc GetBalance (BalanceRequest) returns (stream BalanceResponse);
+  rpc GetBalance (BalanceRequest) returns (stream Balance);
   rpc Escrow (EscrowRequest) returns (EscrowResponse);
   rpc Withdrawal (WithdrawalRequest) returns (WithdrawalResponse);
   rpc Transfer (TransferRequest) returns (TransferResponse);
