@@ -7,15 +7,13 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
-all_content = """filegroup(name = "all", srcs = glob(["**"],exclude = ["libs/wave/test/**/*"]), visibility = ["//visibility:public"])"""
-
 rules_jvm_external_tag = "2.10"
 
 rules_jvm_external_sha = "1bbf2e48d07686707dd85357e9a94da775e1dbd7c464272b3664283c9c716d26"
 
 dagger_version = "2.23.2"
 
-grpc_version = "1.26.0"
+grpc_version = "1.28.1"
 
 ktor_version = "1.2.5"
 
@@ -36,6 +34,7 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "org.bitcoinj:bitcoinj-core:0.15.8",
         "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
         "javax.inject:javax.inject:1",
@@ -90,8 +89,6 @@ maven_install(
 
 git_repository(
     name = "io_bazel_rules_docker",
-    #sha256 = "dc97fccceacd4c6be14e800b2a00693d5e8d07f69ee187babfd04a80a9f8e250",
-    #strip_prefix = "rules_docker-0.14.1",
     branch = "master",
     remote = "https://github.com/bazelbuild/rules_docker.git",
 )
@@ -109,13 +106,6 @@ load(
 )
 
 _java_image_repos()
-
-#load(
-#    "@io_bazel_rules_docker//kotlin:image.bzl",
-#    _kotlin_image_repos = "repositories",
-#)
-#
-#_kotlin_image_repos()
 
 http_archive(
     name = "io_grpc_grpc_java",
@@ -135,7 +125,7 @@ protobuf_deps()
 
 load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
 
-grpc_java_repositories(omit_com_google_protobuf = True)
+grpc_java_repositories()
 
 rules_kotlin_version = "legacy-1.3.0"
 

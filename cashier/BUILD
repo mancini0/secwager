@@ -1,7 +1,8 @@
 load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
-load("@io_bazel_rules_docker//java:image.bzl", "java_image")
+load("@io_bazel_rules_docker//kotlin:image.bzl", "kt_jvm_image")
 load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library", "kt_jvm_test")
 load("//:defs.bzl", "K8S_CLUSTER")
 
 k8s_object(
@@ -21,27 +22,10 @@ java_grpc_library(
     deps = ["//proto:cashier_java_proto"],
 )
 
-java_plugin(
-    name = "dagger_plugin",
-    processor_class = "dagger.internal.codegen.ComponentProcessor",
-    deps = [
-        "@maven//:com_google_dagger_dagger_compiler",
-    ],
-)
-
-java_library(
-    name = "dagger_lib",
-    exported_plugins = ["dagger_plugin"],
-    exports = [
-        "@maven//:com_google_dagger_dagger",
-        "@maven//:javax_inject_javax_inject",
-    ],
-)
-
-java_library(
+kt_jvm_library(
     name = "cashier-service",
     srcs = [
-        "src/main/java/com/secwager/cashier/CashierServiceImpl.java",
+        "src/main/kotlin/CashierServiceImpl.kt",
     ],
     exports = [":cashier-grpc"],
     deps = [
@@ -54,18 +38,18 @@ java_library(
     ],
 )
 
-java_image(
+kt_jvm_image(
     name = "cashier",
     srcs = [
-        "src/main/java/com/secwager/cashier/App.java",
-        "src/main/java/com/secwager/cashier/di/CashierComponent.java",
-        "src/main/java/com/secwager/cashier/di/CashierModule.java",
+        "src/main/kotlin/App.kt",
+        "src/main/kotlin/di/CashierComponent.kt",
+        "src/main/kotlin/di/CashierModule.kt",
     ],
-    main_class = "com.secwager.cashier.App",
+    main_class = "com.secwager.cashier.AppKt",
     resources = ["src/main/resources/logback.xml"],
     deps = [
         ":cashier-service",
-        ":dagger_lib",
+        "//:dagger",
         "//grpc-server",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:com_zaxxer_HikariCP",

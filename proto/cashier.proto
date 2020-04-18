@@ -37,7 +37,16 @@ message TransferResponse {
   CashierActionResult result = 1;
 }
 
+message BalanceRequest {
+  string user_id = 1;
+}
+
+message BalanceResponse {
+ int32 balance = 1;
+}
+
 service Cashier {
+  rpc GetBalance (BalanceRequest) returns (stream BalanceResponse);
   rpc Escrow (EscrowRequest) returns (EscrowResponse);
   rpc Withdrawal (WithdrawalRequest) returns (WithdrawalResponse);
   rpc Transfer (TransferRequest) returns (TransferResponse);

@@ -8,8 +8,8 @@ kt_jvm_binary(
     ],
     main_class = "com.secwager.refdata.AppKt",
     deps = [
+        "//:dagger",
         "//proto:refdata_java_proto",
-        "//third_party/dagger",
         "@maven//:org_apache_kafka_kafka_clients",
     ],
 )
@@ -21,7 +21,7 @@ kt_jvm_library(
     ],
     resources = [],
     deps = [
-        "//football-data:football-data-client",
+        "//football-data-client",
         "//proto:market_java_proto",
         "//proto:refdata_java_proto",
         "@maven//:ch_qos_logback_logback_classic",

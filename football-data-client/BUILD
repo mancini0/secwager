@@ -23,7 +23,7 @@ kt_jvm_test(
     resources = ["src/test/resources/serieAweek23.json"],
     test_class = "com.secwager.refdata.FootballDataClientTest",
     deps = [
-        "//football-data:football-data-client",
+        ":football-data-client",
         "@maven//:com_google_truth_truth",
         "@maven//:com_squareup_okhttp3_mockwebserver",
         "@maven//:junit_junit",
