@@ -7,50 +7,64 @@ enum CashierActionResult {
   RESULT_UNSET = 0;
   SUCCESS = 1;
   FAILURE_INSUFFICIENT_FUNDS = 2;
+  FAILURE_USER_NOT_FOUND = 3;
+  FAILURE_FRIEND_NOT_FOUND = 4;
+  FAILURE_INVALID_PAY_TO_ADDRESS = 5;
 }
 
-message EscrowRequest {
+message UserAmount {
   string user_id = 1;
-  double amount = 2;
+  uint32 amount = 2;
 }
 
-message EscrowResponse {
-  CashierActionResult escrow_status = 1;
+message DepositRequest {
+  string user_id = 1;
+  uint32 amount = 2;
+}
+
+message LockFundsResponse {
+  CashierActionResult result = 1;
+  Balance balance = 2;
+}
+
+message UnlockFundsResponse {
+  CashierActionResult result = 1;
+  Balance balance = 2;
 }
 
 message WithdrawalRequest {
   string user_id = 1;
-  double amount = 2;
+  uint32 amount = 2;
+  string pay_to_address = 3;
 }
 
 message WithdrawalResponse {
   CashierActionResult result = 1;
+  string txn_hash = 2;
 }
 
-message TransferRequest {
-  string from_user_id = 1;
-  string to_user_id = 2;
-  double amount = 3;
-}
-
-message TransferResponse {
+message DepositResponse {
   CashierActionResult result = 1;
 }
+
 
 message BalanceRequest {
   string user_id = 1;
 }
 
 message Balance {
- int32 available_balance = 1;
- int32 escrowed_balance = 2;
+  int32 available_balance = 1;
+  int32 escrowed_balance = 2;
 }
 
 service Cashier {
+  rpc LockFunds (UserAmount) returns (LockFundsResponse);
+  rpc UnlockFunds (UserAmount) returns (UnlockFundsResponse);
+  rpc DepositRisky (DepositRequest) returns (DepositResponse);
+  rpc DepositSafe (DepositRequest) returns (DepositResponse);
   rpc GetBalance (BalanceRequest) returns (stream Balance);
-  rpc Escrow (EscrowRequest) returns (EscrowResponse);
   rpc Withdrawal (WithdrawalRequest) returns (WithdrawalResponse);
-  rpc Transfer (TransferRequest) returns (TransferResponse);
+
 }
 
 

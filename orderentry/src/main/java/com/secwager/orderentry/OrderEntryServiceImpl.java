@@ -2,9 +2,8 @@ package com.secwager.orderentry;
 
 import com.secwager.proto.Market.Order;
 import com.secwager.proto.cashier.CashierGrpc.CashierBlockingStub;
-import com.secwager.proto.cashier.CashierOuterClass.EscrowRequest;
 import com.secwager.proto.cashier.CashierOuterClass.CashierActionResult;
-
+import com.secwager.proto.cashier.CashierOuterClass.UserAmount;
 import javax.inject.Inject;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -25,24 +24,26 @@ public class OrderEntryServiceImpl extends OrderEntryServiceGrpc.OrderEntryServi
     this.cashierBlockingStub = cashierBlockingStub;
   }
 
+  @Override
   public void submitOrder(OrderEntry.SubmitOrderRequest request,
-                          io.grpc.stub.StreamObserver<OrderEntry.SubmitOrderResponse> responseObserver) {
+      io.grpc.stub.StreamObserver<OrderEntry.SubmitOrderResponse> responseObserver) {
     Order o = request.getOrder();
     log.info("order submission: {}", o.toString());
     int maxPrice =
         100 * 100;
-    int escrowAmount =  o.getQtyOnMarket() * maxPrice;
-    EscrowRequest req = EscrowRequest.newBuilder().setAmount(escrowAmount)
+    int escrowAmount = o.getQtyOnMarket() * maxPrice;
+    UserAmount userAmount = UserAmount.newBuilder().setAmount(escrowAmount)
         .setUserId("todo-derive-from-token").build();
     try {
-      CashierActionResult cashierActionResult = cashierBlockingStub.escrow(req).getEscrowStatus();
+      CashierActionResult cashierActionResult = cashierBlockingStub.lockFunds(userAmount)
+          .getResult();
       orderProducer.beginTransaction();
       orderProducer.send(new ProducerRecord<>(o.getIsin(), o.toByteArray()));
       orderProducer.commitTransaction();
       responseObserver.onNext(OrderEntry.SubmitOrderResponse.newBuilder().setSuccess(true).build());
       responseObserver.onCompleted();
       return;
-    }catch (Exception e){
+    } catch (Exception e) {
       orderProducer.abortTransaction();
       log.error("oops: {}", e);
       responseObserver.onError(e);
