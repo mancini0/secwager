@@ -1,5 +1,7 @@
 package com.secwager.cashier.di
 
+import com.secwager.cashier.CashierRepo
+import com.secwager.cashier.CashierRepoJdbcImpl
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dagger.Module
@@ -27,5 +29,11 @@ class CashierModule {
     @Singleton
     fun provideQueryRunner(dataSource: DataSource?): QueryRunner {
         return QueryRunner(dataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCashierRepo(queryRunner: QueryRunner): CashierRepo {
+        return CashierRepoJdbcImpl(queryRunner)
     }
 }

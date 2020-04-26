@@ -1,6 +1,6 @@
 package com.secwager.cashier
 
-import com.secwager.proto.cashier.CashierOuterClass.Balance
+import com.secwager.proto.cashier.CashierOuterClass.*
 import org.apache.commons.dbutils.QueryRunner
 import org.apache.commons.dbutils.ResultSetHandler
 import org.slf4j.LoggerFactory
@@ -31,13 +31,22 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 "from\n" +
                 "\t ACCT_BALANCE;"
 
-        val ESCROW_RISKY_DEPOSIT = "update\n" +
+        val RISKY_DEPOSIT = "update\n" +
                 "\t ACCT_BALANCE\n" +
                 "set\n" +
                 "\t ESCROWED_BALANCE = coalesce(ESCROWED_BALANCE, 0) + ?\n" +
                 "where\n" +
                 "\t USER_ID =? returning AVAILABLE_BALANCE,\n" +
                 "\t ESCROWED_BALANCE;"
+
+        val SAFE_DEPOSIT = "UPDATE\n" +
+                "\tACCT_BALANCE\n" +
+                "SET\n" +
+                "\tAVAILABLE_BALANCE = COALESCE(AVAILABLE_BALANCE,\n" +
+                "\t0) + ?\n" +
+                "WHERE\n" +
+                "\tUSER_ID =? RETURNING AVAILABLE_BALANCE,\n" +
+                "\tESCROWED_BALANCE;"
     }
 
     object BalanceResultSetHandler : ResultSetHandler<Balance> {
@@ -56,37 +65,45 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
     }
 
 
-    override fun directDepositIntoEscrow(userId: String, amount: Int): Balance {
+    override fun directDepositIntoEscrow(userId: String, amount: Int): CashierActionResult {
+        return handleDeposit(isSafe = false, userId = userId, amount = amount)
+    }
+
+    override fun directDepositIntoAvailable(userId: String, amount: Int): CashierActionResult {
+        return handleDeposit(isSafe = true, userId = userId, amount = amount)
+    }
+
+    override fun transferEscrowToAvailable(userId: String, amount: Int, reason: CashierRepo.TransactionReason): CashierActionResult {
+        TODO("Not yet implemented")
+    }
+
+    override fun transferAvailableToEscrow(userId: String, amount: Int, reason: CashierRepo.TransactionReason): CashierActionResult {
+        TODO("Not yet implemented")
+    }
+
+
+    private fun handleDeposit(isSafe: Boolean, userId: String, amount: Int): CashierActionResult {
+        val resultBuilder = CashierActionResult.newBuilder()
         try {
-            val balances = queryRunner.execute(ESCROW_RISKY_DEPOSIT, BalanceResultSetHandler, amount, userId)
+            val balances = queryRunner.execute(if (isSafe) SAFE_DEPOSIT else RISKY_DEPOSIT, BalanceResultSetHandler, amount, userId)
             when (balances.size) {
                 0 -> {
-                    log.info("User does not exist")
+                    resultBuilder.setStatus(CashierActionStatus.FAILURE_USER_NOT_FOUND)
                 }
                 1 -> {
-                    queryRunner.execute(INSERT_TXN_LEDGER, userId, CashierRepo.TXN_TYPE.RISKY_DEPOSIT)
+                    queryRunner.execute(INSERT_TXN_LEDGER, userId, CashierRepo.TransactionReason.RISKY_DEPOSIT.name)
                     queryRunner.dataSource.connection.commit()
-                    return balances.first()
+                    val balance = balances.first()
+                    resultBuilder.setStatus(CashierActionStatus.SUCCESS)
+                            .setBalance(balance)
                 }
             }
         } catch (e: SQLException) {
             log.error("Exception encountered while handling risky deposit: {}", e)
             queryRunner.dataSource.connection.rollback()
+
         }
-        return Balance.getDefaultInstance();
-    }
-
-    override fun directDepositIntoAvailable(userId: String, amount: Int): Balance {
-        return queryRunner.execute("UPDATE ACCT_BALANCE SET AVAILABLE_BALANCE = coalesce(AVAILABLE_BALANCE,0) + ? WHERE USER_ID=? RETURNING AVAILABLE_BALANCE, ESCROWED_BALANCE"
-                , BalanceResultSetHandler, amount, userId).first();
-    }
-
-    override fun transferEscrowToAvailable(userId: String, amount: Int): Balance {
-        TODO("Not yet implemented")
-    }
-
-    override fun transferAvailableToEscrow(userId: String, amount: Int): Balance {
-        TODO("Not yet implemented")
+        return resultBuilder.build()
     }
 
 }
