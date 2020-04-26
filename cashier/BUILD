@@ -15,13 +15,6 @@ k8s_object(
     visibility = ["//infra:__pkg__"],
 )
 
-java_grpc_library(
-    name = "cashier-grpc",
-    srcs = ["//proto:cashier_proto"],
-    visibility = ["//orderentry:__pkg__"],
-    deps = ["//proto:cashier_java_proto"],
-)
-
 kt_jvm_library(
     name = "cashier-repository",
     srcs = ["src/main/kotlin/CashierRepo.kt"],
@@ -35,6 +28,7 @@ kt_jvm_library(
         ":cashier-repository",
         "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:javax_inject_javax_inject",
+        "@maven//:org_slf4j_slf4j_api",
     ],
 )
 
@@ -43,9 +37,9 @@ kt_jvm_library(
     srcs = [
         "src/main/kotlin/CashierServiceImpl.kt",
     ],
-    exports = [":cashier-grpc"],
+    exports = ["//proto:cashier-grpc"],
     deps = [
-        ":cashier-grpc",
+        "//proto:cashier-grpc",
         "//proto:cashier_java_proto",
         "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:io_grpc_grpc_stub",

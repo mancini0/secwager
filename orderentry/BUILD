@@ -14,40 +14,17 @@ k8s_object(
     visibility = ["//infra:__pkg__"],
 )
 
-java_grpc_library(
-    name = "orderentry-grpc",
-    srcs = ["//proto:orderentry_proto"],
-    deps = ["//proto:orderentry_java_proto"],
-)
-
-java_plugin(
-    name = "dagger_plugin",
-    processor_class = "dagger.internal.codegen.ComponentProcessor",
-    deps = [
-        "@maven//:com_google_dagger_dagger_compiler",
-    ],
-)
-
-java_library(
-    name = "dagger_lib",
-    exported_plugins = ["dagger_plugin"],
-    exports = [
-        "@maven//:com_google_dagger_dagger",
-        "@maven//:javax_inject_javax_inject",
-    ],
-)
-
 java_library(
     name = "orderentry-service",
     srcs = [
         "src/main/java/com/secwager/orderentry/OrderEntryServiceImpl.java",
     ],
-    exports = [":orderentry-grpc"],
+    exports = ["//proto:orderentry-grpc"],
     deps = [
-        ":orderentry-grpc",
-        "//cashier:cashier-grpc",
+        "//proto:cashier-grpc",
         "//proto:cashier_java_proto",
         "//proto:market_java_proto",
+        "//proto:orderentry-grpc",
         "//proto:orderentry_java_proto",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
@@ -66,10 +43,10 @@ java_image(
     main_class = "com.secwager.orderentry.App",
     resources = ["src/main/resources/logback.xml"],
     deps = [
-        ":dagger_lib",
         ":orderentry-service",
-        "//cashier:cashier-grpc",
+        "//:dagger",
         "//grpc-server",
+        "//proto:cashier-grpc",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:org_apache_kafka_kafka_clients",

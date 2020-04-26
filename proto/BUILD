@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
+
 proto_library(
     name = "market_proto",
     srcs = ["market.proto"],
@@ -48,4 +50,24 @@ java_proto_library(
 java_proto_library(
     name = "cashier_java_proto",
     deps = [":cashier_proto"],
+)
+
+java_grpc_library(
+    name = "cashier-grpc",
+    srcs = [":cashier_proto"],
+    visibility = [
+        "//blockchain-spv:__pkg__",
+        "//cashier:__pkg__",
+        "//orderentry:__pkg__",
+    ],
+    deps = [":cashier_java_proto"],
+)
+
+java_grpc_library(
+    name = "orderentry-grpc",
+    srcs = ["//proto:orderentry_proto"],
+    visibility = [
+        "//orderentry:__pkg__",
+    ],
+    deps = ["//proto:orderentry_java_proto"],
 )

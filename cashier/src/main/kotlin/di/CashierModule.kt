@@ -19,7 +19,7 @@ class CashierModule {
         config.dataSourceClassName = PGSimpleDataSource::class.java.name
         config.jdbcUrl = System.getenv("JDBC_URL")
         config.username = System.getenv("DB_USER")
-        config.username = System.getenv("DB_PASSWORD")
+        config.password = System.getenv("DB_PASSWORD")
         return HikariDataSource(config)
     }
 

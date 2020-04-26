@@ -1,5 +1,6 @@
 load("@io_bazel_rules_docker//kotlin:image.bzl", "kt_jvm_image")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_test")
 load("//:defs.bzl", "K8S_CLUSTER")
 
 k8s_object(

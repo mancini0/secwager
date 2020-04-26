@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:
+  labels:
+    app: blockchain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blockchain
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: blockchain
+    spec:
+      containers:
+        - name: blockchain
+          image: us.gcr.io/secwager/blockchain:dev
+          imagePullPolicy: Always
