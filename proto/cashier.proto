@@ -4,27 +4,42 @@ option java_package = "com.secwager.proto.cashier";
 
 
 enum CashierActionStatus {
-  STATUS_UNDEFINED = 0;
+  STATUS_UNSPECIFIED = 0;
   SUCCESS = 1;
   FAILURE_INSUFFICIENT_FUNDS = 2;
   FAILURE_USER_NOT_FOUND = 3;
   FAILURE_FRIEND_NOT_FOUND = 4;
   FAILURE_INVALID_PAY_TO_ADDRESS = 5;
+  FAILURE_INTERNAL_ERROR = 6;
 }
 
+enum TransactionReason {
+  REASON_UNSPECIFIED = 0;
+  SAFE_DEPOSIT = 1;
+  RISKY_DEPOSIT = 2;
+  RISKY_DEPOSIT_BECOMES_SAFE = 3;
+  WITHDRAWAL = 4;
+  BET_LOSS = 5;
+  BET_WIN = 6;
+  BET_PUSH = 7;
+  TRANSFER_TO_FRIEND = 8;
+}
 message CashierActionResult {
   CashierActionStatus status = 1;
   Balance balance = 2;
 }
 
-message UserAmount {
+
+message CashierRequest {
   string user_id = 1;
   uint32 amount = 2;
+  TransactionReason reason = 3;
+  
 }
 
 
 message WithdrawalRequest {
-  UserAmount user_amount = 1;
+  CashierRequest cashier_request = 1;
   string pay_to_address = 2;
 }
 
@@ -44,13 +59,12 @@ message Balance {
 }
 
 service Cashier {
-  rpc LockFunds (UserAmount) returns (CashierActionResult);
-  rpc UnlockFunds (UserAmount) returns (CashierActionResult);
-  rpc DepositRisky (UserAmount) returns (CashierActionResult);
-  rpc DepositSafe (UserAmount) returns (CashierActionResult);
+  rpc LockFunds (CashierRequest) returns (CashierActionResult);
+  rpc UnlockFunds (CashierRequest) returns (CashierActionResult);
+  rpc DepositRisky (CashierRequest) returns (CashierActionResult);
+  rpc DepositSafe (CashierRequest) returns (CashierActionResult);
   rpc StreamBalance (BalanceRequest) returns (stream Balance);
   rpc Withdrawal (WithdrawalRequest) returns (WithdrawalResponse);
-
 }
 
 

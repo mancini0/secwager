@@ -13,25 +13,26 @@ class CashierServiceImpl @Inject constructor(private val cashierRepo: CashierRep
     }
 
 
-    override fun lockFunds(userAmount: UserAmount,
+    override fun lockFunds(cashierRequest: CashierRequest,
                            responseObserver: StreamObserver<CashierActionResult>) {
-        TODO("NOT IMPLEMENTED")
+
+        TODO()
     }
 
-    override fun unlockFunds(userAmount: UserAmount,
+    override fun unlockFunds(cashierRequest: CashierRequest,
                              responseObserver: StreamObserver<CashierActionResult>) {
         TODO("NOT IMPLEMENTED")
     }
 
-    override fun depositRisky(userAmount: UserAmount, responseObserver: StreamObserver<CashierActionResult>) {
+    override fun depositRisky(cashierRequest: CashierRequest, responseObserver: StreamObserver<CashierActionResult>) {
         TODO("NOT IMPLEMENTED")
     }
 
-    override fun depositSafe(userAmount: UserAmount, responseObserver: StreamObserver<CashierActionResult>) {
+    override fun depositSafe(cashierRequest: CashierRequest, responseObserver: StreamObserver<CashierActionResult>) {
         TODO("NOT IMPLEMENTED")
     }
 
-    override fun streamBalance(depositRequest: BalanceRequest,
+    override fun streamBalance(balanceRequest: BalanceRequest,
                                responseObserver: StreamObserver<Balance>) {
         TODO("NOT IMPLEMENTED")
     }

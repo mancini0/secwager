@@ -39,6 +39,7 @@ kt_jvm_library(
     ],
     exports = ["//proto:cashier-grpc"],
     deps = [
+        ":cashier-repository-jdbc",
         "//proto:cashier-grpc",
         "//proto:cashier_java_proto",
         "@maven//:commons_dbutils_commons_dbutils",
