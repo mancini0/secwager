@@ -36,4 +36,6 @@ class CashierModule {
     fun provideCashierRepo(queryRunner: QueryRunner): CashierRepo {
         return CashierRepoJdbcImpl(queryRunner)
     }
+
+    
 }

@@ -42,6 +42,7 @@ kt_jvm_library(
         ":cashier-repository-jdbc",
         "//proto:cashier-grpc",
         "//proto:cashier_java_proto",
+        "@maven//:com_github_ben_manes_caffeine_caffeine",
         "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",

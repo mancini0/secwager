@@ -38,8 +38,10 @@ maven_install(
     name = "maven",
     artifacts = [
         "org.bitcoinj:bitcoinj-core:0.15.8",
+        "com.github.jasync-sql:jasync-postgresql:1.0.17",
         "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
+        "com.github.ben-manes.caffeine:caffeine:2.8.2",
         "javax.inject:javax.inject:1",
         "com.squareup.okhttp3:mockwebserver:4.3.1",
         "com.squareup.retrofit2:converter-gson:2.7.1",
@@ -67,6 +69,9 @@ maven_install(
         "commons-dbutils:commons-dbutils:1.7",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
         "com.google.code.findbugs:jsr305:3.0.2",
+        "com.google.auth:google-auth-library-oauth2-http:0.20.0",
+        "com.google.cloud:google-cloud-firestore:1.33.0",
+        "com.google.api:api-common:1.9.0",
         maven.artifact(
             group = "com.nhaarman.mockitokotlin2",
             artifact = "mockito-kotlin",
@@ -76,7 +81,7 @@ maven_install(
         maven.artifact(
             group = "com.google.firebase",
             artifact = "firebase-admin",
-            version = "6.12.0",
+            version = "6.12.2",
             exclusions = [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-api",
@@ -184,4 +189,12 @@ yarn_install(
     name = "ui2_npm",
     package_json = "//ui2:package.json",
     yarn_lock = "//ui2:yarn.lock",
+)
+
+#https://github.com/grpc/grpc-kotlin.git
+
+git_repository(
+    name = "io_grpc_grpc_kotlin",
+    branch = "master",
+    remote = "https://github.com/grpc/grpc-kotlin.git",
 )

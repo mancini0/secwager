@@ -23,6 +23,7 @@ enum TransactionReason {
   BET_WIN = 6;
   BET_PUSH = 7;
   TRANSFER_TO_FRIEND = 8;
+  POST_MARGIN = 9;
 }
 message CashierActionResult {
   CashierActionStatus status = 1;
@@ -34,7 +35,7 @@ message CashierRequest {
   string user_id = 1;
   uint32 amount = 2;
   TransactionReason reason = 3;
-  
+  string related_entity_id = 4;
 }
 
 

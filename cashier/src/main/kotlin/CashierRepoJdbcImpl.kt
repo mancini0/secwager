@@ -19,12 +19,14 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 " \t  into\n" +
                 " \t  TXN_LEDGER(USER_ID,\n" +
                 " \t  TXN_TIME,\n" +
-                " \t  TXN_TYPE,\n" +
+                " \t  TXN_REASON,\n" +
+                " \t  RELATED_ENTITY,\n" +
                 " \t  AVAILABLE_BALANCE,\n" +
                 " \t  ESCROWED_BALANCE)\n" +
                 "select\n" +
-                " \t  (?,\n" +
+                " \t  (user_id,\n" +
                 " \t  current_timestamp,\n" +
+                " \t  ?,\n" +
                 " \t  ?,\n" +
                 " \t  AVAILABLE_BALANCE,\n" +
                 " \t  ESCROWED_BALANCE)\n" +
@@ -126,24 +128,24 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
     }
 
 
-    override fun directDepositIntoEscrow(userId: String, amount: Int): CashierActionResult {
-        return handleDeposit(isSafe = false, userId = userId, amount = amount)
+    override fun directDepositIntoEscrow(userId: String, amount: Int, entityId: String): CashierActionResult {
+        return handleDeposit(isSafe = false, userId = userId, amount = amount, entityId = entityId)
     }
 
-    override fun directDepositIntoAvailable(userId: String, amount: Int): CashierActionResult {
-        return handleDeposit(isSafe = true, userId = userId, amount = amount)
+    override fun directDepositIntoAvailable(userId: String, amount: Int, entityId: String): CashierActionResult {
+        return handleDeposit(isSafe = true, userId = userId, amount = amount, entityId = entityId)
     }
 
-    override fun unlockFunds(userId: String, amount: Int, reason: TransactionReason): CashierActionResult {
-        return handleLockingOrUnlockingFunds(userId, amount, reason, locking = false);
+    override fun unlockFunds(userId: String, amount: Int, reason: TransactionReason, entityId: String): CashierActionResult {
+        return handleLockingOrUnlockingFunds(userId, amount, reason, locking = false, entityId = entityId);
     }
 
-    override fun lockFunds(userId: String, amount: Int, reason: TransactionReason): CashierActionResult {
-        return handleLockingOrUnlockingFunds(userId, amount, reason, locking = true);
+    override fun lockFunds(userId: String, amount: Int, reason: TransactionReason, entityId: String): CashierActionResult {
+        return handleLockingOrUnlockingFunds(userId, amount, reason, locking = true, entityId = entityId);
     }
 
 
-    private fun handleLockingOrUnlockingFunds(userId: String, amount: Int, reason: TransactionReason, locking: Boolean): CashierActionResult {
+    private fun handleLockingOrUnlockingFunds(userId: String, amount: Int, reason: TransactionReason, locking: Boolean, entityId: String): CashierActionResult {
         val resultBuilder = CashierActionResult.newBuilder()
         try {
             val query = if (locking) LOCK_FUNDS else UNLOCK_FUNDS
@@ -157,7 +159,7 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                     resultBuilder.setBalance(balance)
                     if (hadSufficientFunds) {
                         resultBuilder.setStatus(CashierActionStatus.SUCCESS)
-                        queryRunner.execute(INSERT_TXN_LEDGER, userId, reason.name, userId)
+                        queryRunner.execute(INSERT_TXN_LEDGER, reason.name, entityId, userId)
                         queryRunner.dataSource.connection.commit()
                     } else {
                         resultBuilder.setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS)
@@ -167,12 +169,12 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
         } catch (e: SQLException) {
             log.error("Exception encountered while attempting to lock funds: {}", e)
             resultBuilder.setStatus(CashierActionStatus.FAILURE_INTERNAL_ERROR)
-            queryRunner.dataSource.connection.commit()
+            queryRunner.dataSource.connection.rollback()
         }
         return resultBuilder.build()
     }
 
-    private fun handleDeposit(isSafe: Boolean, userId: String, amount: Int): CashierActionResult {
+    private fun handleDeposit(isSafe: Boolean, userId: String, amount: Int, entityId: String): CashierActionResult {
         val resultBuilder = CashierActionResult.newBuilder()
         try {
             val balances = queryRunner.execute(if (isSafe) SAFE_DEPOSIT else RISKY_DEPOSIT, BalanceResultSetHandler, amount, userId)
@@ -181,7 +183,8 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                     resultBuilder.setStatus(CashierActionStatus.FAILURE_USER_NOT_FOUND)
                 }
                 1 -> {
-                    queryRunner.execute(INSERT_TXN_LEDGER, userId, TransactionReason.RISKY_DEPOSIT.name, userId)
+                    val reason = if (isSafe) TransactionReason.SAFE_DEPOSIT else TransactionReason.RISKY_DEPOSIT
+                    queryRunner.execute(INSERT_TXN_LEDGER, reason.name, entityId, userId)
                     queryRunner.dataSource.connection.commit()
                     val balance = balances.first()
                     resultBuilder.setStatus(CashierActionStatus.SUCCESS)

@@ -1,8 +1,13 @@
 package com.secwager.orderentry.di;
 
-import static com.secwager.proto.cashier.CashierGrpc.newBlockingStub;
+import static com.secwager.proto.cashier.CashierGrpc.newStub;
 
-import com.secwager.proto.cashier.CashierGrpc.CashierBlockingStub;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.secwager.dao.order.OrderRepo;
+import com.secwager.proto.Market.Order;
+import com.secwager.proto.cashier.CashierGrpc.CashierStub;
 import dagger.Module;
 import dagger.Provides;
 import io.grpc.ManagedChannel;
@@ -21,22 +26,20 @@ public class OrderEntryModule {
   @Named("cashierChannel")
   public ManagedChannel cashierGrpcChannel() {
     return ManagedChannelBuilder
-        .forAddress("cashier",9305)
+        .forAddress("cashier", 9305)
         .usePlaintext()
         .build();
   }
 
   @Singleton
   @Provides
-  //TODO throw or return Optional if properties are unset or invalid(dagger does not like exceptions thrown during dependency construction)
   public KafkaProducer<String, byte[]> provideKafkaOrderProducer() {
     Properties props = new Properties();
 
     props.put("bootstrap.servers",
         Optional.ofNullable(System.getenv("KAFKA_BOOTSTRAP_SERVERS"))
             .orElseGet(() -> "localhost:9092"));
-    //https://issues.apache.org/jira/browse/KAFKA-8803
-    //props.put("enable.idempotence", "true");
+
     props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
     props.put("transactional.id", Optional.ofNullable(System.getenv("POD_NAME_WITH_ORDINAL"))
@@ -48,8 +51,32 @@ public class OrderEntryModule {
 
   @Provides
   @Singleton
-  public CashierBlockingStub provideCashierClient(@Named("cashierChannel") ManagedChannel channel) {
-    return newBlockingStub(channel);
+  public CashierStub provideCashierClient(@Named("cashierChannel") ManagedChannel channel) {
+    return newStub(channel);
   }
 
+  @Provides
+  @Singleton
+  public FirebaseApp provideFirebase() {
+    try {
+      return FirebaseApp.initializeApp(FirebaseOptions.builder()
+          .setProjectId("secwager")
+          .setCredentials(GoogleCredentials.getApplicationDefault())
+          .setDatabaseUrl("https://secwager.firebaseio.com")
+          .build());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Provides
+  @Singleton
+  public OrderRepo provideOrderRepo() {
+    return new OrderRepo() {
+      @Override
+      public void insertOrder(Order order) {
+
+      }
+    };
+  }
 }
