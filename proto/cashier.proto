@@ -8,7 +8,6 @@ enum CashierActionStatus {
   SUCCESS = 1;
   FAILURE_INSUFFICIENT_FUNDS = 2;
   FAILURE_USER_NOT_FOUND = 3;
-  FAILURE_FRIEND_NOT_FOUND = 4;
   FAILURE_INVALID_PAY_TO_ADDRESS = 5;
   FAILURE_INTERNAL_ERROR = 6;
 }
@@ -24,6 +23,7 @@ enum TransactionReason {
   BET_PUSH = 7;
   TRANSFER_TO_FRIEND = 8;
   POST_MARGIN = 9;
+  RESET_MARGIN = 10;
 }
 message CashierActionResult {
   CashierActionStatus status = 1;

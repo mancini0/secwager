@@ -1,7 +1,7 @@
 workspace(
     name = "secwager",
     managed_directories = {
-        "@ui2_npm": ["ui2/node_modules"],
+        "@npm": ["ui2/node_modules"],
     },
 )
 
@@ -186,15 +186,7 @@ http_archive(
 load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 
 yarn_install(
-    name = "ui2_npm",
+    name = "npm",
     package_json = "//ui2:package.json",
     yarn_lock = "//ui2:yarn.lock",
-)
-
-#https://github.com/grpc/grpc-kotlin.git
-
-git_repository(
-    name = "io_grpc_grpc_kotlin",
-    branch = "master",
-    remote = "https://github.com/grpc/grpc-kotlin.git",
 )
