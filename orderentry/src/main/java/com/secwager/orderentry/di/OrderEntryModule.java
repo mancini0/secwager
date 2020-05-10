@@ -6,8 +6,10 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.secwager.dao.order.OrderRepo;
-import com.secwager.proto.Market.Order;
+import com.secwager.dao.order.OrderRepoImpl;
 import com.secwager.proto.cashier.CashierGrpc.CashierStub;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import dagger.Module;
 import dagger.Provides;
 import io.grpc.ManagedChannel;
@@ -16,7 +18,10 @@ import java.util.Optional;
 import java.util.Properties;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.sql.DataSource;
+import org.apache.commons.dbutils.QueryRunner;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.postgresql.ds.PGSimpleDataSource;
 
 @Module
 public class OrderEntryModule {
@@ -71,12 +76,25 @@ public class OrderEntryModule {
 
   @Provides
   @Singleton
-  public OrderRepo provideOrderRepo() {
-    return new OrderRepo() {
-      @Override
-      public void insertOrder(Order order) {
+  public DataSource provideDataSource() {
+    HikariConfig config = new HikariConfig();
+    config.setAutoCommit(false);
+    config.setDataSourceClassName(PGSimpleDataSource.class.getName());
+    config.setJdbcUrl(System.getenv("JDBC_URL"));
+    config.setUsername(System.getenv("DB_USER"));
+    config.setPassword(System.getenv("DB_PASSWORD"));
+    return new HikariDataSource(config);
+  }
 
-      }
-    };
+  @Provides
+  @Singleton
+  public QueryRunner provideQueryRunner(DataSource dataSource) {
+    return new QueryRunner(dataSource);
+  }
+
+  @Provides
+  @Singleton
+  public OrderRepo provideOrderRepo(QueryRunner queryRunner) {
+    return new OrderRepoImpl(queryRunner);
   }
 }

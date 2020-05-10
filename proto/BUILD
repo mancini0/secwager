@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
+load("@npm_bazel_labs//:index.bzl", "ts_proto_library")
 
 proto_library(
     name = "market_proto",
@@ -38,6 +39,11 @@ java_proto_library(
 java_proto_library(
     name = "refdata_java_proto",
     deps = [":refdata_proto"],
+)
+
+ts_proto_library(
+    name = "orderentry_js_proto",
+    proto = ":orderentry_proto",
 )
 
 java_proto_library(

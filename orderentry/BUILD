@@ -49,6 +49,7 @@ java_image(
         ":orderentry-service",
         "//:dagger",
         "//dao:order-repo",
+        "//dao:order-repo-jdbc",
         "//grpc-server",
         "//proto:cashier-grpc",
         "//proto:market_java_proto",
@@ -57,7 +58,10 @@ java_image(
         "@maven//:com_google_auth_google_auth_library_oauth2_http",
         "@maven//:com_google_cloud_google_cloud_firestore",
         "@maven//:com_google_firebase_firebase_admin",
+        "@maven//:com_zaxxer_HikariCP",
+        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:org_apache_kafka_kafka_clients",
+        "@maven//:org_postgresql_postgresql",
     ],
 )
 

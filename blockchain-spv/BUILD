@@ -12,6 +12,7 @@ kt_jvm_library(
     deps = [
         "//proto:cashier-grpc",
         "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:com_google_cloud_google_cloud_pubsub",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_bitcoinj_bitcoinj_core",
     ],

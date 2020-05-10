@@ -38,6 +38,7 @@ maven_install(
     name = "maven",
     artifacts = [
         "org.bitcoinj:bitcoinj-core:0.15.8",
+        "com.google.cloud:google-cloud-pubsub:1.104.1",
         "com.github.jasync-sql:jasync-postgresql:1.0.17",
         "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
@@ -190,3 +191,42 @@ yarn_install(
     package_json = "//ui2:package.json",
     yarn_lock = "//ui2:yarn.lock",
 )
+
+load(
+    "@io_bazel_rules_docker//nodejs:image.bzl",
+    _nodejs_image_repos = "repositories",
+)
+
+_nodejs_image_repos()
+
+#begin yuck
+
+http_archive(
+    name = "rules_proto",
+    sha256 = "602e7161d9195e50246177e7c55b2f39950a9cf7366f74ed5f22fd45750cd208",
+    strip_prefix = "rules_proto-97d8af4dc474595af3900dd85cb3a29ad28cc313",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+        "https://github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+    ],
+)
+
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+
+rules_proto_dependencies()
+
+rules_proto_toolchains()
+
+# Install any Bazel rules which were extracted earlier by the yarn_install rule.
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+
+install_bazel_dependencies()
+
+# Bazel labs. Contains the ts proto generator
+load("@npm_bazel_labs//:package.bzl", "npm_bazel_labs_dependencies")
+
+npm_bazel_labs_dependencies()
+
+# Setup TypeScript toolchain
+
+#end yuck
