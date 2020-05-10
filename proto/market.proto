@@ -1,57 +1,56 @@
 syntax = "proto3";
 package secwager;
-option java_package = "com.secwager";
+option java_package = "com.secwager.proto";
+import "proto/ref_data.proto";
 
 message Order {
   string order_id = 1;
   enum OrderType {
     BUY = 0;
     SELL = 1;
-    CANCEL = 2;
-    MODIFY = 3;
+    CANCEL=2;
   }
-  OrderType order_type = 2;
-  string symbol = 3;
-  bool is_limit = 4;
+  OrderType orderType = 2;
+  string isin = 3;
   uint32 price = 5;
-  uint32 stop_price = 6;
-  uint32 order_qty = 7;
-  bool all_or_none = 8;
-  bool immediate_or_cancel = 9;
-
   enum State {
-    SUBMITTED = 0;
-    REJECTED = 1; // terminal state
-    ACCEPTED = 2;
-    MODIFY_REQUESTED = 3;
-    MODIFY_REJECTED = 4;
-    MODIFIED = 5;
-    PARTIAL_FILLED = 6;
-    FILLED = 7; // terminal state
-    CANCEL_REQUESTED = 8;
-    CANCEL_REJECTED = 9;
-    CANCELLED = 10; // terminal state
-    UNKNOWN = 11;
+    UNKNOWN=0;
+    OPEN = 1;
+    REJECTED = 2; // terminal state
+    FILLED = 3; // terminal state
+    CANCELLED = 4; // terminal state
+  }
+  enum RejectedReason {
+    NOT_APPLICABLE=0;
+    ORDER_NOT_FOUND=1;
+    ALREADY_CANCELLED=2;
+    ALREADY_FILLED=3;
+
+  }
+  message Match {
+    string order_id = 1;
+    string trader_id =2;
+    uint32 qty = 3;
+    uint32 price=4;
   }
   State state = 10;
-  string rejected_reason = 11;
+  RejectedReason rejected_reason = 11;
   uint32 qty_filled = 12;
-  uint32 fill_cost = 13;
   uint32 qty_on_market = 14;
-  string originating_user_id = 15;
-  repeated string matched_against = 16;
-  bool is_buy = 17;
+  string trader_id = 15;
+  repeated Match matches = 16;
+  Instrument instrument=18;
 }
 
 message LastTrade {
-  string symbol = 1;
+  string isin = 1;
   uint32 price = 2;
   uint32 qty = 3;
 }
 
 
-message DepthBook {
-  string symbol = 1;
+message Depth {
+  string  isin = 1;
   repeated uint32 bid_prices = 2;
   repeated uint32 bid_qtys = 3;
   repeated uint32 ask_prices = 4;
@@ -59,7 +58,19 @@ message DepthBook {
 }
 
 message Quote {
-  string symbol = 1;
+  string  isin = 1;
   LastTrade last_trade =2;
-  DepthBook depth = 3;
+  Depth depth = 3;
+}
+
+
+message BookState {
+  message RestingOrders {
+    repeated Order order =1;
+  }
+  map<uint32, RestingOrders> bids =1;
+  map<uint32, RestingOrders> asks =2;
+  map<string, Order> arena = 3;
+  uint32 minAsk = 4;
+  uint32 maxBid = 5;
 }

@@ -1,46 +1,71 @@
 syntax = "proto3";
 package secwager;
-option java_package = "com.secwager.cashier";
+option java_package = "com.secwager.proto.cashier";
 
 
-enum CashierActionResult {
-  RESULT_UNSET = 0;
+enum CashierActionStatus {
+  STATUS_UNSPECIFIED = 0;
   SUCCESS = 1;
   FAILURE_INSUFFICIENT_FUNDS = 2;
+  FAILURE_USER_NOT_FOUND = 3;
+  FAILURE_INVALID_PAY_TO_ADDRESS = 5;
+  FAILURE_INTERNAL_ERROR = 6;
 }
 
-message EscrowRequest {
+enum TransactionReason {
+  REASON_UNSPECIFIED = 0;
+  SAFE_DEPOSIT = 1;
+  RISKY_DEPOSIT = 2;
+  RISKY_DEPOSIT_BECOMES_SAFE = 3;
+  WITHDRAWAL = 4;
+  BET_LOSS = 5;
+  BET_WIN = 6;
+  BET_PUSH = 7;
+  TRANSFER_TO_FRIEND = 8;
+  POST_MARGIN = 9;
+  RESET_MARGIN = 10;
+}
+message CashierActionResult {
+  CashierActionStatus status = 1;
+  Balance balance = 2;
+}
+
+
+message CashierRequest {
   string user_id = 1;
-  double amount = 2;
+  uint32 amount = 2;
+  TransactionReason reason = 3;
+  string related_entity_id = 4;
 }
 
-message EscrowResponse {
-  CashierActionResult escrow_status = 1;
-}
 
 message WithdrawalRequest {
-  string user_id = 1;
-  double amount = 2;
+  CashierRequest cashier_request = 1;
+  string pay_to_address = 2;
 }
 
 message WithdrawalResponse {
   CashierActionResult result = 1;
+  string txn_hash = 2;
 }
 
-message TransferRequest {
-  string from_user_id = 1;
-  string to_user_id = 2;
-  double amount = 3;
+
+message BalanceRequest {
+  string user_id = 1;
 }
 
-message TransferResponse {
-  CashierActionResult result = 1;
+message Balance {
+  int32 available_balance = 1;
+  int32 escrowed_balance = 2;
 }
 
 service Cashier {
-  rpc Escrow (EscrowRequest) returns (EscrowResponse);
+  rpc LockFunds (CashierRequest) returns (CashierActionResult);
+  rpc UnlockFunds (CashierRequest) returns (CashierActionResult);
+  rpc DepositRisky (CashierRequest) returns (CashierActionResult);
+  rpc DepositSafe (CashierRequest) returns (CashierActionResult);
+  rpc StreamBalance (BalanceRequest) returns (stream Balance);
   rpc Withdrawal (WithdrawalRequest) returns (WithdrawalResponse);
-  rpc Transfer (TransferRequest) returns (TransferResponse);
 }
 
 

@@ -1,12 +1,14 @@
 workspace(
     name = "secwager",
+    managed_directories = {
+        "@npm": ["ui2/node_modules"],
+    },
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
-all_content = """filegroup(name = "all", srcs = glob(["**"],exclude = ["libs/wave/test/**/*"]), visibility = ["//visibility:public"])"""
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
 rules_jvm_external_tag = "2.10"
 
@@ -14,7 +16,7 @@ rules_jvm_external_sha = "1bbf2e48d07686707dd85357e9a94da775e1dbd7c464272b366428
 
 dagger_version = "2.23.2"
 
-grpc_version = "1.26.0"
+grpc_version = "1.28.1"
 
 ktor_version = "1.2.5"
 
@@ -35,7 +37,13 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "org.bitcoinj:bitcoinj-core:0.15.8",
+        "com.google.cloud:google-cloud-pubsub:1.104.1",
+        "com.github.jasync-sql:jasync-postgresql:1.0.17",
+        "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
+        "com.github.ben-manes.caffeine:caffeine:2.8.2",
+        "javax.inject:javax.inject:1",
         "com.squareup.okhttp3:mockwebserver:4.3.1",
         "com.squareup.retrofit2:converter-gson:2.7.1",
         "com.squareup.retrofit2:retrofit:2.7.1",
@@ -45,9 +53,9 @@ maven_install(
         "org.apache.kafka:kafka-streams:%s" % kafka_version,
         "org.apache.kafka:kafka-clients:%s" % kafka_version,
         "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
-        "org.springframework.kafka:spring-kafka:2.1.10.RELEASE",
         "javax.annotation:javax.annotation-api:1.3.2",
-        "org.apache.ignite:ignite-core:2.7.6",
+        "org.postgresql:postgresql:42.2.11",
+        "com.zaxxer:HikariCP:3.4.2",
         "io.grpc:grpc-netty-shaded:%s" % grpc_version,
         "io.grpc:grpc-api:%s" % grpc_version,
         "io.grpc:grpc-testing:%s" % grpc_version,
@@ -62,10 +70,19 @@ maven_install(
         "commons-dbutils:commons-dbutils:1.7",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
         "com.google.code.findbugs:jsr305:3.0.2",
+        "com.google.auth:google-auth-library-oauth2-http:0.20.0",
+        "com.google.cloud:google-cloud-firestore:1.33.0",
+        "com.google.api:api-common:1.9.0",
+        maven.artifact(
+            group = "com.nhaarman.mockitokotlin2",
+            artifact = "mockito-kotlin",
+            version = "2.2.0",
+            exclusions = ["org.mockito:mockito-core"],
+        ),
         maven.artifact(
             group = "com.google.firebase",
             artifact = "firebase-admin",
-            version = "6.12.0",
+            version = "6.12.2",
             exclusions = [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-api",
@@ -79,32 +96,25 @@ maven_install(
     ],
 )
 
-http_archive(
+git_repository(
     name = "io_bazel_rules_docker",
-    #sha256 = "e513c0ac6534810eb7a14bf025a0f159726753f97f74ab7863c650d26e01d677",
-    strip_prefix = "rules_docker-0.12.1",
-    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.12.1/rules_docker-v0.12.1.tar.gz"],
+    branch = "master",
+    remote = "https://github.com/bazelbuild/rules_docker.git",
 )
 
-http_archive(
-    name = "rules_foreign_cc",
-    #sha256 = "045a24ac29402074fd20cba3fd472578cf1861e0b3d5585652e4b0dd249e92d6",
-    strip_prefix = "rules_foreign_cc-master",
-    url = "https://github.com/bazelbuild/rules_foreign_cc/archive/master.zip",
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
 )
 
-http_archive(
-    name = "cmake",
-    build_file_content = all_content,
-    strip_prefix = "CMake-3.12.1",
-    urls = [
-        "https://github.com/Kitware/CMake/archive/v3.12.1.tar.gz",
-    ],
+container_repositories()
+
+load(
+    "@io_bazel_rules_docker//java:image.bzl",
+    _java_image_repos = "repositories",
 )
 
-load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
-
-rules_foreign_cc_dependencies(["//:built_cmake_toolchain"])
+_java_image_repos()
 
 http_archive(
     name = "io_grpc_grpc_java",
@@ -124,96 +134,9 @@ protobuf_deps()
 
 load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
 
-grpc_java_repositories(omit_com_google_protobuf = True)
+grpc_java_repositories()
 
-http_archive(
-    name = "kafka",
-    build_file_content = all_content,
-    #sha256 = "123b47404c16bcde194b4bd1221c21fdce832ad12912bd8074f88f64b2b86f2b",
-    strip_prefix = "librdkafka-1.3.0",
-    urls = [
-        "https://github.com/edenhill/librdkafka/archive/v1.3.0.tar.gz",
-    ],
-)
-
-http_archive(
-    name = "spdlog",
-    build_file_content = all_content,
-    sha256 = "160845266e94db1d4922ef755637f6901266731c4cb3b30b45bf41efa0e6ab70",
-    strip_prefix = "spdlog-1.3.1",
-    urls = [
-        "https://github.com/gabime/spdlog/archive/v1.3.1.tar.gz",
-    ],
-)
-
-http_archive(
-    name = "rules_cc",
-    strip_prefix = "rules_cc-master",
-    urls = ["https://github.com/bazelbuild/rules_cc/archive/master.zip"],
-)
-
-git_repository(
-    name = "gtest",
-    #tag = "release-1.8.1",
-    commit = "ed2eef654373c17b96bf5a007bb481a6e96ba629",
-    remote = "https://github.com/google/googletest.git",
-)
-
-new_git_repository(
-    name = "liquibook",
-    build_file_content = """cc_library(
-                                name = "liquibook",
-                                hdrs = glob(["src/book/*.h"]),
-                                strip_include_prefix ="src/book",
-                                include_prefix="liquibook",
-                                visibility = ["//visibility:public"],
-                            )""",
-    commit = "828a771d715438f487db15bbc6d6c310a952e26d",
-    remote = "https://github.com/objectcomputing/liquibook.git",
-    shallow_since = "1562647708 -0500",
-)
-
-load(
-    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
-    docker_toolchain_configure = "toolchain_configure",
-)
-
-#I shouldn't need this call.00 - defaults should be sufficient, but docker is not found on ubuntu 18.04 for some reason.
-docker_toolchain_configure(
-    name = "docker_config",
-    docker_path = "/snap/bin/docker",
-)
-
-load(
-    "@io_bazel_rules_docker//repositories:repositories.bzl",
-    container_repositories = "repositories",
-)
-
-container_repositories()
-
-load(
-    "@io_bazel_rules_docker//java:image.bzl",
-    _java_image_repos = "repositories",
-)
-load(
-    "@io_bazel_rules_docker//cc:image.bzl",
-    _cc_image_repos = "repositories",
-)
-
-_java_image_repos()
-
-_cc_image_repos()
-
-http_archive(
-    name = "boost",
-    build_file_content = all_content,
-    strip_prefix = "boost_1_71_0",
-    urls = ["https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz"],
-)
-
-rules_kotlin_version = "legacy-1.3.0-rc4"
-
-#rules_kotlin_sha = "9de078258235ea48021830b1669bbbb678d7c3bdffd3435f4c0817c921a88e42"
+rules_kotlin_version = "legacy-1.3.0"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
@@ -225,6 +148,85 @@ http_archive(
 
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_register_toolchains")
 
-kotlin_repositories()
+KOTLIN_VERSION = "1.3.70"
+
+KOTLINC_RELEASE_SHA = "709d782ff707a633278bac4c63bab3026b768e717f8aaf62de1036c994bc89c7"
+
+KOTLINC_RELEASE = {
+    "urls": [
+        "https://github.com/JetBrains/kotlin/releases/download/v{v}/kotlin-compiler-{v}.zip".format(v = KOTLIN_VERSION),
+    ],
+    "sha256": KOTLINC_RELEASE_SHA,
+}
+
+kotlin_repositories(compiler_release = KOTLINC_RELEASE)
 
 kt_register_toolchains()
+
+http_archive(
+    name = "io_bazel_rules_k8s",
+    sha256 = "cc75cf0d86312e1327d226e980efd3599704e01099b58b3c2fc4efe5e321fcd9",
+    strip_prefix = "rules_k8s-0.3.1",
+    urls = ["https://github.com/bazelbuild/rules_k8s/releases/download/v0.3.1/rules_k8s-v0.3.1.tar.gz"],
+)
+
+load("@io_bazel_rules_k8s//k8s:k8s.bzl", "k8s_repositories")
+
+k8s_repositories()
+
+load("@io_bazel_rules_k8s//k8s:k8s_go_deps.bzl", k8s_go_deps = "deps")
+
+k8s_go_deps()
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "f9e7b9f42ae202cc2d2ce6d698ccb49a9f7f7ea572a78fd451696d03ef2ee116",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.6.0/rules_nodejs-1.6.0.tar.gz"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
+
+yarn_install(
+    name = "npm",
+    package_json = "//ui2:package.json",
+    yarn_lock = "//ui2:yarn.lock",
+)
+
+load(
+    "@io_bazel_rules_docker//nodejs:image.bzl",
+    _nodejs_image_repos = "repositories",
+)
+
+_nodejs_image_repos()
+
+#begin yuck
+
+http_archive(
+    name = "rules_proto",
+    sha256 = "602e7161d9195e50246177e7c55b2f39950a9cf7366f74ed5f22fd45750cd208",
+    strip_prefix = "rules_proto-97d8af4dc474595af3900dd85cb3a29ad28cc313",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+        "https://github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+    ],
+)
+
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+
+rules_proto_dependencies()
+
+rules_proto_toolchains()
+
+# Install any Bazel rules which were extracted earlier by the yarn_install rule.
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+
+install_bazel_dependencies()
+
+# Bazel labs. Contains the ts proto generator
+load("@npm_bazel_labs//:package.bzl", "npm_bazel_labs_dependencies")
+
+npm_bazel_labs_dependencies()
+
+# Setup TypeScript toolchain
+
+#end yuck

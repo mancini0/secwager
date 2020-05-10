@@ -11,12 +11,17 @@ spec:
   selector:
     app: cashier
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cashier
+  labels:
+    app: cashier
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: cashier
   template:
     metadata:
       labels:

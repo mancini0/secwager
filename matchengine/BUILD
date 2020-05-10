@@ -1,65 +1,32 @@
-load("@io_bazel_rules_docker//cc:image.bzl", "cc_image")
-load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library", "kt_jvm_test")
 
-cc_library(
-    name = "protosender",
+package(default_visibility = ["//visibility:public"])
+
+kt_jvm_test(
+    name = "test",
     srcs = [
-        "kafka_proto_sender.cc",
-        "logging_proto_sender.cc",
+        "src/test/kotlin/OrderBookTest.kt",
     ],
-    hdrs = [
-        "kafka_proto_sender.h",
-        "logging_proto_sender.h",
-        "proto_sender.h",
-    ],
+    test_class = "com.secwager.matchengine.OrderBookTest",
     deps = [
-        "//proto:market_cc_proto",
-        "//third_party/kafka:librdkafka",
-        "//third_party/spdlog",
+        ":orderbook",
+        "@maven//:com_google_truth_truth",
+        "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
+        "@maven//:junit_junit",
+        "@maven//:org_mockito_mockito_core",
     ],
 )
 
-cc_library(
-    name = "market",
+kt_jvm_library(
+    name = "orderbook",
     srcs = [
-        "market.cc",
-        "market_data_publisher.cc",
-        "market_data_publisher.h",
-        "order_status_publisher.cc",
-        "order_status_publisher.h",
-    ],
-    hdrs = [
-        "market.h",
-    ],
-    visibility = ["//matchengine/test:__pkg__"],
-    deps = [
-        ":protosender",
-        "//proto:market_cc_proto",
-        "//third_party/boost:boost_fiber",
-        "//third_party/spdlog",
-        "@liquibook",
-    ],
-)
-
-cc_image(
-    name = "matchengine",
-    srcs = [
-        "config_utils.h",
-        "constants.h",
-        "kafka_inbound_order_channel.cc",
-        "kafka_inbound_order_channel.h",
-        "main.cc",
+        "src/main/kotlin/OrderBook.kt",
+        "src/main/kotlin/Publishers.kt",
     ],
     deps = [
-        ":market",
+        "//entity-common:dto",
+        "//entity-common:proto-conversion-utils",
+        "//proto:market_java_proto",
+        "@maven//:org_slf4j_slf4j_api",
     ],
-)
-
-container_push(
-    name = "push",
-    format = "Docker",
-    image = ":matchengine",
-    registry = "us.gcr.io",
-    repository = "secwager/matchengine",
-    tag = "dev",
 )

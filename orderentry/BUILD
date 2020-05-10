@@ -1,28 +1,17 @@
 load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("//:defs.bzl", "K8S_CLUSTER")
 
-java_grpc_library(
-    name = "orderentry-grpc",
-    srcs = ["//proto:orderentry_proto"],
-    deps = ["//proto:orderentry_java_proto"],
-)
-
-java_plugin(
-    name = "dagger_plugin",
-    processor_class = "dagger.internal.codegen.ComponentProcessor",
-    deps = [
-        "@maven//:com_google_dagger_dagger_compiler",
-    ],
-)
-
-java_library(
-    name = "dagger_lib",
-    exported_plugins = ["dagger_plugin"],
-    exports = [
-        "@maven//:com_google_dagger_dagger",
-        "@maven//:javax_inject_javax_inject",
-    ],
+k8s_object(
+    name = "k8s",
+    cluster = K8S_CLUSTER,
+    images = {
+        "us.gcr.io/secwager/orderentry:dev": ":orderentry",
+    },
+    template = ":k8s.yaml",
+    visibility = ["//infra:__pkg__"],
 )
 
 java_library(
@@ -30,13 +19,16 @@ java_library(
     srcs = [
         "src/main/java/com/secwager/orderentry/OrderEntryServiceImpl.java",
     ],
-    exports = [":orderentry-grpc"],
+    exports = ["//proto:orderentry-grpc"],
     deps = [
-        ":orderentry-grpc",
-        "//cashier:cashier-grpc",
+        "//dao:order-repo",
+        "//proto:cashier-grpc",
         "//proto:cashier_java_proto",
         "//proto:market_java_proto",
+        "//proto:orderentry-grpc",
         "//proto:orderentry_java_proto",
+        "@maven//:com_google_api_api_common",
+        "@maven//:com_google_firebase_firebase_admin",
         "@maven//:io_grpc_grpc_stub",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_apache_kafka_kafka_clients",
@@ -54,13 +46,22 @@ java_image(
     main_class = "com.secwager.orderentry.App",
     resources = ["src/main/resources/logback.xml"],
     deps = [
-        ":dagger_lib",
         ":orderentry-service",
-        "//cashier:cashier-grpc",
-        "//jvm-common:grpc-server",
+        "//:dagger",
+        "//dao:order-repo",
+        "//dao:order-repo-jdbc",
+        "//grpc-server",
+        "//proto:cashier-grpc",
+        "//proto:market_java_proto",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:com_google_auth_google_auth_library_oauth2_http",
+        "@maven//:com_google_cloud_google_cloud_firestore",
+        "@maven//:com_google_firebase_firebase_admin",
+        "@maven//:com_zaxxer_HikariCP",
+        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:org_apache_kafka_kafka_clients",
+        "@maven//:org_postgresql_postgresql",
     ],
 )
 

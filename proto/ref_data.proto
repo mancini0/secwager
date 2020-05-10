@@ -1,0 +1,65 @@
+syntax = "proto3";
+package secwager;
+option java_package = "com.secwager.refdata";
+
+message League {
+    enum LeagueName{
+        LEAGUE_UNSPECIFIED=0;
+        ENGLISH_PREMIER_LEAGUE=1;
+        UEFA_CHAMPIONS_LEAGUE=2;
+        UEFA_EUROPA_LEAGUE=3;
+        LA_LIGA=4;
+        LIGUE_1=5;
+        SERIE_A=6;
+    }
+    uint32 league_id =1;
+    LeagueName name = 2;
+}
+
+
+message Team {
+    uint32 team_id=1;
+    string name = 2;
+
+}
+
+message Fixture {
+    uint32 fixture_id=1;
+    League league=2;
+    Team home_team =3;
+    Team away_team=4;
+    uint64 event_start_date=5;
+    uint32 minutes_elapsed=6;
+    string venue = 7;
+    uint32 goals_home =8;
+    uint32 goals_away=9;
+}
+
+enum Grade {
+    GRADE_UNSPECIFIED=0;
+    UNGRADED=1;
+    LOSE=2;
+    WIN=3;
+    PUSH=4;
+}
+
+
+enum Proposition {
+    PROPOSITION_UNSPECIFIED=0;
+    HOME_TEAM_WIN=1;
+    AWAY_TEAM_WIN=2;
+    DRAW=3;
+    HOME_TEAM_WIN_SPREAD=4;
+    AWAY_TEAM_WIN_SPREAD=5;
+    OVER=6;
+    UNDER=7;
+}
+
+message Instrument {
+    string isin=1;
+    Proposition proposition=2;
+    Grade grade = 3;
+    string description=4;
+    uint32 fixture_id=5;
+    int32 threshold =6;
+}

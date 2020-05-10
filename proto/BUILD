@@ -1,14 +1,18 @@
 package(default_visibility = ["//visibility:public"])
 
-proto_library(
-    name = "market_data_proto",
-    srcs = ["market_data.proto"],
-    deps = [":market_proto"],
-)
+load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
+load("@npm_bazel_labs//:index.bzl", "ts_proto_library")
 
 proto_library(
     name = "market_proto",
     srcs = ["market.proto"],
+    deps = [":refdata_proto"],
+)
+
+proto_library(
+    name = "refdata_proto",
+    srcs = ["ref_data.proto"],
+    deps = [],
 )
 
 proto_library(
@@ -33,6 +37,16 @@ java_proto_library(
 )
 
 java_proto_library(
+    name = "refdata_java_proto",
+    deps = [":refdata_proto"],
+)
+
+ts_proto_library(
+    name = "orderentry_js_proto",
+    proto = ":orderentry_proto",
+)
+
+java_proto_library(
     name = "orderentry_java_proto",
     deps = [
         ":orderentry_proto",
@@ -40,11 +54,26 @@ java_proto_library(
 )
 
 java_proto_library(
-    name = "market_data_java_proto",
-    deps = [":market_data_proto"],
-)
-
-java_proto_library(
     name = "cashier_java_proto",
     deps = [":cashier_proto"],
+)
+
+java_grpc_library(
+    name = "cashier-grpc",
+    srcs = [":cashier_proto"],
+    visibility = [
+        "//blockchain-spv:__pkg__",
+        "//cashier:__pkg__",
+        "//orderentry:__pkg__",
+    ],
+    deps = [":cashier_java_proto"],
+)
+
+java_grpc_library(
+    name = "orderentry-grpc",
+    srcs = ["//proto:orderentry_proto"],
+    visibility = [
+        "//orderentry:__pkg__",
+    ],
+    deps = ["//proto:orderentry_java_proto"],
 )
