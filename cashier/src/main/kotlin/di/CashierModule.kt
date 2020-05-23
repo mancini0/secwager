@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import org.apache.commons.dbutils.QueryRunner
 import org.postgresql.ds.PGSimpleDataSource
+import java.util.*
 import javax.inject.Singleton
 import javax.sql.DataSource
 
@@ -16,13 +17,17 @@ class CashierModule {
     @Provides
     @Singleton
     fun provideDataSource(): DataSource {
-        val config = HikariConfig()
+        val props = Properties()
+        props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
+        props.setProperty("dataSource.user", "yugabyte")
+        props.setProperty("dataSource.password", "yugabyte")
+        props.setProperty("dataSource.databaseName", "secwager")
+        props.setProperty("dataSource.serverName", "localhost")
+        props.setProperty("dataSource.portNumber", "5433")
+        val config = HikariConfig(props)
         config.isAutoCommit = false
-        config.dataSourceClassName = PGSimpleDataSource::class.java.name
-        config.jdbcUrl = System.getenv("JDBC_URL")
-        config.username = System.getenv("DB_USER")
-        config.password = System.getenv("DB_PASSWORD")
-        return HikariDataSource(config)
+        val ds = HikariDataSource(config)
+        return ds
     }
 
     @Provides
@@ -37,5 +42,5 @@ class CashierModule {
         return CashierRepoJdbcImpl(queryRunner)
     }
 
-    
+
 }

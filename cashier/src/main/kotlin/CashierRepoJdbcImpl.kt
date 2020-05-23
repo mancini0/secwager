@@ -15,6 +15,7 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
 
         val GET_BALANCE = "SELECT AVAILABLE_BALANCE, ESCROWED_BALANCE FROM ACCT_BALANCE WHERE USER_ID=?"
 
+
         val INSERT_TXN_LEDGER = "insert\n" +
                 " \t  into\n" +
                 " \t  TXN_LEDGER(USER_ID,\n" +
@@ -33,22 +34,17 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 "from\n" +
                 " \t  ACCT_BALANCE where user_id=?"
 
-        val RISKY_DEPOSIT = "update\n" +
-                " \t  ACCT_BALANCE\n" +
-                "set\n" +
-                " \t  ESCROWED_BALANCE = coalesce(ESCROWED_BALANCE, 0) + ?\n" +
-                "where\n" +
-                " \t  USER_ID =? returning AVAILABLE_BALANCE,\n" +
-                " \t  ESCROWED_BALANCE"
+        val RISKY_DEPOSIT = "with cte as (select user_id, ? as satoshis from users u where u.p2pkh_addr = ?)\n" +
+                "insert into acct_balance (user_id ,escrowed_balance) select cte.user_id, cte.satoshis from cte\n" +
+                "on conflict(user_id)\n" +
+                "do update set escrowed_balance = acct_balance.escrowed_balance +(select cte.satoshis from cte)\n" +
+                "returning user_id ,available_balance, escrowed_balance"
 
-        val SAFE_DEPOSIT = "UPDATE\n" +
-                " \t ACCT_BALANCE\n" +
-                "SET\n" +
-                " \t AVAILABLE_BALANCE = COALESCE(AVAILABLE_BALANCE,\n" +
-                " \t 0) + ?\n" +
-                "WHERE\n" +
-                " \t USER_ID =? RETURNING AVAILABLE_BALANCE,\n" +
-                " \t ESCROWED_BALANCE";
+        val SAFE_DEPOSIT = "with cte as (select user_id, ? as satoshis from users u where u.p2pkh_addr =?)\n" +
+                "insert into acct_balance (user_id ,available_balance) select cte.user_id, cte.satoshis from cte\n" +
+                "on conflict(user_id)\n" +
+                "do update set available_balance = acct_balance.available_balance +(select cte.satoshis from cte)\n" +
+                "returning user_id ,available_balance, escrowed_balance"
 
         //cte strategy unusable until https://github.com/YugaByte/yugabyte-db/issues/738 is fixed
         val LOCK_FUNDS_CTE = "with cte as (\n" +
@@ -66,8 +62,8 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 " \t  \t  \t when available_balance >= cte.val then escrowed_balance + cte.val\n" +
                 " \t  \t  \t else escrowed_balance end\n" +
                 " \t  \t from\n" +
-                " \t  \t  \t cte returning available_balance,\n" +
-                " \t  \t  \t escrowed_balance, case when AVAILABLE_BALANCE >= cte.val then TRUE else FALSE had_funds where user_id=?"
+                " \t  \t  \t cte returning user_id, available_balance,\n" +
+                " \t  \t  \t escrowed_balance, case when AVAILABLE_BALANCE >= cte.val then TRUE else FALSE end had_funds where user_id=?"
 
         /** cant use a CTE in yugabyte (yet) so I have to pass the jdbc param an excessive amount of times **/
         val LOCK_FUNDS = "update\n" +
@@ -80,7 +76,7 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 " \t  \t escrowed_balance =\n" +
                 " \t  \t case\n" +
                 " \t  \t  \t when available_balance >= ? then escrowed_balance + ?\n" +
-                " \t  \t  \t else escrowed_balance end returning available_balance,\n" +
+                " \t  \t  \t else escrowed_balance end returning user_id, available_balance,\n" +
                 " \t  \t  \t escrowed_balance,\n" +
                 " \t  \t  \t case\n" +
                 " \t  \t  \t  \t when AVAILABLE_BALANCE >= ? then TRUE\n" +
@@ -96,7 +92,7 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 " \t  \t ESCROWED_BALANCE =\n" +
                 " \t  \t case\n" +
                 " \t  \t  \t when ESCROWED_BALANCE >= ? then ESCROWED_BALANCE - ?\n" +
-                " \t  \t  \t else ESCROWED_BALANCE end returning available_balance,\n" +
+                " \t  \t  \t else ESCROWED_BALANCE end returning user_id, available_balance,\n" +
                 " \t  \t  \t escrowed_balance,\n" +
                 " \t  \t  \t case\n" +
                 " \t  \t  \t  \t when ESCROWED_BALANCE >= ? then TRUE\n" +
@@ -194,7 +190,7 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
         } catch (e: SQLException) {
             log.error("Exception encountered while handling risky deposit: {}", e)
             queryRunner.dataSource.connection.rollback()
-
+            resultBuilder.setStatus(CashierActionStatus.FAILURE_INTERNAL_ERROR);
         }
         return resultBuilder.build()
     }

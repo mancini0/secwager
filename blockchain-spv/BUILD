@@ -4,17 +4,36 @@ load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_libra
 load("//:defs.bzl", "K8S_CLUSTER")
 
 kt_jvm_library(
-    name = "coin-receiver",
+    name = "coin-received-listener",
     srcs = [
-        "src/main/kotlin/CoinReceiver.kt",
+        "src/main/kotlin/CoinsReceivedEventListenerImpl.kt",
+        "src/main/kotlin/DepositResponseObserver.kt",
+        "src/main/kotlin/Queries.kt",
     ],
     resources = ["src/main/resources/logback.xml"],
     deps = [
         "//proto:cashier-grpc",
-        "@maven//:ch_qos_logback_logback_classic",
-        "@maven//:com_google_cloud_google_cloud_pubsub",
+        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_bitcoinj_bitcoinj_core",
+        "@maven//:org_slf4j_slf4j_api",
+    ],
+)
+
+kt_jvm_library(
+    name = "user-ec-key-receiver",
+    srcs = [
+        "src/main/kotlin/Queries.kt",
+        "src/main/kotlin/UserECKeyReceiver.kt",
+    ],
+    resources = ["src/main/resources/logback.xml"],
+    deps = [
+        "@maven//:com_google_cloud_google_cloud_core",
+        "@maven//:com_google_cloud_google_cloud_pubsub",
+        "@maven//:commons_dbutils_commons_dbutils",
+        "@maven//:javax_inject_javax_inject",
+        "@maven//:org_bitcoinj_bitcoinj_core",
+        "@maven//:org_slf4j_slf4j_api",
     ],
 )
 
@@ -22,11 +41,20 @@ kt_jvm_binary(
     name = "blockchain-spv",
     srcs = [
         "src/main/kotlin/App.kt",
+        "src/main/kotlin/di/AppComponent.kt",
+        "src/main/kotlin/di/BlockchainListenerModule.kt",
     ],
     main_class = "com.secwager.blockchain.AppKt",
     resources = ["src/main/resources/logback.xml"],
     deps = [
-        ":coin-receiver",
+        ":coin-received-listener",
+        ":user-ec-key-receiver",
+        "//:dagger",
+        "//proto:cashier-grpc",
+        "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:com_zaxxer_HikariCP",
+        "@maven//:commons_dbutils_commons_dbutils",
+        "@maven//:org_postgresql_postgresql",
     ],
 )

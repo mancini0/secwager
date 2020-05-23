@@ -28,6 +28,7 @@ enum TransactionReason {
 message CashierActionResult {
   CashierActionStatus status = 1;
   Balance balance = 2;
+  string user_id = 3;
 }
 
 

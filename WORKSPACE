@@ -73,6 +73,7 @@ maven_install(
         "com.google.auth:google-auth-library-oauth2-http:0.20.0",
         "com.google.cloud:google-cloud-firestore:1.33.0",
         "com.google.api:api-common:1.9.0",
+        "com.google.cloud:google-cloud-core:1.93.4",
         maven.artifact(
             group = "com.nhaarman.mockitokotlin2",
             artifact = "mockito-kotlin",
