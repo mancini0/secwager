@@ -69,3 +69,21 @@ kt_jvm_image(
         "@maven//:org_postgresql_postgresql",
     ],
 )
+
+kt_jvm_test(
+    name = "cashier-repo-test",
+    srcs = ["src/test/kotlin/CashierRepoTest.kt"],
+    test_class = "com.secwager.cashier.CashierRepoTest",
+    deps = [
+        "//cashier:cashier-repository-jdbc",
+        "//infra:db-init",
+        "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:com_google_truth_truth",
+        "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
+        "@maven//:junit_junit",
+        "@maven//:org_mockito_mockito_core",
+        "@maven//:org_testcontainers_postgresql",
+        "@maven//:org_postgresql_postgresql",
+        #"@maven//:org_testcontainers_testcontainers",
+    ],
+)

@@ -14,6 +14,13 @@ k8s_object(
     template = ":ingress.yaml",
 )
 
+java_library(
+    name = "db-init",
+    srcs = ["src/main/java/com/secwager/database/Initializer.java"],
+    visibility = ["//visibility:public"],
+    deps = [],
+)
+
 #k8s_objects(
 #    name = "everything",
 #    objects = [

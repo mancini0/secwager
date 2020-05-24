@@ -37,6 +37,8 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "org.testcontainers:testcontainers:1.14.2",
+        "org.testcontainers:postgresql:1.14.2",
         "org.bitcoinj:bitcoinj-core:0.15.8",
         "com.google.cloud:google-cloud-pubsub:1.104.1",
         "com.github.jasync-sql:jasync-postgresql:1.0.17",
