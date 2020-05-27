@@ -49,58 +49,6 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 "do update set available_balance = acct_balance.available_balance +(select cte.satoshis from cte)\n" +
                 "returning user_id ,available_balance, escrowed_balance"
 
-        //cte strategy unusable until https://github.com/YugaByte/yugabyte-db/issues/738 is fixed
-        val LOCK_FUNDS_CTE = "with cte as (\n" +
-                "select\n" +
-                " \t ? as val)\n" +
-                "update\n" +
-                " \t acct_balance\n" +
-                "set\n" +
-                " \t available_balance =\n" +
-                " \t case\n" +
-                " \t  \t when AVAILABLE_BALANCE >= cte.val then available_balance - cte.val\n" +
-                " \t  \t else available_balance end,\n" +
-                " \t  \t escrowed_balance =\n" +
-                " \t  \t case\n" +
-                " \t  \t  \t when available_balance >= cte.val then escrowed_balance + cte.val\n" +
-                " \t  \t  \t else escrowed_balance end\n" +
-                " \t  \t from\n" +
-                " \t  \t  \t cte returning user_id, available_balance,\n" +
-                " \t  \t  \t escrowed_balance, case when AVAILABLE_BALANCE >= cte.val then TRUE else FALSE end had_funds where user_id=?"
-
-        /** cant use a CTE in yugabyte (yet) so I have to pass the jdbc param an excessive amount of times **/
-        val LOCK_FUNDS = "update\n" +
-                " \t acct_balance\n" +
-                "set\n" +
-                " \t available_balance =\n" +
-                " \t case\n" +
-                " \t  \t when AVAILABLE_BALANCE >= ? then available_balance - ?\n" +
-                " \t  \t else available_balance end,\n" +
-                " \t  \t escrowed_balance =\n" +
-                " \t  \t case\n" +
-                " \t  \t  \t when available_balance >= ? then escrowed_balance + ?\n" +
-                " \t  \t  \t else escrowed_balance end returning user_id, available_balance,\n" +
-                " \t  \t  \t escrowed_balance,\n" +
-                " \t  \t  \t case\n" +
-                " \t  \t  \t  \t when AVAILABLE_BALANCE >= ? then TRUE\n" +
-                " \t  \t  \t  \t else FALSE end had_funds where user_id = ?"
-
-        val UNLOCK_FUNDS = "update\n" +
-                " \t acct_balance\n" +
-                "set\n" +
-                " \t available_balance =\n" +
-                " \t case\n" +
-                " \t  \t when ESCROWED_BALANCE >= ? then AVAILABLE_BALANCE + ?\n" +
-                " \t  \t else AVAILABLE_BALANCE end,\n" +
-                " \t  \t ESCROWED_BALANCE =\n" +
-                " \t  \t case\n" +
-                " \t  \t  \t when ESCROWED_BALANCE >= ? then ESCROWED_BALANCE - ?\n" +
-                " \t  \t  \t else ESCROWED_BALANCE end returning user_id, available_balance,\n" +
-                " \t  \t  \t escrowed_balance,\n" +
-                " \t  \t  \t case\n" +
-                " \t  \t  \t  \t when ESCROWED_BALANCE >= ? then TRUE\n" +
-                " \t  \t  \t  \t else FALSE end had_funds where user_id = ?"
-
     }
 
 
@@ -140,31 +88,46 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
     private fun handleLockingOrUnlockingFunds(userId: String, amount: Int, reason: TransactionReason, locking: Boolean, entityId: String): CashierActionResult {
         val resultBuilder = CashierActionResult.newBuilder().setUserId(userId)
         val conn = queryRunner.dataSource.connection
+        //TODO use kotlin's 'use' facilities upon resolution of https://github.com/bazelbuild/rules_kotlin/issues/333
+        // to try-with-resources stmt, conn, resultSet, etc.
         try {
             conn.autoCommit = false
-            val query = if (locking) LOCK_FUNDS else UNLOCK_FUNDS
-            val result = queryRunner.query(conn, query, MapListHandler(), amount, amount, amount, amount, userId)
-            when (result.size) {
-                0 -> {
-                    resultBuilder.setStatus(CashierActionStatus.FAILURE_USER_NOT_FOUND)
+            val stmt = conn.prepareStatement(GET_BALANCE, ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE, ResultSet.CLOSE_CURSORS_AT_COMMIT)
+            stmt.setString(1, userId)
+            val resultSet = stmt.executeQuery()
+            if (resultSet.next()) {
+                var available = resultSet.getInt("AVAILABLE_BALANCE")
+                var escrowed = resultSet.getInt("ESCROWED_BALANCE")
+                if (locking && available >= amount) {
+                    available = available - amount
+                    escrowed = escrowed + amount
+                    resultSet.updateInt("AVAILABLE_BALANCE", available)
+                    resultSet.updateInt("ESCROWED_BALANCE", escrowed)
+                    queryRunner.execute(conn, INSERT_TXN_LEDGER, reason.name, entityId, userId)
+                    conn.commit()
+                    resultBuilder.setStatus(CashierActionStatus.SUCCESS)
+                } else if (!locking && escrowed >= amount) {
+                    available = available + amount
+                    escrowed = escrowed - amount
+                    resultSet.updateInt("AVAILABLE_BALANCE", available)
+                    resultSet.updateInt("ESCROWED_BALANCE", escrowed)
+                    queryRunner.execute(conn, INSERT_TXN_LEDGER, reason.name, entityId, userId)
+                    conn.commit()
+                    resultBuilder.setStatus(CashierActionStatus.SUCCESS)
+                } else {
+                    resultBuilder.setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS)
                 }
-                1 -> {
-                    val row = result.first()
-                    resultBuilder.setBalance(Balance.newBuilder()
-                            .setAvailableBalance(row["AVAILABLE_BALANCE"] as Int)
-                            .setEscrowedBalance(row["ESCROWED_BALANCE"] as Int))
-                    if (row["HAD_FUNDS"] as Boolean) {
-                        resultBuilder.setStatus(CashierActionStatus.SUCCESS)
-                        queryRunner.execute(conn, INSERT_TXN_LEDGER, reason.name, entityId, userId)
-                        conn.commit()
-                    } else {
-                        resultBuilder.setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS)
-                    }
-                }
-                else -> throw IllegalStateException("impossible - unlock funds statement returned multiple rows")
+                resultBuilder.setBalance(Balance.newBuilder()
+                        .setAvailableBalance(available)
+                        .setEscrowedBalance(escrowed))
+            } else {
+                resultBuilder.setStatus(CashierActionStatus.FAILURE_USER_NOT_FOUND)
             }
+            resultSet.close()
+            stmt.close()
         } catch (e: SQLException) {
-            log.error("Exception encountered while attempting to lock funds: {}", e)
+            log.error("Exception encountered while attempting to lock/unlock funds: {}", e)
             resultBuilder.setStatus(CashierActionStatus.FAILURE_INTERNAL_ERROR)
             conn.rollback()
         } finally {
