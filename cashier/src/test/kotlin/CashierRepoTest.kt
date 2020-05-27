@@ -1,28 +1,60 @@
 package com.secwager.cashier
 
-import org.junit.*
-import org.testcontainers.containers.ExecInContainerPattern.execInContainer
-import org.testcontainers.containers.GenericContainer
+import com.secwager.database.DatabaseInitializer
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import org.apache.commons.dbutils.QueryRunner
+import org.apache.commons.dbutils.handlers.MapListHandler
+import org.junit.Before
+import org.junit.ClassRule
+import org.junit.Test
+import org.postgresql.ds.PGSimpleDataSource
+import org.slf4j.LoggerFactory
 import org.testcontainers.containers.PostgreSQLContainer
-import java.sql.DriverManager
+
 
 class CashierRepoTest {
 
-    //workaround for Kotlin TestContainers compatibility
-    // class KPostgreSQLContainer : PostgreSQLContainer<KPostgreSQLContainer>() {}
+    class KPostgreSQLContainer() : PostgreSQLContainer<KPostgreSQLContainer>() {}
+    companion object {
+        val log = LoggerFactory.getLogger(CashierRepoTest::class.java)
 
-    //@get: ClassRule
-    //val postgres: KPostgreSQLContainer = KPostgreSQLContainer().withDatabaseName("secwager")
+        @get: ClassRule
+        val postgres: KPostgreSQLContainer = KPostgreSQLContainer()
+                .withDatabaseName("secwager")
+    }
+
+    private var dbInitialized = false
+    private lateinit var cashierRepo: CashierRepo
+    private lateinit var queryRunner: QueryRunner
+
+
+    @Before
+    fun setup() {
+        if (!dbInitialized) {
+            postgres.start()
+            val dataSource = PGSimpleDataSource();
+            dataSource.setURL(postgres.jdbcUrl)
+            dataSource.user = postgres.username
+            dataSource.password = postgres.password
+            DatabaseInitializer.initializeDatabase(dataSource)
+            
+            queryRunner = QueryRunner(dataSource)
+            cashierRepo = CashierRepoJdbcImpl(queryRunner)
+            dbInitialized = true
+        }
+
+        queryRunner.update("delete from txn_ledger")
+        queryRunner.update("delete from acct_balance")
+        queryRunner.update("delete from users")
+    }
 
 
     @Test
-    fun foo() {
-        val jdbcUrl = "jdbc:tc:postgresql:12.3:///secwager?TC_INITFUNCTION=com.secwager.database.Initializer::initializeDatabase"
-        Class.forName("org.postgresql.Driver")
-        val conn = DriverManager.getConnection(jdbcUrl)
-        val stmt = conn.prepareStatement("SELECT * FROM foo");
-        val rs = stmt.executeQuery()
-        println(rs);
-
+    fun safeDeposit() {
+        queryRunner.execute("insert into users(user_id, pub_key, priv_key, p2pkh_addr) values ('user1','pubk','privk','addr1')")
+        log.info("uuu {}", queryRunner.query("SELECT * FROM USERS", MapListHandler()))
+        val result = cashierRepo.directDepositIntoAvailable("addr1", 200, "tx1")
+        log.info("res is: {}", result)
     }
 }

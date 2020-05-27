@@ -37,6 +37,7 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "org.flywaydb:flyway-core:6.4.2",
         "org.testcontainers:testcontainers:1.14.2",
         "org.testcontainers:postgresql:1.14.2",
         "org.bitcoinj:bitcoinj-core:0.15.8",
@@ -56,7 +57,7 @@ maven_install(
         "org.apache.kafka:kafka-clients:%s" % kafka_version,
         "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
         "javax.annotation:javax.annotation-api:1.3.2",
-        "org.postgresql:postgresql:42.2.11",
+        "org.postgresql:postgresql:42.2.12",
         "com.zaxxer:HikariCP:3.4.2",
         "io.grpc:grpc-netty-shaded:%s" % grpc_version,
         "io.grpc:grpc-api:%s" % grpc_version,
@@ -162,7 +163,7 @@ KOTLINC_RELEASE = {
     "sha256": KOTLINC_RELEASE_SHA,
 }
 
-kotlin_repositories(compiler_release = KOTLINC_RELEASE)
+kotlin_repositories()
 
 kt_register_toolchains()
 

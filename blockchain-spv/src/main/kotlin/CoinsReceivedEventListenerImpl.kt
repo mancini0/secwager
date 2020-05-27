@@ -38,7 +38,7 @@ class CoinsReceivedEventListenerImpl @Inject constructor(val queryRunner: QueryR
         relevantOutputs.forEach {
             val addr = it.scriptPubKey.getToAddress(wallet.params)
             val cashierRequest = CashierRequest.newBuilder()
-                    .setUserId(addr.toString())
+                    .setP2PkhAddress(addr.toString())
                     .setAmount(it.value.value.toInt())
                     .setRelatedEntityId(it.parentTransactionHash.toString()).build()
             if (txConfirmed) {
@@ -47,6 +47,5 @@ class CoinsReceivedEventListenerImpl @Inject constructor(val queryRunner: QueryR
                 cashierStub.depositRisky(cashierRequest, DepositResponseObserver(txo = it, wasRiskyAtTimeOfDeposit = true, cashierStub = cashierStub, minBlocks = minBlocks))
             }
         }
-
     }
 }

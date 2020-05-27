@@ -3,9 +3,12 @@ package com.secwager.cashier
 import com.secwager.proto.cashier.CashierOuterClass.*
 import org.apache.commons.dbutils.QueryRunner
 import org.apache.commons.dbutils.ResultSetHandler
+import org.apache.commons.dbutils.handlers.MapListHandler
 import org.slf4j.LoggerFactory
+import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.util.*
 import javax.inject.Inject
 
 class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunner) : CashierRepo {
@@ -13,7 +16,7 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
     companion object {
         val log = LoggerFactory.getLogger(com.secwager.cashier.CashierRepoJdbcImpl::class.java)
 
-        val GET_BALANCE = "SELECT AVAILABLE_BALANCE, ESCROWED_BALANCE FROM ACCT_BALANCE WHERE USER_ID=?"
+        val GET_BALANCE = "SELECT USER_ID, AVAILABLE_BALANCE, ESCROWED_BALANCE FROM ACCT_BALANCE WHERE USER_ID=?"
 
 
         val INSERT_TXN_LEDGER = "insert\n" +
@@ -25,22 +28,22 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
                 " \t  AVAILABLE_BALANCE,\n" +
                 " \t  ESCROWED_BALANCE)\n" +
                 "select\n" +
-                " \t  (user_id,\n" +
+                " \t  user_id,\n" +
                 " \t  current_timestamp,\n" +
-                " \t  ?,\n" +
+                " \t  ?::txn_reason,\n" +
                 " \t  ?,\n" +
                 " \t  AVAILABLE_BALANCE,\n" +
-                " \t  ESCROWED_BALANCE)\n" +
+                " \t  ESCROWED_BALANCE \n" +
                 "from\n" +
                 " \t  ACCT_BALANCE where user_id=?"
 
-        val RISKY_DEPOSIT = "with cte as (select user_id, ? as satoshis from users u where u.p2pkh_addr = ?)\n" +
+        val RISKY_DEPOSIT = "with cte as (select user_id, ?::int as satoshis from users u where u.p2pkh_addr = ?::text)\n" +
                 "insert into acct_balance (user_id ,escrowed_balance) select cte.user_id, cte.satoshis from cte\n" +
                 "on conflict(user_id)\n" +
                 "do update set escrowed_balance = acct_balance.escrowed_balance +(select cte.satoshis from cte)\n" +
                 "returning user_id ,available_balance, escrowed_balance"
 
-        val SAFE_DEPOSIT = "with cte as (select user_id, ? as satoshis from users u where u.p2pkh_addr =?)\n" +
+        val SAFE_DEPOSIT = "with cte as (select user_id, ?::int as satoshis from users u where u.p2pkh_addr =?)\n" +
                 "insert into acct_balance (user_id ,available_balance) select cte.user_id, cte.satoshis from cte\n" +
                 "on conflict(user_id)\n" +
                 "do update set available_balance = acct_balance.available_balance +(select cte.satoshis from cte)\n" +
@@ -100,36 +103,29 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
 
     }
 
-    object BalanceResultSetHandler : ResultSetHandler<Balance> {
-        override fun handle(rs: ResultSet?): Balance {
-            return Balance.newBuilder()
-                    .setAvailableBalance(rs?.getInt("AVAILABLE_BALANCE") ?: 0)
-                    .setEscrowedBalance(rs?.getInt("ESCROWED_BALANCE") ?: 0)
-                    .build()
-        }
-    }
 
-    object ChangeAwareBalanceResultHandler : ResultSetHandler<Pair<Balance, Boolean>> {
-        override fun handle(rs: ResultSet?): Pair<Balance, Boolean> {
-            return Pair(Balance.newBuilder()
-                    .setAvailableBalance(rs?.getInt("AVAILABLE_BALANCE") ?: 0)
-                    .setEscrowedBalance(rs?.getInt("ESCROWED_BALANCE") ?: 0)
-                    .build(), rs?.getBoolean("HAD_FUNDS") ?: false)
-        }
-    }
-
-    override fun getBalance(userId: String): Balance {
+    override fun getBalance(userId: String): CashierActionResult {
         return queryRunner.query(GET_BALANCE
-                , BalanceResultSetHandler, userId);
+                , MapListHandler(), userId).map {
+            CashierActionResult.newBuilder().setStatus(CashierActionStatus.SUCCESS)
+                    .setBalance(
+                            Balance.newBuilder()
+                                    .setAvailableBalance(it.get("AVAILABLE_BALANCE") as Int)
+                                    .setEscrowedBalance(it.get("ESCROWED_BALANCE") as Int))
+                    .setUserId(it.get("USER_ID") as String).build()
+        }.getOrElse(0) {
+            CashierActionResult.newBuilder().setUserId(userId)
+                    .setStatus(CashierActionStatus.FAILURE_USER_NOT_FOUND).build()
+        }
     }
 
 
-    override fun directDepositIntoEscrow(userId: String, amount: Int, entityId: String): CashierActionResult {
-        return handleDeposit(isSafe = false, userId = userId, amount = amount, entityId = entityId)
+    override fun directDepositIntoEscrow(p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult {
+        return handleDeposit(isSafe = false, p2pkhAddress = p2pkhAddress, amount = amount, entityId = entityId)
     }
 
-    override fun directDepositIntoAvailable(userId: String, amount: Int, entityId: String): CashierActionResult {
-        return handleDeposit(isSafe = true, userId = userId, amount = amount, entityId = entityId)
+    override fun directDepositIntoAvailable(p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult {
+        return handleDeposit(isSafe = true, p2pkhAddress = p2pkhAddress, amount = amount, entityId = entityId)
     }
 
     override fun unlockFunds(userId: String, amount: Int, reason: TransactionReason, entityId: String): CashierActionResult {
@@ -142,57 +138,74 @@ class CashierRepoJdbcImpl @Inject constructor(private val queryRunner: QueryRunn
 
 
     private fun handleLockingOrUnlockingFunds(userId: String, amount: Int, reason: TransactionReason, locking: Boolean, entityId: String): CashierActionResult {
-        val resultBuilder = CashierActionResult.newBuilder()
+        val resultBuilder = CashierActionResult.newBuilder().setUserId(userId)
+        val conn = queryRunner.dataSource.connection
         try {
+            conn.autoCommit = false
             val query = if (locking) LOCK_FUNDS else UNLOCK_FUNDS
-            val balanceChangedPairs = queryRunner.execute(query, ChangeAwareBalanceResultHandler, amount, amount, amount, amount, userId)
-            when (balanceChangedPairs.size) {
+            val result = queryRunner.query(conn, query, MapListHandler(), amount, amount, amount, amount, userId)
+            when (result.size) {
                 0 -> {
                     resultBuilder.setStatus(CashierActionStatus.FAILURE_USER_NOT_FOUND)
                 }
                 1 -> {
-                    val (balance, hadSufficientFunds) = balanceChangedPairs.first()
-                    resultBuilder.setBalance(balance)
-                    if (hadSufficientFunds) {
+                    val row = result.first()
+                    resultBuilder.setBalance(Balance.newBuilder()
+                            .setAvailableBalance(row["AVAILABLE_BALANCE"] as Int)
+                            .setEscrowedBalance(row["ESCROWED_BALANCE"] as Int))
+                    if (row["HAD_FUNDS"] as Boolean) {
                         resultBuilder.setStatus(CashierActionStatus.SUCCESS)
-                        queryRunner.execute(INSERT_TXN_LEDGER, reason.name, entityId, userId)
-                        queryRunner.dataSource.connection.commit()
+                        queryRunner.execute(conn, INSERT_TXN_LEDGER, reason.name, entityId, userId)
+                        conn.commit()
                     } else {
                         resultBuilder.setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS)
                     }
                 }
+                else -> throw IllegalStateException("impossible - unlock funds statement returned multiple rows")
             }
         } catch (e: SQLException) {
             log.error("Exception encountered while attempting to lock funds: {}", e)
             resultBuilder.setStatus(CashierActionStatus.FAILURE_INTERNAL_ERROR)
-            queryRunner.dataSource.connection.rollback()
+            conn.rollback()
+        } finally {
+            conn.close()
         }
         return resultBuilder.build()
     }
 
-    private fun handleDeposit(isSafe: Boolean, userId: String, amount: Int, entityId: String): CashierActionResult {
+    private fun handleDeposit(isSafe: Boolean, p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult {
         val resultBuilder = CashierActionResult.newBuilder()
+        val conn = queryRunner.dataSource.connection
         try {
-            val balances = queryRunner.execute(if (isSafe) SAFE_DEPOSIT else RISKY_DEPOSIT, BalanceResultSetHandler, amount, userId)
-            when (balances.size) {
+            conn.autoCommit = false
+            val result = queryRunner.query(conn, if (isSafe) SAFE_DEPOSIT else RISKY_DEPOSIT, MapListHandler(), amount, p2pkhAddress)
+            when (result.size) {
                 0 -> {
                     resultBuilder.setStatus(CashierActionStatus.FAILURE_USER_NOT_FOUND)
                 }
                 1 -> {
                     val reason = if (isSafe) TransactionReason.SAFE_DEPOSIT else TransactionReason.RISKY_DEPOSIT
-                    queryRunner.execute(INSERT_TXN_LEDGER, reason.name, entityId, userId)
-                    queryRunner.dataSource.connection.commit()
-                    val balance = balances.first()
-                    resultBuilder.setStatus(CashierActionStatus.SUCCESS)
-                            .setBalance(balance)
+                    queryRunner.execute(conn, INSERT_TXN_LEDGER, reason.name, entityId, p2pkhAddress)
+                    val row = result.first()
+                    resultBuilder
+                            .setStatus(CashierActionStatus.SUCCESS)
+                            .setBalance(Balance.newBuilder()
+                                    .setAvailableBalance(row["AVAILABLE_BALANCE"] as Int)
+                                    .setEscrowedBalance(row["ESCROWED_BALANCE"] as Int))
+                            .setUserId(row["USER_ID"] as String)
+                    conn.commit()
+                }
+                else -> {
+                    throw IllegalStateException("impossible - deposit query returned multiple rows")
                 }
             }
-        } catch (e: SQLException) {
-            log.error("Exception encountered while handling risky deposit: {}", e)
-            queryRunner.dataSource.connection.rollback()
+        } catch (e: Exception) {
+            log.error("Exception encountered while handling deposit: {}", e)
+            conn.rollback()
             resultBuilder.setStatus(CashierActionStatus.FAILURE_INTERNAL_ERROR);
+        } finally {
+            conn.close()
         }
         return resultBuilder.build()
     }
-
 }

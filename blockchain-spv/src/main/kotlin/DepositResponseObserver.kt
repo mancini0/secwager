@@ -21,7 +21,6 @@ class DepositResponseObserver(val txo: TransactionOutput, val wasRiskyAtTimeOfDe
     override fun onNext(result: CashierActionResult) {
         when (result.status) {
             CashierActionStatus.SUCCESS -> {
-                log.debug("deposited fine:  {}", result)
                 if (wasRiskyAtTimeOfDeposit) {
                     Futures.addCallback(txo.parentTransaction?.confidence?.getDepthFuture(1), object : FutureCallback<TransactionConfidence> {
                         override fun onSuccess(confidence: TransactionConfidence?) {

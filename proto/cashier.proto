@@ -33,7 +33,10 @@ message CashierActionResult {
 
 
 message CashierRequest {
-  string user_id = 1;
+  oneof identifier {
+    string user_id = 1;
+    string p2pkh_address = 5;
+  }
   uint32 amount = 2;
   TransactionReason reason = 3;
   string related_entity_id = 4;

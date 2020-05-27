@@ -16,9 +16,13 @@ k8s_object(
 
 java_library(
     name = "db-init",
-    srcs = ["src/main/java/com/secwager/database/Initializer.java"],
+    srcs = ["src/main/java/com/secwager/database/DatabaseInitializer.java"],
+    resources = ["src/main/resources/db/migration/V1__initial_ddl.sql"],
     visibility = ["//visibility:public"],
-    deps = [],
+    deps = [
+        "@maven//:org_flywaydb_flyway_core",
+        "@maven//:org_slf4j_slf4j_api",
+    ],
 )
 
 #k8s_objects(

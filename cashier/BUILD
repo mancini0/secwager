@@ -84,6 +84,7 @@ kt_jvm_test(
         "@maven//:org_mockito_mockito_core",
         "@maven//:org_testcontainers_postgresql",
         "@maven//:org_postgresql_postgresql",
+        "@maven//:com_zaxxer_HikariCP",
         #"@maven//:org_testcontainers_testcontainers",
     ],
 )
