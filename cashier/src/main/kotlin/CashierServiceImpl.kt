@@ -10,30 +10,27 @@ import javax.inject.Inject
 class CashierServiceImpl @Inject constructor(private val cashierRepo: CashierRepo) : CashierImplBase() {
     companion object {
         private val log = LoggerFactory.getLogger(CashierServiceImpl::class.java)
+        public val INVALID_TRANSFER_MSG = "Requests to lock funds must contain a non-empty user id, " +
+                "the amount must be greater than 0, a valid transaction reason must be specifed, and a related entity id must be provided."
+        public val INVALID_DEPOSIT_MSG = "Requests to deposit funds must contain a non-empty user id, " +
+                "the amount must be greater than 0, and a related entity id must be provided."
     }
-
 
     override fun lockFunds(cashierRequest: CashierRequest,
                            responseObserver: StreamObserver<CashierActionResult>) {
         if (isInvalidForLockOrUnlock(cashierRequest)) {
-            responseObserver.onError(IllegalArgumentException("Requests to lock funds must contain a non-empty user id, " +
-                    "the amount must be greater than 0, a valid transaction reason must be specifed, and a related entity id must be provided."))
+            responseObserver.onError(IllegalArgumentException(INVALID_TRANSFER_MSG))
             responseObserver.onCompleted()
             return
         }
-
-        val result = cashierRepo.lockFunds(cashierRequest.userId, cashierRequest.amount, cashierRequest.reason, cashierRequest.relatedEntityId)
-        if (result.status == CashierActionStatus.SUCCESS) {
-
-            responseObserver.onCompleted()
-        }
+        responseObserver.onNext(cashierRepo.lockFunds(cashierRequest.userId, cashierRequest.amount, cashierRequest.reason, cashierRequest.relatedEntityId))
+        responseObserver.onCompleted()
     }
 
     override fun unlockFunds(cashierRequest: CashierRequest,
                              responseObserver: StreamObserver<CashierActionResult>) {
         if (isInvalidForLockOrUnlock(cashierRequest)) {
-            responseObserver.onError(IllegalArgumentException("Requests to unlock funds must contain a non-empty user id, " +
-                    "the amount must be greater than 0, a valid transaction reason must be specifed, and a related entity id must be provided."))
+            responseObserver.onError(IllegalArgumentException(INVALID_TRANSFER_MSG))
             responseObserver.onCompleted()
             return
         }
@@ -43,8 +40,7 @@ class CashierServiceImpl @Inject constructor(private val cashierRepo: CashierRep
 
     override fun depositRisky(cashierRequest: CashierRequest, responseObserver: StreamObserver<CashierActionResult>) {
         if (isInvalidForDeposit(cashierRequest)) {
-            responseObserver.onError(IllegalArgumentException("Requests to deposit funds must contain a non-empty user id, " +
-                    "the amount must be greater than 0, and a related entity id must be provided."))
+            responseObserver.onError(IllegalArgumentException(INVALID_DEPOSIT_MSG))
             responseObserver.onCompleted()
             return
         }
@@ -54,7 +50,13 @@ class CashierServiceImpl @Inject constructor(private val cashierRepo: CashierRep
     }
 
     override fun depositSafe(cashierRequest: CashierRequest, responseObserver: StreamObserver<CashierActionResult>) {
-        TODO("NOT IMPLEMENTED")
+        if (isInvalidForDeposit(cashierRequest)) {
+            responseObserver.onError(IllegalArgumentException(INVALID_DEPOSIT_MSG))
+            responseObserver.onCompleted()
+            return
+        }
+        responseObserver.onNext(cashierRepo.directDepositIntoAvailable(cashierRequest.userId, cashierRequest.amount, entityId = cashierRequest.relatedEntityId))
+        responseObserver.onCompleted()
     }
 
     override fun streamBalance(balanceRequest: BalanceRequest,

@@ -75,7 +75,7 @@ class CashierRepoTest {
     @Test
     fun lockAllAvailableFundsWhenEscrowEmpty() {
         cashierRepo.directDepositIntoAvailable("addr0", 200, "tx1")
-        val result = cashierRepo.lockFunds("user0", 200, TransactionReason.POST_MARGIN, "order0")
+        val result: CashierActionResult = cashierRepo.lockFunds("user0", 200, TransactionReason.POST_MARGIN, "order0")
         assertThat(result).isEqualTo(CashierActionResult.newBuilder()
                 .setStatus(CashierActionStatus.SUCCESS)
                 .setUserId("user0")
@@ -85,11 +85,67 @@ class CashierRepoTest {
     @Test
     fun lockSomeAvailableFundsWhenEscrowEmpty() {
         cashierRepo.directDepositIntoAvailable("addr0", 200, "tx1")
-        val result = cashierRepo.lockFunds("user0", 151, TransactionReason.POST_MARGIN, "order0")
+        val result: CashierActionResult = cashierRepo.lockFunds("user0", 151, TransactionReason.POST_MARGIN, "order0")
         assertThat(result).isEqualTo(CashierActionResult.newBuilder()
                 .setStatus(CashierActionStatus.SUCCESS)
                 .setUserId("user0")
                 .setBalance(Balance.newBuilder().setAvailableBalance(49).setEscrowedBalance(151)).build())
     }
+
+    @Test
+    fun lockSomeAvailableFundsWhenEscrowedFundsExist() {
+        cashierRepo.directDepositIntoAvailable("addr0", 200, "tx1")
+        cashierRepo.directDepositIntoEscrow("addr0", 150, "tx1")
+        val result: CashierActionResult = cashierRepo.lockFunds("user0", 5, TransactionReason.POST_MARGIN, "order0")
+        assertThat(result).isEqualTo(CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.SUCCESS)
+                .setUserId("user0")
+                .setBalance(Balance.newBuilder().setAvailableBalance(195).setEscrowedBalance(155)).build())
+    }
+
+    @Test
+    fun lockFundsWhenInsufficientFundsAvailable() {
+        cashierRepo.directDepositIntoAvailable("addr0", 100, "tx1")
+        val result: CashierActionResult = cashierRepo.lockFunds("user0", 101, TransactionReason.POST_MARGIN, "order0")
+        assertThat(result).isEqualTo(CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS)
+                .setUserId("user0")
+                .setBalance(Balance.newBuilder().setAvailableBalance(100).setEscrowedBalance(0)).build())
+    }
+
+
+    @Test
+    fun unlockFunds() {
+        cashierRepo.directDepositIntoEscrow("addr0", 100, "tx1")
+        val result: CashierActionResult = cashierRepo.unlockFunds("user0", 44, TransactionReason.BET_WIN, "order0")
+        assertThat(result).isEqualTo(CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.SUCCESS)
+                .setUserId("user0")
+                .setBalance(Balance.newBuilder().setAvailableBalance(44).setEscrowedBalance(56)).build())
+    }
+
+    @Test
+    fun unlockFundsWhenAvailableExists() {
+        cashierRepo.directDepositIntoEscrow("addr0", 100, "tx1")
+        cashierRepo.directDepositIntoAvailable("addr0", 30, "tx1")
+        val result: CashierActionResult = cashierRepo.unlockFunds("user0", 44, TransactionReason.BET_WIN, "order0")
+        assertThat(result).isEqualTo(CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.SUCCESS)
+                .setUserId("user0")
+                .setBalance(Balance.newBuilder().setAvailableBalance(74).setEscrowedBalance(56)).build())
+    }
+
+
+    @Test
+    fun unlockFundsWhenInsufficientEscrowed() {
+        cashierRepo.directDepositIntoEscrow("addr0", 100, "tx1")
+        cashierRepo.directDepositIntoAvailable("addr0", 20, "tx1")
+        val result: CashierActionResult = cashierRepo.unlockFunds("user0", 105, TransactionReason.BET_WIN, "order0")
+        assertThat(result).isEqualTo(CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS)
+                .setUserId("user0")
+                .setBalance(Balance.newBuilder().setAvailableBalance(20).setEscrowedBalance(100)).build())
+    }
+
 
 }
