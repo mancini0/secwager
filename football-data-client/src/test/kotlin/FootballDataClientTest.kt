@@ -7,10 +7,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class FootballDataClientTest {
-
-
-
-    //TODO test cross product of [epl, serie_a, ligue_1, la_liga] x [in_progress, match_ended, not_started]
+    companion object {
+    }
 
     @Test
     fun serieA_MatchEnded() {
@@ -44,7 +42,7 @@ class FootballDataClientTest {
                         teamName = "Udinese",
                         logo = "https://media.api-football.com/teams/494.png"), goalsAwayTeam = 1, goalsHomeTeam = 1, score =
         Score(halftime = "0-0", fulltime = "1-1", extraTime = null, penalty = null))
-
+        
         assertEquals(udineseAtBrescia, expected)
 
     }

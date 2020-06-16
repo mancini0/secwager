@@ -6,6 +6,7 @@ kt_jvm_library(
     name = "football-data-client",
     srcs = [
         "src/main/kotlin/FootballDataClient.kt",
+        "src/main/kotlin/MatchDaysDeserializer.kt",
         "src/main/kotlin/Models.kt",
     ],
     resources = [],
