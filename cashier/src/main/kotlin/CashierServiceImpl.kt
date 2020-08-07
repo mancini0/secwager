@@ -10,9 +10,9 @@ import javax.inject.Inject
 class CashierServiceImpl @Inject constructor(private val cashierRepo: CashierRepo) : CashierImplBase() {
     companion object {
         private val log = LoggerFactory.getLogger(CashierServiceImpl::class.java)
-        public val INVALID_TRANSFER_MSG = "Requests to lock funds must contain a non-empty user id, " +
+        val INVALID_TRANSFER_MSG = "Requests to lock funds must contain a non-empty user id, " +
                 "the amount must be greater than 0, a valid transaction reason must be specifed, and a related entity id must be provided."
-        public val INVALID_DEPOSIT_MSG = "Requests to deposit funds must contain a non-empty user id, " +
+        val INVALID_DEPOSIT_MSG = "Requests to deposit funds must contain a non-empty user id, " +
                 "the amount must be greater than 0, and a related entity id must be provided."
     }
 
@@ -61,7 +61,7 @@ class CashierServiceImpl @Inject constructor(private val cashierRepo: CashierRep
 
     override fun streamBalance(balanceRequest: BalanceRequest,
                                responseObserver: StreamObserver<Balance>) {
-        TODO()
+
     }
 
     private fun isInvalidForLockOrUnlock(cashierRequest: CashierRequest) = isInvalidForDeposit(cashierRequest) ||

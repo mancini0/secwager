@@ -16,19 +16,13 @@ rules_jvm_external_sha = "1bbf2e48d07686707dd85357e9a94da775e1dbd7c464272b366428
 
 dagger_version = "2.23.2"
 
-grpc_version = "1.28.1"
+grpc_version = "1.30.2"
 
 ktor_version = "1.2.5"
 
 vertx_version = "3.8.4"
 
 kafka_version = "2.4.0"
-
-git_repository(
-    name = "grpc-kotlin",
-    branch = "master",
-    remote = "https://github.com/grpc/grpc-kotlin.git",
-)
 
 http_archive(
     name = "rules_jvm_external",
@@ -43,6 +37,7 @@ load("@rules_jvm_external//:specs.bzl", "maven")
 maven_install(
     name = "maven",
     artifacts = [
+        "com.squareup:kotlinpoet:1.5.0",
         "org.flywaydb:flyway-core:6.4.2",
         "org.testcontainers:testcontainers:1.14.2",
         "org.testcontainers:postgresql:1.14.2",
@@ -77,12 +72,12 @@ maven_install(
         "org.slf4j:slf4j-api:1.7.25",
         "ch.qos.logback:logback-classic:1.2.3",
         "commons-dbutils:commons-dbutils:1.7",
-        "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.2",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.8",
         "com.google.code.findbugs:jsr305:3.0.2",
-        "com.google.auth:google-auth-library-oauth2-http:0.20.0",
-        "com.google.cloud:google-cloud-firestore:1.33.0",
-        "com.google.api:api-common:1.9.0",
-        "com.google.cloud:google-cloud-core:1.93.4",
+        "com.google.auth:google-auth-library-oauth2-http:0.21.1",
+        "com.google.cloud:google-cloud-firestore:1.35.2",
+        "com.google.api:api-common:1.10.0",
+        "com.google.cloud:google-cloud-core:1.93.7",
         maven.artifact(
             group = "com.nhaarman.mockitokotlin2",
             artifact = "mockito-kotlin",
@@ -92,7 +87,7 @@ maven_install(
         maven.artifact(
             group = "com.google.firebase",
             artifact = "firebase-admin",
-            version = "6.12.2",
+            version = "6.15.0",
             exclusions = [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-api",
@@ -150,8 +145,8 @@ http_archive(
 
 http_archive(
     name = "com_google_protobuf",
-    strip_prefix = "protobuf-3.10.0",
-    urls = ["https://github.com/google/protobuf/archive/v3.10.0.zip"],
+    strip_prefix = "protobuf-3.12.0",
+    urls = ["https://github.com/google/protobuf/archive/v3.12.0.zip"],
 )
 
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
@@ -238,3 +233,13 @@ install_bazel_dependencies()
 load("@npm_bazel_labs//:package.bzl", "npm_bazel_labs_dependencies")
 
 npm_bazel_labs_dependencies()
+
+git_repository(
+    name = "com_github_grpc_grpc_kotlin",
+    branch = "master",
+    remote = "https://github.com/grpc/grpc-kotlin.git",
+)
+
+load("@com_github_grpc_grpc_kotlin//:repositories.bzl", "grpc_kt_repositories")
+
+grpc_kt_repositories()

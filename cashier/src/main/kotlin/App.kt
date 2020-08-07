@@ -1,10 +1,12 @@
 package com.secwager.cashier
 
 import com.secwager.cashier.di.DaggerCashierComponent;
-import com.secwager.grpc.GrpcServer;
+import io.grpc.*
+
 
 fun main() {
-    val server = GrpcServer(9305,
-            DaggerCashierComponent.create().buildCashierService())
-    server.start()
+    ServerBuilder.forPort(9305)
+            .addService(DaggerCashierComponent.create().buildCashierService())
+            .build()
+            .awaitTermination();
 }
