@@ -19,14 +19,6 @@ kt_jvm_library(
     ],
 )
 
-kt_jvm_library(
-    name = "serdes",
-    srcs = ["src/main/kotlin/Serdes.kt"],
-    deps = [
-        "//proto:market_java_proto",
-        "@maven//:org_apache_kafka_kafka_streams",
-    ],
-)
 
 kt_jvm_test(
     name = "proto-to-dto-conversion-tests",

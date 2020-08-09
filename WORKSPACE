@@ -58,12 +58,9 @@ maven_install(
         "com.squareup.okhttp3:mockwebserver:4.3.1",
         "com.squareup.retrofit2:converter-gson:2.7.1",
         "com.squareup.retrofit2:retrofit:2.7.1",
-        "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
         "com.google.truth:truth:1.0.1",
         "com.google.guava:guava:28.2-jre",
-        "org.apache.kafka:kafka-streams:%s" % kafka_version,
         "org.apache.kafka:kafka-clients:%s" % kafka_version,
-        "org.apache.kafka:kafka-streams-test-utils:%s" % kafka_version,
         "javax.annotation:javax.annotation-api:1.3.2",
         "org.postgresql:postgresql:42.2.12",
         "com.zaxxer:HikariCP:3.4.2",
@@ -202,8 +199,8 @@ load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 
 yarn_install(
     name = "npm",
-    package_json = "//ui2:package.json",
-    yarn_lock = "//ui2:yarn.lock",
+    package_json = "//ui:package.json",
+    yarn_lock = "//ui:yarn.lock",
 )
 
 load(

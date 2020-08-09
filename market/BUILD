@@ -25,7 +25,6 @@ kt_jvm_image(
     main_class = "com.secwager.market.AppKt",
     deps = [
         "//entity-common:proto-conversion-utils",
-        "//entity-common:serdes",
         "//matchengine:orderbook",
         "@maven//:com_google_guava_guava",
         "@maven//:org_apache_kafka_kafka_clients",
