@@ -1,1 +1,0 @@
-export const DEPOSIT_INFO_MSG = "You may deposit funds by credit card or bank deposit."

@@ -62,7 +62,6 @@ kt_jvm_image(
     deps = [
         ":cashier-service",
         "//:dagger",
-        "//grpc-server",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:com_zaxxer_HikariCP",
         "@maven//:commons_dbutils_commons_dbutils",

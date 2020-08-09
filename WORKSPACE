@@ -34,10 +34,17 @@ http_archive(
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 load("@rules_jvm_external//:specs.bzl", "maven")
 
+git_repository(
+    name = "com_github_grpc_grpc_kotlin",
+    branch = "master",
+    remote = "https://github.com/grpc/grpc-kotlin.git",
+)
+
+load("@com_github_grpc_grpc_kotlin//:repositories.bzl", "IO_GRPC_GRPC_KOTLIN_ARTIFACTS")
+
 maven_install(
     name = "maven",
     artifacts = [
-        "com.squareup:kotlinpoet:1.5.0",
         "org.flywaydb:flyway-core:6.4.2",
         "org.testcontainers:testcontainers:1.14.2",
         "org.testcontainers:postgresql:1.14.2",
@@ -94,7 +101,7 @@ maven_install(
                 "io.grpc:grpc-netty-shaded",
             ],
         ),
-    ],
+    ] + IO_GRPC_GRPC_KOTLIN_ARTIFACTS,
     repositories = [
         "https://jcenter.bintray.com/",
         "https://repo1.maven.org/maven2",
@@ -233,12 +240,6 @@ install_bazel_dependencies()
 load("@npm_bazel_labs//:package.bzl", "npm_bazel_labs_dependencies")
 
 npm_bazel_labs_dependencies()
-
-git_repository(
-    name = "com_github_grpc_grpc_kotlin",
-    branch = "master",
-    remote = "https://github.com/grpc/grpc-kotlin.git",
-)
 
 load("@com_github_grpc_grpc_kotlin//:repositories.bzl", "grpc_kt_repositories")
 

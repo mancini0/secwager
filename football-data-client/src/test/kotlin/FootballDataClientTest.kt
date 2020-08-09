@@ -42,7 +42,7 @@ class FootballDataClientTest {
                         teamName = "Udinese",
                         logo = "https://media.api-football.com/teams/494.png"), goalsAwayTeam = 1, goalsHomeTeam = 1, score =
         Score(halftime = "0-0", fulltime = "1-1", extraTime = null, penalty = null))
-        
+
         assertEquals(udineseAtBrescia, expected)
 
     }

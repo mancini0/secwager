@@ -1,16 +1,11 @@
-package sandbox
+package com.secwager.helloworld
 
-import com.secwager.helloworld.GreeterGrpcKt
-import com.secwager.helloworld.HelloReply
-import com.secwager.helloworld.HelloRequest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
+class Sandbox : GreeterGrpcKt.GreeterCoroutineImplBase() {
 
-class Sandbox
-/**: GreeterGrpcKt.GreeterCoroutineImplBase()**/
-{
-    /**override**/
-    suspend fun sayHello(request: HelloRequest): HelloReply {
-        return HelloReply.newBuilder().build()
-        
+    override fun sayHello(request: HelloRequest): Flow<HelloReply> {
+        return flowOf(HelloReply.newBuilder().build());
     }
 }

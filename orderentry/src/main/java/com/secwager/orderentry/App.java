@@ -1,14 +1,14 @@
 package com.secwager.orderentry;
 
-import com.secwager.grpc.GrpcServer;
 import com.secwager.orderentry.di.DaggerOrderEntryComponent;
+import io.grpc.ServerBuilder;
 
 public class App {
 
 
   public static void main(String[] args) throws Exception {
-    GrpcServer server = new GrpcServer(9085,
-        DaggerOrderEntryComponent.create().buildOrderEntryService());
-    server.start();
+    ServerBuilder.forPort(9085)
+        .addService(DaggerOrderEntryComponent.create().buildOrderEntryService())
+        .build().awaitTermination();
   }
 }

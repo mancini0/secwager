@@ -13,7 +13,7 @@ data class Team(val teamId: Long, val teamName: String, val logo: String)
 data class Score(val halftime: String?, val fulltime: String?, val extraTime: String?, val penalty: String?)
 
 
-class Fixture(
+data class Fixture(
         @SerializedName("fixture_id") val fixtureId: Int,
         @SerializedName("league_id") val leagueId: Int,
         val league: League,

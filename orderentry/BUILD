@@ -50,7 +50,6 @@ java_image(
         "//:dagger",
         "//dao:order-repo",
         "//dao:order-repo-jdbc",
-        "//grpc-server",
         "//proto:cashier-grpc",
         "//proto:market_java_proto",
         "@io_grpc_grpc_java//api",

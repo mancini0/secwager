@@ -1,6 +1,3 @@
-load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
-load("@io_bazel_rules_docker//java:image.bzl", "java_image")
-load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("//:defs.bzl", "K8S_CLUSTER")
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_library")
@@ -11,7 +8,8 @@ kt_jvm_library(
     srcs = ["Sandbox.kt"],
     deps = [
         ":kt_grpc_hello",
-        "@io_grpc_grpc_java//netty",
+        "@com_github_grpc_grpc_kotlin//stub/src/main/java/io/grpc/kotlin:stub",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
     ],
 )
 
@@ -28,5 +26,7 @@ java_proto_library(
 kt_jvm_grpc_library(
     name = "kt_grpc_hello",
     srcs = [":hello_proto"],
-    deps = [":java_hello_proto"],
+    deps = [
+        ":java_hello_proto",
+    ],
 )
