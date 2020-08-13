@@ -2,51 +2,65 @@ package com.secwager.refdata
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import com.secwager.refdata.dto.Fixture
 import com.secwager.refdata.dto.FixtureResponseWrapper
-import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Path
+import kotlinx.coroutines.future.await
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.io.InputStreamReader
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse.BodyHandlers
 
-interface FootballDataClient {
+class FootballDataClient(val baseUrl: String, val apiKey: String) {
+
 
     companion object {
+        private val log: Logger = LoggerFactory.getLogger(FootballDataClient::class.java)
+
         const val SERIE_A_LEAGUE_ID = 891;
         const val EPL_LEAGUE_ID = 524;
         const val LA_LIGA_LEAGUE_ID = 525;
 
-        fun create(baseUrl: String, accessKey: String): FootballDataClient {
+        private val gson = GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(object : TypeToken<List<String>>() {}.getType(), MatchDaysDeserializer())
+                .create()
 
-            val gson = GsonBuilder()
-                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                    .registerTypeAdapter(object : TypeToken<List<String>>() {}.getType(), MatchDaysDeserializer())
-                    .create()
+        private val httpClient = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.ALWAYS).build()
 
-            val httpClient = OkHttpClient.Builder()
-                    .addInterceptor { chain ->
-                        val request = chain.request().newBuilder().addHeader("X-RapidAPI-Key", accessKey).build()
-                        chain.proceed(request)
-                    }.build()
-
-            return Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .client(httpClient)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build()
-                    .create(FootballDataClient::class.java)
-        }
     }
 
-    @GET("/fixtures/league/{leagueId}/{round}")
-    fun getFixturesByLeagueAndRound(@Path("leagueId") leagueId: Int, @Path("round") round: String): Call<FixtureResponseWrapper>
+    suspend fun getCurrentRound(leagueId: Int): String? {
+        return httpClient.sendAsync(HttpRequest.newBuilder()
+                .header("X-RapidAPI-Key", apiKey)
+                .uri(URI.create((baseUrl + "/fixtures/rounds/${leagueId}/current")).normalize())
+                .build(), BodyHandlers.ofString()).thenApply {
+            JsonParser.parseString(it.body()).asJsonObject["api"]
+                    .asJsonObject["fixtures"].asJsonArray[0].asString
+        }.exceptionally {
+            log.error("could not retrieve current round for leagueId: {} due to exception {}", leagueId, it)
+            null
+        }.await()
+    }
 
-    @GET("/fixtures/rounds/{leagueId}/current")
-    fun getCurrentRoundByLeague(@Path("leagueId") leagueId: Int): Call<List<String>>
-
-    @GET("/fixtures/rounds/{league_id}")
-    fun getRounds(@Path("leagueId") leagueId: Int): Call<List<String>>
+    suspend fun getFixturesByLeagueAndRound(leagueId: Int, roundId: String): List<Fixture> {
+        return httpClient.sendAsync(HttpRequest.newBuilder()
+                .header("X-RapidAPI-Key", apiKey)
+                .uri(URI.create(baseUrl + "/fixtures/league/${leagueId}/${roundId}").normalize())
+                .build(), BodyHandlers.ofInputStream()).thenApply {
+            InputStreamReader(it.body()).use {
+                (gson.fromJson(it, FixtureResponseWrapper::class.java).api.fixtures)
+            }
+        }.exceptionally {
+            log.error("Could not retrieve fixtures for leagueId: {}, roundId: {} due to " +
+                    "exception {}", leagueId, roundId, it)
+            listOf()
+        }.await()
+    }
 
 }

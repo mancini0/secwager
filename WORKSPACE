@@ -52,8 +52,6 @@ maven_install(
         "com.github.ben-manes.caffeine:caffeine:2.8.2",
         "javax.inject:javax.inject:1",
         "com.squareup.okhttp3:mockwebserver:4.3.1",
-        "com.squareup.retrofit2:converter-gson:2.7.1",
-        "com.squareup.retrofit2:retrofit:2.7.1",
         "com.google.truth:truth:1.0.1",
         "com.google.guava:guava:28.2-jre",
         "org.apache.kafka:kafka-clients:%s" % kafka_version,

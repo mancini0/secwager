@@ -11,8 +11,10 @@ kt_jvm_library(
     ],
     resources = [],
     deps = [
-        "@maven//:com_squareup_retrofit2_converter_gson",
-        "@maven//:com_squareup_retrofit2_retrofit",
+        "@maven//:com_google_code_gson_gson",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_jdk8",
+        "@maven//:org_slf4j_slf4j_api",
     ],
 )
 
