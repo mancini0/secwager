@@ -6,8 +6,6 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dagger.Module
 import dagger.Provides
-import org.apache.commons.dbutils.QueryRunner
-import org.postgresql.ds.PGSimpleDataSource
 import java.util.*
 import javax.inject.Singleton
 import javax.sql.DataSource
@@ -30,15 +28,10 @@ class CashierModule {
         return ds
     }
 
-    @Provides
-    @Singleton
-    fun provideQueryRunner(dataSource: DataSource?): QueryRunner {
-        return QueryRunner(dataSource)
-    }
 
     @Provides
     @Singleton
-    fun provideCashierRepo(queryRunner: QueryRunner): CashierRepo {
+    fun provideCashierRepo(queryRunner: Datasource): CashierRepo {
         return CashierRepoJdbcImpl(queryRunner)
     }
 

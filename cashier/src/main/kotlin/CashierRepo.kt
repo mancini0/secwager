@@ -1,13 +1,14 @@
 package com.secwager.cashier
 
-import com.secwager.proto.cashier.CashierOuterClass.*
+import com.secwager.proto.cashier.CashierOuterClass.CashierActionResult
+import com.secwager.proto.cashier.CashierOuterClass.TransactionReason
 
 
 interface CashierRepo {
 
-    fun getBalance(userId: String): CashierActionResult
-    fun directDepositIntoEscrow(p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult
-    fun directDepositIntoAvailable(p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult
-    fun lockFunds(userId: String, amount: Int, reason: TransactionReason, entityId: String): CashierActionResult
-    fun unlockFunds(userId: String, amount: Int, reason: TransactionReason, entityId: String): CashierActionResult
+    suspend fun getBalance(userId: String): CashierActionResult
+    suspend fun depositIntoEscrow(p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult
+    suspend fun depositIntoAvailable(p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult
+    suspend fun lockFunds(userId: String, amount: Int, reason: TransactionReason, entityId: String): CashierActionResult
+    suspend fun unlockFunds(userId: String, amount: Int, reason: TransactionReason, entityId: String): CashierActionResult
 }
