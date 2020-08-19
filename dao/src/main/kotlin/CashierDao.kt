@@ -1,10 +1,10 @@
-package com.secwager.cashier
+package com.secwager.dao.cashier
 
 import com.secwager.proto.cashier.CashierOuterClass.CashierActionResult
 import com.secwager.proto.cashier.CashierOuterClass.TransactionReason
 
 
-interface CashierRepo {
+interface CashierDao {
 
     suspend fun getBalance(userId: String): CashierActionResult
     suspend fun depositIntoEscrow(p2pkhAddress: String, amount: Int, entityId: String): CashierActionResult

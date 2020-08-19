@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 
-class CashierServiceImpl @Inject constructor(private val cashierRepo: CashierRepo) : CashierGrpcKt.CashierCoroutineImplBase() {
+class CashierServiceImpl @Inject constructor(private val cashierDao: CashierDao) : CashierGrpcKt.CashierCoroutineImplBase() {
     companion object {
         private val log = LoggerFactory.getLogger(CashierServiceImpl::class.java)
     }

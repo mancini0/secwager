@@ -1,11 +1,12 @@
-package com.secwager.cashier
+package com.secwager.dao.cashier
 
 import com.github.jasync.sql.db.Connection
 import com.github.jasync.sql.db.asSuspending
-import com.secwager.proto.cashier.CashierOuterClass.*
 import kotlinx.coroutines.future.await
 
-class CashierRepoJasyncImpl(val conn: Connection) : CashierRepo {
+import com.secwager.proto.cashier.CashierOuterClass.*
+
+class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
     companion object {
         val GET_BALANCE = "SELECT USER_ID, AVAILABLE_BALANCE, ESCROWED_BALANCE FROM ACCT_BALANCE WHERE USER_ID=?"
         val RISKY_DEPOSIT = "with cte as (select user_id, ?::int as satoshis from users u where u.p2pkh_addr = ?::text)\n" +
