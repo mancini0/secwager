@@ -12,6 +12,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.junit.Test
 import com.secwager.proto.cashier.CashierOuterClass.*
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.future.await
 
 class CashierDaoTest {
 
@@ -25,6 +26,8 @@ class CashierDaoTest {
         @get: ClassRule
         val postgres: KPostgreSQLContainer = KPostgreSQLContainer()
                 .withDatabaseName("secwager")
+		.withUsername("user1")
+		.withPassword("pass1")
     }
 
 
@@ -38,16 +41,12 @@ class CashierDaoTest {
                 dataSource.user = postgres.username
                 dataSource.password = postgres.password
                 DatabaseInitializer.initializeDatabase(dataSource)
-
-                conn = PostgreSQLConnectionBuilder.createConnectionPool(
-                        postgres.jdbcUrl)
-
+                conn = PostgreSQLConnectionBuilder.createConnectionPool("${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}")
                 cashierDao = CashierDaoJasyncImpl(conn)
-
                 dbInitialized = true
             }
-            conn.sendPreparedStatement("delete from acct_balance")
-            conn.sendPreparedStatement("delete from txn_ledger")
+           // conn.sendPreparedStatement("delete from acct_balance")
+            //conn.sendPreparedStatement("delete from txn_ledger")
 
         }
     }
@@ -55,12 +54,11 @@ class CashierDaoTest {
 
     @Test
     fun safeDeposit() {
-        runBlocking {
+       runBlocking {
             val result = cashierDao.depositIntoAvailable("addr0", 200, "tx1")
-            println("deposited")
             assertThat(result).isEqualTo(CashierActionResult.newBuilder()
                     .setStatus(CashierActionStatus.SUCCESS)
-                    .setBalance(Balance.newBuilder().setEscrowedBalance(0).setAvailableBalance(200))
+                   .setBalance(Balance.newBuilder().setEscrowedBalance(0).setAvailableBalance(200))
                     .setUserId("user0")
                     .build())
         }

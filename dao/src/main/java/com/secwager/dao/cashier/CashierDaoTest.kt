@@ -3,6 +3,8 @@ package com.secwager.dao.cashier
 import com.github.jasync.sql.db.Connection
 import com.github.jasync.sql.db.postgresql.PostgreSQLConnectionBuilder
 import com.secwager.database.DatabaseInitializer
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.ClassRule
 import org.postgresql.ds.PGSimpleDataSource
@@ -17,11 +19,13 @@ class CashierDaoTest {
     companion object {
         val log = LoggerFactory.getLogger(CashierDaoTest::class.java)
         private var dbInitialized = false
-        private lateinit var cashierDao: CashierDao
+        //private lateinit var cashierDao: CashierDao
 
         @get: ClassRule
         val postgres: KPostgreSQLContainer = KPostgreSQLContainer()
                 .withDatabaseName("secwager")
+                .withPassword("foo")
+                .withUsername("bar")
     }
 
 
@@ -33,12 +37,12 @@ class CashierDaoTest {
             dataSource.setURL(postgres.jdbcUrl)
             dataSource.user = postgres.username
             dataSource.password = postgres.password
+            log.info("the pw is {}, uri is {}", postgres.password, postgres.uri)
             DatabaseInitializer.initializeDatabase(dataSource)
-
-            val connection: Connection = PostgreSQLConnectionBuilder.createConnectionPool(
-                    postgres.jdbcUrl)
-
-            val cashierRepo = CashierDaoJasyncImpl(connection)
+//            val connection: Connection = PostgreSQLConnectionBuilder.createConnectionPool(
+//                    postgres.jdbcUrl)
+//
+//            val cashierRepo = CashierDaoJasyncImpl(connection)
 
             dbInitialized = true
         }
@@ -48,16 +52,19 @@ class CashierDaoTest {
     }
 
 
-//    @Test
-//    fun safeDeposit() =
-//            runBlocking {
+    @Test
+    fun safeDeposit() =
+            runBlocking {
+
+                delay(1000)
+                println(postgres.jdbcUrl)
 //                val result = cashierRepo.depositIntoAvailable("addr0", 200, "tx1")
 //                assertThat(result).isEqualTo(CashierActionResult.newBuilder()
 //                        .setStatus(CashierActionStatus.SUCCESS)
 //                        .setBalance(Balance.newBuilder().setEscrowedBalance(0).setAvailableBalance(200))
 //                        .setUserId("user0")
 //                        .build())
-//            }
+            }
 
 //    @Test
 //    fun riskyDeposit() {
