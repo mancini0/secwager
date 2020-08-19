@@ -8,7 +8,7 @@ import com.secwager.proto.cashier.CashierOuterClass.*
 
 class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
     companion object {
-        val GET_BALANCE = "SELECT USER_ID, AVAILABLE_BALANCE, ESCROWED_BALANCE FROM ACCT_BALANCE WHERE USER_ID=?"
+        val GET_BALANCE = "SELECT USER_ID, available_balance, escrowed_balance FROM ACCT_BALANCE WHERE USER_ID=?"
         val RISKY_DEPOSIT = "with cte as (select user_id, ?::int as satoshis from users u where u.p2pkh_addr = ?::text)\n" +
                 "insert into acct_balance (user_id ,escrowed_balance) select cte.user_id, cte.satoshis from cte\n" +
                 "on conflict(user_id)\n" +
@@ -45,7 +45,7 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                 "\t cte returning user_id,\n" +
                 "\t available_balance,\n" +
                 "\t escrowed_balance,\n" +
-                "\t case when cte.escrowed >= cte.satoshis then true else false end as had_sufficent_funds"
+                "\t case when cte.escrowed >= cte.satoshis then true else false end as had_sufficient_funds"
 
         val LOCK_FUNDS = "with cte as (\n" +
                 "select\n" +
@@ -71,7 +71,7 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                 "\t cte returning user_id,\n" +
                 "\t available_balance,\n" +
                 "\t escrowed_balance,\n" +
-                "\t case when cte.available >= cte.satoshis then true else false end as had_sufficent_funds"
+                "\t case when cte.available >= cte.satoshis then true else false end as had_sufficient_funds"
 
         val INSERT_TXN_LEDGER = "insert\n" +
                 " \t   into\n" +
@@ -79,15 +79,15 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                 " \t   TXN_TIME,\n" +
                 " \t   TXN_REASON,\n" +
                 " \t   RELATED_ENTITY,\n" +
-                " \t   AVAILABLE_BALANCE,\n" +
-                " \t   ESCROWED_BALANCE)\n" +
+                " \t   available_balance,\n" +
+                " \t   escrowed_balance)\n" +
                 "select\n" +
                 " \t   user_id,\n" +
                 " \t   current_timestamp,\n" +
                 " \t   ?::txn_reason,\n" +
                 " \t   ?,\n" +
-                " \t   AVAILABLE_BALANCE,\n" +
-                " \t   ESCROWED_BALANCE \n" +
+                " \t   available_balance,\n" +
+                " \t   escrowed_balance \n" +
                 "from\n" +
                 " \t   ACCT_BALANCE where user_id=?"
     }
@@ -103,8 +103,8 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                         CashierActionResult.newBuilder().setUserId(userId)
                                 .setStatus(CashierActionStatus.SUCCESS)
                                 .setBalance(Balance.newBuilder()
-                                        .setEscrowedBalance(row.getInt("ESCROWED_BALANCE") ?: 0)
-                                        .setAvailableBalance(row.getInt("AVAILABLE_BALANCE") ?: 0)
+                                        .setEscrowedBalance(row.getInt("escrowed_balance") ?: 0)
+                                        .setAvailableBalance(row.getInt("available_balance") ?: 0)
                                         .build())
                                 .build()
                     }
@@ -136,13 +136,12 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                 val depositRow = depositResult.rows.single()
                 val reason = if (shouldEscrow) TransactionReason.RISKY_DEPOSIT else TransactionReason.SAFE_DEPOSIT
                 conn.sendPreparedStatement(INSERT_TXN_LEDGER, listOf(reason.name, entityId, p2pkhAddress))
-                        .rows.single()
                 CashierActionResult.newBuilder()
                         .setStatus(CashierActionStatus.SUCCESS)
                         .setBalance(Balance.newBuilder()
-                                .setAvailableBalance(depositRow["AVAILABLE_BALANCE"] as Int)
-                                .setEscrowedBalance(depositRow["ESCROWED_BALANCE"] as Int))
-                        .setUserId(depositRow["USER_ID"] as String).build()
+                                .setAvailableBalance(depositRow["available_balance"] as Int)
+                                .setEscrowedBalance(depositRow["escrowed_balance"] as Int))
+                        .setUserId(depositRow["user_id"] as String).build()
             }
         }
     }
@@ -169,14 +168,13 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                         .newBuilder()
                         .setUserId(userId)
                         .setBalance(Balance.newBuilder()
-                                .setAvailableBalance(row["AVAILABLE_BALANCE"] as Int)
-                                .setEscrowedBalance(row["ESCROWED_BALANCE"] as Int))
+                                .setAvailableBalance(row["available_balance"] as Int)
+                                .setEscrowedBalance(row["escrowed_balance"] as Int))
 
-                if (!(row["HAD_SUFFICIENT_FUNDS"] as Boolean)) {
+                if (!(row["had_sufficient_funds"] as Boolean)) {
                     resultBuilder.setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS).build()
                 } else {
                     it.sendPreparedStatement(INSERT_TXN_LEDGER, listOf(reason, entityId, userId))
-                            .rows.single()//roll everything back if ledger could not be updated
                     resultBuilder
                             .setStatus(CashierActionStatus.SUCCESS).build()
                 }
