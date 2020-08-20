@@ -5,6 +5,7 @@ import com.github.jasync.sql.db.asSuspending
 import kotlinx.coroutines.future.await
 
 import com.secwager.proto.cashier.CashierOuterClass.*
+import java.lang.IllegalStateException
 
 class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
     companion object {
@@ -73,7 +74,7 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                 "\t escrowed_balance,\n" +
                 "\t case when cte.available >= cte.satoshis then true else false end as had_sufficient_funds"
 
-        val INSERT_TXN_LEDGER = "insert\n" +
+        val INSERT_TXN_LEDGER_BY_P2PKH = "insert\n" +
                 " \t   into\n" +
                 " \t   TXN_LEDGER(USER_ID,\n" +
                 " \t   TXN_TIME,\n" +
@@ -82,14 +83,33 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                 " \t   available_balance,\n" +
                 " \t   escrowed_balance)\n" +
                 "select\n" +
-                " \t   user_id,\n" +
+                " \t   a.user_id,\n" +
                 " \t   current_timestamp,\n" +
                 " \t   ?::txn_reason,\n" +
                 " \t   ?,\n" +
                 " \t   available_balance,\n" +
                 " \t   escrowed_balance \n" +
                 "from\n" +
-                " \t   ACCT_BALANCE where user_id=?"
+                " \t   acct_balance a , users u where a.user_id=u.user_id \n" +
+                " \t   and u.p2pkh_addr=? "
+
+        val INSERT_TXN_LEDGER_BY_USER_ID = "insert\n" +
+                " \t   into\n" +
+                " \t   TXN_LEDGER(USER_ID,\n" +
+                " \t   TXN_TIME,\n" +
+                " \t   TXN_REASON,\n" +
+                " \t   RELATED_ENTITY,\n" +
+                " \t   available_balance,\n" +
+                " \t   escrowed_balance)\n" +
+                "select\n" +
+                " \t   a.user_id,\n" +
+                " \t   current_timestamp,\n" +
+                " \t   ?::txn_reason,\n" +
+                " \t   ?,\n" +
+                " \t   available_balance,\n" +
+                " \t   escrowed_balance \n" +
+                "from\n" +
+                " \t   acct_balance a where a.user_id=? "
     }
 
     override suspend fun getBalance(userId: String): CashierActionResult {
@@ -135,7 +155,7 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
             } else {
                 val depositRow = depositResult.rows.single()
                 val reason = if (shouldEscrow) TransactionReason.RISKY_DEPOSIT else TransactionReason.SAFE_DEPOSIT
-                conn.sendPreparedStatement(INSERT_TXN_LEDGER, listOf(reason.name, entityId, p2pkhAddress))
+                val txnLedgerResult = conn.sendPreparedStatement(INSERT_TXN_LEDGER_BY_P2PKH, listOf(reason.name, entityId, p2pkhAddress))
                 CashierActionResult.newBuilder()
                         .setStatus(CashierActionStatus.SUCCESS)
                         .setBalance(Balance.newBuilder()
@@ -174,7 +194,10 @@ class CashierDaoJasyncImpl(val conn: Connection) : CashierDao {
                 if (!(row["had_sufficient_funds"] as Boolean)) {
                     resultBuilder.setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS).build()
                 } else {
-                    it.sendPreparedStatement(INSERT_TXN_LEDGER, listOf(reason, entityId, userId))
+                    val txnLedgerResult = it.sendPreparedStatement(INSERT_TXN_LEDGER_BY_USER_ID, listOf(reason, entityId, userId))
+                    if (txnLedgerResult.rowsAffected != 1L) {
+                        throw IllegalStateException("Exactly one row should be inserted into the transaction ledger for any kind of funds transfer or deposit")
+                    }
                     resultBuilder
                             .setStatus(CashierActionStatus.SUCCESS).build()
                 }

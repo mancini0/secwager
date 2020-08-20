@@ -1,5 +1,6 @@
 package com.secwager.cashier
 
+import com.secwager.dao.cashier.CashierDao
 import com.secwager.proto.cashier.CashierGrpcKt
 import com.secwager.proto.cashier.CashierOuterClass.*
 import org.slf4j.LoggerFactory

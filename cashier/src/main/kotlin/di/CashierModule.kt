@@ -1,38 +1,38 @@
 package com.secwager.cashier.di
 
-import com.secwager.cashier.CashierDao
-import com.secwager.cashier.CashierRepoJdbcImpl
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
+import com.github.jasync.sql.db.Connection
+import com.github.jasync.sql.db.postgresql.PostgreSQLConnectionBuilder
+import com.secwager.dao.cashier.CashierDao
+import com.secwager.dao.cashier.CashierDaoJasyncImpl
+import com.secwager.dao.cashier.CashierDaoTest
+
 import dagger.Module
 import dagger.Provides
 import java.util.*
 import javax.inject.Singleton
 import javax.sql.DataSource
 
+
 @Module
 class CashierModule {
     @Provides
     @Singleton
-    fun provideDataSource(): DataSource {
-        val props = Properties()
-        props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
-        props.setProperty("dataSource.user", "yugabyte")
-        props.setProperty("dataSource.password", "yugabyte")
-        props.setProperty("dataSource.databaseName", "secwager")
-        props.setProperty("dataSource.serverName", "localhost")
-        props.setProperty("dataSource.portNumber", "5433")
-        val config = HikariConfig(props)
-        config.isAutoCommit = false
-        val ds = HikariDataSource(config)
-        return ds
+    fun provideConnectionPool(): Connection {
+        return PostgreSQLConnectionBuilder.createConnectionPool{
+            password=""
+            host=""
+            username=""
+            database="secwager"
+            connectionCreateTimeout=
+            port=0
+        }
     }
 
 
     @Provides
     @Singleton
-    fun provideCashierRepo(queryRunner: Datasource): CashierDao {
-        return CashierRepoJdbcImpl(queryRunner)
+    fun provideCashierDao(connection: Connection): CashierDao {
+        return CashierDaoJasyncImpl(connection)
     }
 
 
