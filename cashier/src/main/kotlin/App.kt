@@ -6,7 +6,7 @@ import io.grpc.*
 
 fun main() {
     ServerBuilder.forPort(9305)
-            .addService(DaggerCashierComponent.create().buildCashierService())
-            .build()
-            .awaitTermination();
+            .addService(DaggerCashierComponent.create().buildCashierService()
+                    .build()
+                    .awaitTermination()
 }
