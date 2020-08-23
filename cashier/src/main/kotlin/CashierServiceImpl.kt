@@ -12,19 +12,43 @@ class CashierServiceImpl @Inject constructor(private val cashierDao: CashierDao)
         private val log = LoggerFactory.getLogger(CashierServiceImpl::class.java)
     }
 
-    override suspend fun lockFunds(cashierRequest: CashierRequest): CashierActionResult {
-        if (isInvalidForLockOrUnlock(cashierRequest)) {
+    override suspend fun lockFunds(req: CashierRequest): CashierActionResult {
+        if (isInvalidForLockOrUnlock(req)) {
             return CashierActionResult.newBuilder()
                     .setStatus(CashierActionStatus.FAILURE_MALFORMED_REQUEST).build()
         }
-        return CashierActionResult.getDefaultInstance()
+        return cashierDao.lockFunds(req.userId, req.amount,
+                req.reason, req.relatedEntityId)
+    }
+
+    override suspend fun unlockFunds(req: CashierRequest): CashierActionResult {
+        if (isInvalidForLockOrUnlock(req)) {
+            return CashierActionResult.newBuilder()
+                    .setStatus(CashierActionStatus.FAILURE_MALFORMED_REQUEST).build()
+        }
+        return cashierDao.unlockFunds(req.userId, req.amount,
+                req.reason, req.relatedEntityId)
+    }
+
+    override suspend fun depositRisky(req: CashierRequest): CashierActionResult {
+        return if (isInvalidForDeposit(req)) CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.FAILURE_MALFORMED_REQUEST).build()
+        else
+            cashierDao.depositIntoEscrow(req.p2PkhAddress, req.amount, req.relatedEntityId)
+    }
+
+    override suspend fun depositSafe(req: CashierRequest): CashierActionResult {
+        return if (isInvalidForDeposit(req)) CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.FAILURE_MALFORMED_REQUEST).build()
+        else
+            cashierDao.depositIntoAvailable(req.p2PkhAddress, req.amount, req.relatedEntityId)
     }
 
 
-    private fun isInvalidForLockOrUnlock(cashierRequest: CashierRequest) = isInvalidForDeposit(cashierRequest) ||
-            cashierRequest.reason == TransactionReason.REASON_UNSPECIFIED
+    private fun isInvalidForLockOrUnlock(req: CashierRequest) = isInvalidForDeposit(req) ||
+            req.reason == TransactionReason.REASON_UNSPECIFIED
 
-    private fun isInvalidForDeposit(cashierRequest: CashierRequest) = cashierRequest.userId.isNullOrBlank() || cashierRequest.amount <= 0
-            || cashierRequest.relatedEntityId.isNullOrEmpty()
+    private fun isInvalidForDeposit(req: CashierRequest) = req.p2PkhAddress.isNullOrBlank() || req.amount <= 0
+            || req.relatedEntityId.isNullOrEmpty()
 }
 

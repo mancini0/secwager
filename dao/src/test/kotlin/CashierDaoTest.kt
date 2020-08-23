@@ -3,18 +3,16 @@ package com.secwager.dao.cashier
 import com.github.jasync.sql.db.Connection
 import com.github.jasync.sql.db.asSuspending
 import com.github.jasync.sql.db.postgresql.PostgreSQLConnectionBuilder
+import com.google.common.truth.Truth.assertThat
 import com.secwager.database.DatabaseInitializer
+import com.secwager.proto.cashier.CashierOuterClass.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.ClassRule
+import org.junit.Test
 import org.postgresql.ds.PGSimpleDataSource
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.PostgreSQLContainer
-import org.junit.Test
-import com.secwager.proto.cashier.CashierOuterClass.*
-import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.future.await
-import java.time.LocalDateTime
 
 class CashierDaoTest {
 

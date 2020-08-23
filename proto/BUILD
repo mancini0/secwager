@@ -67,11 +67,11 @@ kt_jvm_grpc_library(
     ],
 )
 
-java_grpc_library(
-    name = "orderentry-grpc",
-    srcs = ["//proto:orderentry_proto"],
+kt_jvm_grpc_library(
+    name = "kt_grpc_order_entry",
+    srcs = [":orderentry_proto"],
     visibility = [
-        "//orderentry:__pkg__",
+        "//orderentry-grpc:__pkg__",
     ],
-    deps = ["//proto:orderentry_java_proto"],
+    deps = [":orderentry_java_proto"],
 )

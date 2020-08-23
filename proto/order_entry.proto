@@ -5,13 +5,20 @@ option java_package = "com.secwager.orderentry";
 import "proto/market.proto";
 
 message SubmitOrderRequest {
-  string auth_token = 1;
-  Order order = 2;
+  Order order = 1;
+}
+
+enum OrderSubmissionStatus {
+  STATUS_UNSPECIFIED=0;
+  SUCCESS=1;
+  FAILURE_INSUFFICIENT_FUNDS=2;
+  FAILURE_USER_NOT_FOUND=3;
+  FAILURE_INVALID_ORDER=4;
+  FAILURE_INTERNAL_ERROR=5;
 }
 
 message SubmitOrderResponse {
-  bool success = 1;
-  string message = 2;
+  OrderSubmissionStatus order_submission_status =1;
 }
 
 service OrderEntryService {

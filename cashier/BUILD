@@ -24,7 +24,6 @@ kt_jvm_library(
         "//proto:kt_grpc_cashier",
         "@com_github_grpc_grpc_kotlin//stub/src/main/java/io/grpc/kotlin:stub",
         "@maven//:com_github_ben_manes_caffeine_caffeine",
-        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
         "@maven//:org_slf4j_slf4j_api",
@@ -45,8 +44,6 @@ kt_jvm_image(
         "//:dagger",
         "//dao:cashier-dao-impl-jasync",
         "@maven//:ch_qos_logback_logback_classic",
-        "@maven//:com_zaxxer_HikariCP",
-        "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:org_postgresql_postgresql",
     ],
 )
