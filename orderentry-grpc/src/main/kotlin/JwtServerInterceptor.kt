@@ -7,6 +7,9 @@ import java.util.*
 
 
 class JwtServerInterceptor : ServerInterceptor {
+    companion object{
+        protected val UID_KEY = Context.key<String>("uid")
+    }
     override fun <ReqT : Any, RespT : Any> interceptCall(call: ServerCall<ReqT, RespT>, headers: Metadata,
                                                            next: ServerCallHandler<ReqT, RespT>): ServerCall.Listener<ReqT> {
 
@@ -14,7 +17,7 @@ class JwtServerInterceptor : ServerInterceptor {
                 Metadata.ASCII_STRING_MARSHALLER))?.let {
             val uid = JsonParser.parseString(String(Base64.getDecoder().decode(it)))
                     .asJsonObject["sub"]?.asString
-            val ctx = Context.current().withValue(Context.key("uid"), uid)
+            val ctx = Context.current().withValue(UID_KEY, uid)
             return Contexts.interceptCall(ctx, call, headers, next)
         }
         call.close(Status.UNAUTHENTICATED, headers)

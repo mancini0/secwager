@@ -19,6 +19,7 @@ kt_jvm_library(
     srcs = [
         "src/main/kotlin/CashierServiceImpl.kt",
     ],
+    visibility = ["//orderentry-grpc:__pkg__"],
     deps = [
         "//dao:cashier-dao",
         "//proto:kt_grpc_cashier",
@@ -31,7 +32,7 @@ kt_jvm_library(
 )
 
 kt_jvm_image(
-    name = "cashier",
+    name = "cashier-grpc",
     srcs = [
         "src/main/kotlin/App.kt",
         "src/main/kotlin/di/CashierComponent.kt",

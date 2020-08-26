@@ -23,7 +23,7 @@ class OrderEntryModule {
     @Named("cashierChannel")
     fun cashierGrpcChannel(): Channel {
         return ManagedChannelBuilder
-                .forAddress("cashier", 9305)
+                .forAddress("cashier-grpc", 9305)
                 .usePlaintext()
                 .build()
     }

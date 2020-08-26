@@ -47,7 +47,7 @@ maven_install(
         "org.bitcoinj:bitcoinj-core:0.15.8",
         "com.google.cloud:google-cloud-pubsub:1.104.1",
         "com.github.jasync-sql:jasync-postgresql:1.1.3",
-        "org.mockito:mockito-core:3.3.1",
+        "org.mockito:mockito-core:3.5.6",
         "junit:junit:4.13",
         "com.github.ben-manes.caffeine:caffeine:2.8.2",
         "com.squareup.okhttp3:mockwebserver:4.3.1",

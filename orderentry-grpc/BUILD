@@ -39,10 +39,15 @@ kt_jvm_test(
     test_class = "com.secwager.orderentry.OrderEntryServiceTest",
     deps = [
         ":orderentry-service",
+        "//cashier-grpc:cashier-service",
+        "//proto:kt_grpc_order_entry",
         "@com_github_grpc_grpc_kotlin//stub/src/main/java/io/grpc/kotlin:stub",
         "@io_grpc_grpc_java//core:inprocess",
+        "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
         "@maven//:io_grpc_grpc_testing",
         "@maven//:junit_junit",
+        "@maven//:org_apache_kafka_kafka_clients",
+        "@maven//:org_mockito_mockito_core",
     ],
 )
 
