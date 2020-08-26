@@ -27,12 +27,15 @@ spec:
       labels:
         app: orderentry
     spec:
-      imagePullSecrets:
-      - name: gcr-key
       containers:
         - name: orderentry
           image: us.gcr.io/secwager/orderentry:dev
           env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              valueFrom:
+                secretKeyRef:
+                  name: gcloud-secret
+                  key:  firebase-adminsdk-key
             - name: POD_NAME_WITH_ORDINAL
               valueFrom:
                 fieldRef:

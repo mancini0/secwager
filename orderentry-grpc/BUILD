@@ -17,6 +17,7 @@ load("//:defs.bzl", "K8S_CLUSTER")
 kt_jvm_library(
     name = "orderentry-service",
     srcs = [
+        "src/main/kotlin/JwtServerInterceptor.kt",
         "src/main/kotlin/OrderEntryServiceImpl.kt",
     ],
     deps = [
@@ -24,10 +25,24 @@ kt_jvm_library(
         "//proto:cashier_java_proto",
         "//proto:kt_grpc_cashier",
         "//proto:kt_grpc_order_entry",
+        "@io_grpc_grpc_java//context",
         "@maven//:com_google_firebase_firebase_admin",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_apache_kafka_kafka_clients",
         "@maven//:org_slf4j_slf4j_api",
+    ],
+)
+
+kt_jvm_test(
+    name = "orderentry-service-test",
+    srcs = ["src/test/kotlin/OrderEntryServiceTest.kt"],
+    test_class = "com.secwager.orderentry.OrderEntryServiceTest",
+    deps = [
+        ":orderentry-service",
+        "@com_github_grpc_grpc_kotlin//stub/src/main/java/io/grpc/kotlin:stub",
+        "@io_grpc_grpc_java//core:inprocess",
+        "@maven//:io_grpc_grpc_testing",
+        "@maven//:junit_junit",
     ],
 )
 

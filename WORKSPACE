@@ -50,7 +50,6 @@ maven_install(
         "org.mockito:mockito-core:3.3.1",
         "junit:junit:4.13",
         "com.github.ben-manes.caffeine:caffeine:2.8.2",
-        "javax.inject:javax.inject:1",
         "com.squareup.okhttp3:mockwebserver:4.3.1",
         "com.google.truth:truth:1.0.1",
         "com.google.guava:guava:28.2-jre",
