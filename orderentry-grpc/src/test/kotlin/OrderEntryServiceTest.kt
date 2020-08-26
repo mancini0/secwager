@@ -1,12 +1,10 @@
 package com.secwager.orderentry
 
 import com.nhaarman.mockitokotlin2.mock
-import com.secwager.cashier.CashierServiceImpl
-import com.secwager.dao.cashier.CashierDao
+import com.nhaarman.mockitokotlin2.spy
 import com.secwager.emergency.EmergencyService
 import com.secwager.proto.cashier.CashierGrpcKt
 import io.grpc.ManagedChannel
-import io.grpc.Server
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.testing.GrpcCleanupRule
@@ -24,11 +22,9 @@ class OrderEntryServiceTest {
     private val serverName: String = InProcessServerBuilder.generateName()
 
     private val emergencyService: EmergencyService = mock()
-    private val kafkaProducer:KafkaProducer<String,ByteArray> = mock()
-    private val cashierDao : CashierDao = mock()
-    private val alt: CashierGrpcKt.CashierCoroutineImplBase = mock()
+    private val kafkaProducer: KafkaProducer<String, ByteArray> = mock()
+    private val mockCashierService: CashierGrpcKt.CashierCoroutineImplBase = spy()
 
-    private val cashierService = CashierServiceImpl(cashierDao)
 
     private val channel: ManagedChannel = grpcCleanup.register(InProcessChannelBuilder
             .forName(serverName).directExecutor().build())
@@ -38,13 +34,13 @@ class OrderEntryServiceTest {
     private val grpcServer = grpcCleanup.register(InProcessServerBuilder
             .forName(serverName).directExecutor()
             .intercept(JwtServerInterceptor())
-            .addService(alt)
-            .addService(OrderEntryServiceImpl(kafkaProducer,emergencyService,cashierStub))
+            .addService(mockCashierService)
+            .addService(OrderEntryServiceImpl(kafkaProducer, emergencyService, cashierStub))
             .build()).start()
 
     @Test
-    fun f()  {
-        runBlocking{
+    fun f() {
+        runBlocking {
 //            val orderStub = OrderEntryServiceGrpcKt.OrderEntryServiceCoroutineStub(channel)
 //            orderStub.submitOrder(OrderEntry.SubmitOrderRequest.getDefaultInstance())
         }
