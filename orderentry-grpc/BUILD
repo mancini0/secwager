@@ -43,6 +43,7 @@ kt_jvm_test(
         "//proto:kt_grpc_order_entry",
         "@com_github_grpc_grpc_kotlin//stub/src/main/java/io/grpc/kotlin:stub",
         "@io_grpc_grpc_java//core:inprocess",
+        "@io_grpc_grpc_java//stub",
         "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
         "@maven//:io_grpc_grpc_testing",
         "@maven//:junit_junit",

@@ -11,12 +11,12 @@ fun main() {
         val fixtures = mutableListOf<Fixture>()
         listOf(FDC.EPL_LEAGUE_ID, FDC.LA_LIGA_LEAGUE_ID, FDC.SERIE_A_LEAGUE_ID).map { league ->
             async {
-                client.getCurrentRound(league)?.let { round ->
+                client.getCurrentRound(league).let { round ->
                     client.getFixturesByLeagueAndRound(league, round)
                 }
             }
         }.forEach {
-            it.await()?.let { fixtures.addAll(it) }
+            it.await().let { fixtures.addAll(it) }
         }
         println(fixtures);
     }
