@@ -8,7 +8,7 @@ k8s_object(
     name = "k8s",
     cluster = K8S_CLUSTER,
     images = {
-        "us.gcr.io/secwager/cashier:dev": ":cashier",
+        "us.gcr.io/secwager/cashier:dev": ":cashier-grpc",
     },
     template = ":k8s.yaml",
     visibility = ["//infra:__pkg__"],
