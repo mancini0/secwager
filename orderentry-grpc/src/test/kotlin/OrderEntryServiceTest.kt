@@ -1,9 +1,7 @@
 package com.secwager.orderentry
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.whenever
+
+import com.secwager.cashier.CashierServiceImpl
 import com.secwager.emergency.EmergencyService
 import com.secwager.proto.Market
 import com.secwager.proto.cashier.CashierGrpcKt
@@ -14,6 +12,10 @@ import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.stub.MetadataUtils
 import io.grpc.testing.GrpcCleanupRule
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.junit.Before
@@ -32,17 +34,10 @@ class OrderEntryServiceTest {
     private val orderEntryServerName: String = InProcessServerBuilder.generateName()
     private val cashierServerName: String = InProcessServerBuilder.generateName()
 
+    private val cashierService = spyk<CashierGrpcKt.CashierCoroutineImplBase>();
+    private val kafkaProducer = mockk<KafkaProducer<String,ByteArray>>()
+    private val emergencyService = mockk<EmergencyService>()
 
-    private val emergencyService: EmergencyService = mock()
-    private val kafkaProducer: KafkaProducer<String, ByteArray> = mock()
-    private val cashierService = mock<CashierGrpcKt.CashierCoroutineImplBase>().also { m->
-        runBlocking {
-            whenever(m.lockFunds(any())).thenACashierOuterClass.CashierActionResult
-                    .newBuilder()
-                    .setStatus(CashierOuterClass.CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS)
-                    .build())
-        }
-    }
 
     private val orderChannel: ManagedChannel = grpcCleanup.register(InProcessChannelBuilder
             .forName(orderEntryServerName).directExecutor().build())
@@ -80,6 +75,10 @@ class OrderEntryServiceTest {
     @Test
     fun insufficientFunds() {
         runBlocking {
+        coEvery { cashierService.lockFunds(any()) } returns CashierOuterClass
+                .CashierActionResult.newBuilder()
+                .setStatus(CashierOuterClass.CashierActionStatus.SUCCESS).build()
+
 
             val result = orderStubWithHeaders.submitOrder(OrderEntry.SubmitOrderRequest
                     .newBuilder().setOrder(Market.Order.newBuilder()
