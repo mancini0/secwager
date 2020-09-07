@@ -30,8 +30,7 @@ class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Kafka
 
     override suspend fun submitOrder(request: OrderEntry.SubmitOrderRequest):
             SubmitOrderResponse {
-        val ctxUid: String = UID_CTX_KEY.get()
-        println("uid from ctx is : ctxUid")
+        val uid: String = UID_CTX_KEY.get()
         val responseBuilder = SubmitOrderResponse.newBuilder()
         val order = request.order
         if (!isOrderValid(order)) {
@@ -45,14 +44,14 @@ class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Kafka
                 val marginAmount = order.qtyOnMarket *
                         SATOSHIS_PER_CONTRACT * MAX_PRICE_OF_BINARY_OPTION
                 val lockFundsResult = cashierStub.lockFunds(CashierRequest.newBuilder()
-                        .setUserId("")
+                        .setUserId(uid)
                         .setRelatedEntityId(orderId)
                         .setReason(TransactionReason.POST_MARGIN)
                         .setAmount(marginAmount).build())
                 when (lockFundsResult.status) {
                     SUCCESS -> {
                         return submit(order.toBuilder().setOrderId(orderId)
-                                .setTraderId("").build())
+                                .setTraderId(uid).build())
                     }
                     FAILURE_USER_NOT_FOUND -> {
                         return responseBuilder
@@ -72,9 +71,10 @@ class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Kafka
                 }
             }
             CANCEL -> {
-                return submit(order.toBuilder().setTraderId("").build())
+                return submit(order.toBuilder().setTraderId(uid).build())
             }
             else -> {
+                log.warn("Unhandled order type: {}", order.orderType)
                 return responseBuilder
                         .setOrderSubmissionStatus(OrderSubmissionStatus.FAILURE_INTERNAL_ERROR)
                         .build()

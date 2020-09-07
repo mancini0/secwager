@@ -77,6 +77,7 @@ maven_install(
         "com.google.api:api-common:1.10.0",
         "com.google.cloud:google-cloud-core:1.93.7",
         "com.google.code.gson:gson:2.8.6",
+        "io.mockk:mockk:1.10.0",
         maven.artifact(
             group = "com.nhaarman.mockitokotlin2",
             artifact = "mockito-kotlin",
