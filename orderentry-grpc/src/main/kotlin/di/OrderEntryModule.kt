@@ -3,8 +3,8 @@ package com.secwager.orderentry.di
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.secwager.emergency.EmergencyService
-import com.secwager.emergency.EmergencyServiceLoggingImpl
+import com.secwager.intervention.InterventionService
+import com.secwager.intervention.InterventionServiceLoggingImpl
 
 import com.secwager.proto.cashier.CashierGrpcKt
 import dagger.Module
@@ -12,6 +12,7 @@ import dagger.Provides
 import io.grpc.Channel
 import io.grpc.ManagedChannelBuilder
 import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.Producer
 import java.util.*
 import javax.inject.Named
 import javax.inject.Singleton
@@ -30,7 +31,7 @@ class OrderEntryModule {
 
     @Singleton
     @Provides
-    fun provideKafkaOrderProducer(): KafkaProducer<String, ByteArray> {
+    fun provideKafkaOrderProducer(): Producer<String, ByteArray> {
         val props = Properties()
         props["bootstrap.servers"] = System.getenv("KAFKA_BOOTSTRAP_SERVERS")
         props["key.serializer"] = "org.apache.kafka.common.serialization.StringSerializer"
@@ -49,8 +50,8 @@ class OrderEntryModule {
 
     @Provides
     @Singleton
-    fun provideEmergencyService(): EmergencyService {
-        return EmergencyServiceLoggingImpl()
+    fun provideEmergencyService(): InterventionService {
+        return InterventionServiceLoggingImpl()
     }
 
     @Provides

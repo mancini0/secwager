@@ -21,7 +21,7 @@ kt_jvm_library(
         "src/main/kotlin/OrderEntryServiceImpl.kt",
     ],
     deps = [
-        "//emergency:emergency-service",
+        "//intervention:intervention-service",
         "//proto:cashier_java_proto",
         "//proto:kt_grpc_cashier",
         "//proto:kt_grpc_order_entry",
@@ -63,7 +63,7 @@ kt_jvm_image(
     deps = [
         ":orderentry-service",
         "//:dagger",
-        "//emergency:emergency-service-logging-impl",
+        "//intervention:intervention-service-logging-impl",
         "//proto:kt_grpc_cashier",
         "//proto:market_java_proto",
         "@maven//:ch_qos_logback_logback_classic",

@@ -3,21 +3,21 @@ load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library", "kt_jvm_test
 package(default_visibility = ["//visibility:public"])
 
 kt_jvm_library(
-    name = "emergency-service",
+    name = "intervention-service",
     srcs = [
-        "EmergencyService.kt",
+        "InterventionService.kt",
     ],
     deps = [
     ],
 )
 
 kt_jvm_library(
-    name = "emergency-service-logging-impl",
+    name = "intervention-service-logging-impl",
     srcs = [
-        "EmergencyServiceLoggingImpl.kt",
+        "InterventionServiceLoggingImpl.kt",
     ],
     deps = [
-        ":emergency-service",
+        ":intervention-service",
         "@maven//:org_slf4j_slf4j_api",
     ],
 )

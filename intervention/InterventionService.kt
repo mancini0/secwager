@@ -1,9 +1,9 @@
-package com.secwager.emergency
+package com.secwager.intervention
 
 import java.lang.Exception
 import java.time.LocalDateTime
 
-interface EmergencyService {
+interface InterventionService {
 
     fun requestIntervention(problemDescription:String,
                             timestamp: LocalDateTime,

@@ -1,8 +1,7 @@
 package com.secwager.orderentry
 
 
-import com.secwager.cashier.CashierServiceImpl
-import com.secwager.emergency.EmergencyService
+import com.secwager.intervention.InterventionService
 import com.secwager.proto.Market
 import com.secwager.proto.cashier.CashierGrpcKt
 import com.secwager.proto.cashier.CashierOuterClass
@@ -13,11 +12,10 @@ import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.stub.MetadataUtils
 import io.grpc.testing.GrpcCleanupRule
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
-import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.MockProducer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,9 +32,12 @@ class OrderEntryServiceTest {
     private val orderEntryServerName: String = InProcessServerBuilder.generateName()
     private val cashierServerName: String = InProcessServerBuilder.generateName()
 
-    private val cashierService = spyk<CashierGrpcKt.CashierCoroutineImplBase>();
-    private val kafkaProducer = mockk<KafkaProducer<String,ByteArray>>()
-    private val emergencyService = mockk<EmergencyService>()
+    private val cashierService = spyk<CashierGrpcKt.CashierCoroutineImplBase>()
+
+    private val kafkaProducer  = MockProducer<String,ByteArray>().apply {
+        this.initTransactions()
+    }
+    private val interventionService = mockk<InterventionService>()
 
 
     private val orderChannel: ManagedChannel = grpcCleanup.register(InProcessChannelBuilder
@@ -51,7 +52,7 @@ class OrderEntryServiceTest {
     private val orderEntryServer = grpcCleanup.register(InProcessServerBuilder
             .forName(orderEntryServerName).directExecutor()
             .intercept(JwtServerInterceptor())
-            .addService(OrderEntryServiceImpl(kafkaProducer, emergencyService, cashierStub))
+            .addService(OrderEntryServiceImpl(kafkaProducer, interventionService, cashierStub))
             .build()).start()
 
     private val cashierServer = grpcCleanup.register(InProcessServerBuilder

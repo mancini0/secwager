@@ -1,6 +1,6 @@
 package com.secwager.orderentry
 
-import com.secwager.emergency.EmergencyService
+import com.secwager.intervention.InterventionService
 import com.secwager.orderentry.JwtServerInterceptor.Companion.UID_CTX_KEY
 import com.secwager.orderentry.OrderEntry.OrderSubmissionStatus
 import com.secwager.orderentry.OrderEntry.OrderSubmissionStatus.FAILURE_INVALID_ORDER
@@ -11,15 +11,15 @@ import com.secwager.proto.cashier.CashierGrpcKt
 import com.secwager.proto.cashier.CashierOuterClass.CashierActionStatus.*
 import com.secwager.proto.cashier.CashierOuterClass.CashierRequest
 import com.secwager.proto.cashier.CashierOuterClass.TransactionReason
-import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 
-class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: KafkaProducer<String, ByteArray>,
-                                                private val emergencyService: EmergencyService,
+class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Producer<String, ByteArray>,
+                                                private val interventionService: InterventionService,
                                                 private val cashierStub: CashierGrpcKt.CashierCoroutineStub) : OrderEntryServiceGrpcKt.OrderEntryServiceCoroutineImplBase() {
 
     companion object {
@@ -100,7 +100,7 @@ class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Kafka
                         "${SUCCESS.name}")
             }.onFailure {
                 log.error("could not unlock funds after order publish failed...requesting manual intervention")
-                emergencyService.requestIntervention("could not unlock funds after order publish failed",
+                interventionService.requestIntervention("could not unlock funds after order publish failed",
                         LocalDateTime.now(), order.traderId, it)
             }
             kotlin.runCatching {
