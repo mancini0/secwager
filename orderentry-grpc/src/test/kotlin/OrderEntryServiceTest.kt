@@ -1,10 +1,11 @@
 package com.secwager.orderentry
 
 
+import com.google.common.truth.Truth.assertThat
 import com.secwager.intervention.InterventionService
 import com.secwager.proto.Market
 import com.secwager.proto.cashier.CashierGrpcKt
-import com.secwager.proto.cashier.CashierOuterClass
+import com.secwager.proto.cashier.CashierOuterClass.*
 import io.grpc.ManagedChannel
 import io.grpc.Metadata
 import io.grpc.inprocess.InProcessChannelBuilder
@@ -47,7 +48,7 @@ class OrderEntryServiceTest {
             .forName(cashierServerName).directExecutor().build())
 
     private val cashierStub = CashierGrpcKt.CashierCoroutineStub(cashierChannel)
-    private val orderEntryStub = OrderEntryServiceGrpcKt.OrderEntryServiceCoroutineStub(orderChannel)
+    private val orderEntryStubNoHeaders = OrderEntryServiceGrpcKt.OrderEntryServiceCoroutineStub(orderChannel)
 
     private val orderEntryServer = grpcCleanup.register(InProcessServerBuilder
             .forName(orderEntryServerName).directExecutor()
@@ -60,7 +61,7 @@ class OrderEntryServiceTest {
             .addService(cashierService)
             .build()).start()
 
-    private lateinit var orderStubWithHeaders: OrderEntryServiceGrpcKt.OrderEntryServiceCoroutineStub
+    private lateinit var orderStub: OrderEntryServiceGrpcKt.OrderEntryServiceCoroutineStub
 
 
     @Before
@@ -70,23 +71,41 @@ class OrderEntryServiceTest {
         val jwtJson = "{\"sub\":\"testuser\"}"
         headers.put(key,
                 Base64.getEncoder().encodeToString(jwtJson.toByteArray()))
-        orderStubWithHeaders = MetadataUtils.attachHeaders(orderEntryStub, headers)
+        orderStub = MetadataUtils.attachHeaders(orderEntryStubNoHeaders, headers)
     }
 
     @Test
-    fun insufficientFunds() {
+    fun insufficientFunds(){
         runBlocking {
-        coEvery { cashierService.lockFunds(any()) } returns CashierOuterClass
-                .CashierActionResult.newBuilder()
-                .setStatus(CashierOuterClass.CashierActionStatus.SUCCESS).build()
+            coEvery { cashierService.lockFunds(any()) } returns
+                    CashierActionResult.newBuilder()
+                            .setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS).build()
 
-
-            val result = orderStubWithHeaders.submitOrder(OrderEntry.SubmitOrderRequest
+            val result = orderStub.submitOrder(OrderEntry.SubmitOrderRequest
                     .newBuilder().setOrder(Market.Order.newBuilder()
                             .setOrderType(Market.Order.OrderType.BUY)
                             .setIsin("IBM")
                             .setQtyOnMarket(100).build()).build())
-            println(result)
+
+            assertThat(result.orderSubmissionStatus)
+                    .isEqualTo(OrderEntry.OrderSubmissionStatus.FAILURE_INSUFFICIENT_FUNDS)
+        }
+    }
+
+    @Test
+    fun sufficientFunds() {
+        runBlocking {
+        coEvery { cashierService.lockFunds(any()) } returns
+                CashierActionResult.newBuilder()
+                .setStatus(CashierActionStatus.SUCCESS).build()
+
+            val result = orderStub.submitOrder(OrderEntry.SubmitOrderRequest
+                    .newBuilder().setOrder(Market.Order.newBuilder()
+                            .setOrderType(Market.Order.OrderType.BUY)
+                            .setIsin("IBM")
+                            .setQtyOnMarket(100).build()).build())
+            assertThat(result.orderSubmissionStatus)
+                    .isEqualTo(OrderEntry.OrderSubmissionStatus.SUCCESS)
         }
     }
 }

@@ -44,6 +44,7 @@ kt_jvm_test(
         "@com_github_grpc_grpc_kotlin//stub/src/main/java/io/grpc/kotlin:stub",
         "@io_grpc_grpc_java//core:inprocess",
         "@io_grpc_grpc_java//stub",
+        "@maven//:com_google_truth_truth",
         "@maven//:io_grpc_grpc_testing",
         "@maven//:io_mockk_mockk",
         "@maven//:junit_junit",
