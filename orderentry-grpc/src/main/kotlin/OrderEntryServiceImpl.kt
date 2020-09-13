@@ -87,7 +87,7 @@ class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Produ
         val responseBuilder = SubmitOrderResponse.newBuilder()
         kotlin.runCatching {
             kafkaProducer.beginTransaction()
-            kafkaProducer.send(ProducerRecord(order.isin, order.toByteArray()))
+            kafkaProducer.send(ProducerRecord("order-entry",order.isin, order.toByteArray()))
             kafkaProducer.commitTransaction()
             responseBuilder.setOrderSubmissionStatus(OrderSubmissionStatus.SUCCESS)
         }.onFailure {

@@ -3,7 +3,8 @@ package com.secwager.orderentry
 
 import com.google.common.truth.Truth.assertThat
 import com.secwager.intervention.InterventionService
-import com.secwager.proto.Market
+import com.secwager.proto.Market.*
+import com.secwager.proto.Market.Order.OrderType
 import com.secwager.proto.cashier.CashierGrpcKt
 import com.secwager.proto.cashier.CashierOuterClass.*
 import io.grpc.ManagedChannel
@@ -17,6 +18,7 @@ import io.mockk.mockk
 import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.clients.producer.MockProducer
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -82,28 +84,42 @@ class OrderEntryServiceTest {
                             .setStatus(CashierActionStatus.FAILURE_INSUFFICIENT_FUNDS).build()
 
             val result = orderStub.submitOrder(OrderEntry.SubmitOrderRequest
-                    .newBuilder().setOrder(Market.Order.newBuilder()
-                            .setOrderType(Market.Order.OrderType.BUY)
+                    .newBuilder().setOrder(Order.newBuilder()
+                            .setOrderType(OrderType.BUY)
                             .setIsin("IBM")
                             .setQtyOnMarket(100).build()).build())
 
             assertThat(result.orderSubmissionStatus)
                     .isEqualTo(OrderEntry.OrderSubmissionStatus.FAILURE_INSUFFICIENT_FUNDS)
+
+            assertThat(kafkaProducer.history()).isEmpty()
         }
     }
 
     @Test
-    fun sufficientFunds() {
+            /**When a valid order is submitted and the customer has sufficient funds to post
+             * margin, the application should publish the trade to kafka's order-entry topic.
+             * The key of the message should be equal to the instruments symbol.
+             */
+
+    fun success() {
         runBlocking {
         coEvery { cashierService.lockFunds(any()) } returns
                 CashierActionResult.newBuilder()
                 .setStatus(CashierActionStatus.SUCCESS).build()
 
             val result = orderStub.submitOrder(OrderEntry.SubmitOrderRequest
-                    .newBuilder().setOrder(Market.Order.newBuilder()
-                            .setOrderType(Market.Order.OrderType.BUY)
+                    .newBuilder().setOrder(Order.newBuilder()
+                            .setOrderType(OrderType.BUY)
                             .setIsin("IBM")
                             .setQtyOnMarket(100).build()).build())
+
+
+            assertThat(kafkaProducer.history()).hasSize(1)
+            assertThat(kafkaProducer.history().get(0).topic()).isEqualTo("order-entry")
+            assertThat(kafkaProducer.history().get(0).key()).isEqualTo("IBM")
+            assertThat(Order.parseFrom(kafkaProducer.history().get(0).value()).orderType)
+                    .isEqualTo(OrderType.BUY)
             assertThat(result.orderSubmissionStatus)
                     .isEqualTo(OrderEntry.OrderSubmissionStatus.SUCCESS)
         }
