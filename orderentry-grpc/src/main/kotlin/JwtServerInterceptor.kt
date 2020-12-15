@@ -9,8 +9,6 @@ class JwtServerInterceptor : ServerInterceptor {
     companion object {
         val UID_CTX_KEY = Context.key<String>("uid")
         val ENCODED_JWT_PAYLOAD_KEY = "jwt-payload-base64"
-
-
     }
 
     override fun <ReqT : Any, RespT : Any> interceptCall(call: ServerCall<ReqT, RespT>, headers: Metadata,

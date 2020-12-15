@@ -69,8 +69,8 @@ maven_install(
         "org.slf4j:slf4j-api:1.7.25",
         "ch.qos.logback:logback-classic:1.2.3",
         "commons-dbutils:commons-dbutils:1.7",
-        "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.3.5",
-        "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:jar:1.3.5",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:jar:1.4.2",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:jar:1.4.2",
         "com.google.code.findbugs:jsr305:3.0.2",
         "com.google.auth:google-auth-library-oauth2-http:0.21.1",
         "com.google.cloud:google-cloud-firestore:1.35.2",
@@ -157,7 +157,7 @@ load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
 
 grpc_java_repositories()
 
-rules_kotlin_version = "legacy-1.4.0-rc3"
+rules_kotlin_version = "legacy-1.4.0-rc4"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
