@@ -10,13 +10,14 @@ import com.secwager.proto.cashier.CashierOuterClass.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 
 class CashierServiceImpl
 @Inject constructor(private val cashierDao: CashierDao) : CashierGrpcKt.CashierCoroutineImplBase() {
 
-    private val subscribers: MutableMap<String, MutableStateFlow<Balance>> = mutableMapOf()
+    private val subscribers: MutableMap<String, MutableStateFlow<Balance>> = ConcurrentHashMap()
 
     private val balanceCache: Cache<String, Balance> = Caffeine.newBuilder()
             .writer(object : CacheWriter<String, Balance> {
