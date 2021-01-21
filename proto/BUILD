@@ -12,7 +12,7 @@ proto_library(
 
 proto_library(
     name = "refdata_proto",
-    srcs = ["ref_data.proto"],
+    srcs = ["reference_data.proto"],
     deps = [],
 )
 
@@ -24,11 +24,6 @@ proto_library(
 proto_library(
     name = "orderentry_proto",
     srcs = ["order_entry.proto"],
-    deps = [":market_proto"],
-)
-
-cc_proto_library(
-    name = "market_cc_proto",
     deps = [":market_proto"],
 )
 
