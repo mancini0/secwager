@@ -4,7 +4,7 @@ metadata:
   name: secwager
 spec:
   kafka:
-    version: 2.3.0
+    version: 2.5.0
     replicas: 1
     listeners:
       plain: {}

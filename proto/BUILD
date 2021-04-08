@@ -12,7 +12,7 @@ proto_library(
 
 proto_library(
     name = "refdata_proto",
-    srcs = ["ref_data.proto"],
+    srcs = ["reference_data.proto"],
     deps = [],
 )
 
@@ -24,11 +24,6 @@ proto_library(
 proto_library(
     name = "orderentry_proto",
     srcs = ["order_entry.proto"],
-    deps = [":market_proto"],
-)
-
-cc_proto_library(
-    name = "market_cc_proto",
     deps = [":market_proto"],
 )
 
@@ -67,11 +62,11 @@ kt_jvm_grpc_library(
     ],
 )
 
-java_grpc_library(
-    name = "orderentry-grpc",
-    srcs = ["//proto:orderentry_proto"],
+kt_jvm_grpc_library(
+    name = "kt_grpc_order_entry",
+    srcs = [":orderentry_proto"],
     visibility = [
-        "//orderentry:__pkg__",
+        "//orderentry-grpc:__pkg__",
     ],
-    deps = ["//proto:orderentry_java_proto"],
+    deps = [":orderentry_java_proto"],
 )

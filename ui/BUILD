@@ -23,7 +23,7 @@ webpack(
 nodejs_binary(
     name = "ui",
     args = [
-        "ui2/public",  #server base path
+        "ui/public",  #server base path
     ],
     data = [
         "public/app.bundle.js",
