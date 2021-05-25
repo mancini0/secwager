@@ -11,7 +11,7 @@ load("//:defs.bzl", "K8S_CLUSTER")
 #        "us.gcr.io/secwager/orderentry:dev": ":orderentry",
 #    },
 #    template = ":k8s.yaml",
-#    visibility = ["//infra:__pkg__"],
+#    visibility = ["//infrastructure:__pkg__"],
 #)
 
 kt_jvm_library(

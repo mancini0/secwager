@@ -12,7 +12,7 @@ kt_jvm_library(
     ],
     resources = ["src/main/resources/logback.xml"],
     deps = [
-        "//proto:cashier-grpc",
+        "//proto:kt_grpc_cashier",
         "@maven//:commons_dbutils_commons_dbutils",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_bitcoinj_bitcoinj_core",
@@ -48,9 +48,8 @@ kt_jvm_binary(
     resources = ["src/main/resources/logback.xml"],
     deps = [
         ":coin-received-listener",
-        ":user-ec-key-receiver",
-        "//:dagger",
-        "//proto:cashier-grpc",
+job        "//:dagger",
+        "//proto:kt_grpc_cashier",
         "@io_grpc_grpc_java//api",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:com_zaxxer_HikariCP",

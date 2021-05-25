@@ -14,7 +14,7 @@ class DepositModal extends React.Component {
             <Modal.Header>{'Deposit funds'}</Modal.Header>
             <Modal.Content>
                 <div>
-                    <h5>WHAT UP</h5>
+                    <p>{`Send funds to  ${this.props.address}.`}</p>
                 </div>
             </Modal.Content>
         </Modal>

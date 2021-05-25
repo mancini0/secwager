@@ -8,7 +8,7 @@ kt_jvm_test(
     test_class = "com.secwager.dao.cashier.CashierDaoTest",
     deps = [
         ":cashier-dao-impl-jasync",
-        "//infra:db-init",
+        "//infrastructure:db-init",
         "@maven//:ch_qos_logback_logback_classic",
         "@maven//:com_github_jasync_sql_jasync_postgresql",
         "@maven//:com_google_truth_truth",

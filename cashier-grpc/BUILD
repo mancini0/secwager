@@ -11,7 +11,7 @@ k8s_object(
         "us.gcr.io/secwager/cashier:dev": ":cashier-grpc",
     },
     template = ":k8s.yaml",
-    visibility = ["//infra:__pkg__"],
+    visibility = ["//infrastructure:__pkg__"],
 )
 
 kt_jvm_library(

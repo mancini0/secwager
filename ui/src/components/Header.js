@@ -32,7 +32,7 @@ class HeaderBar extends React.Component {
                             onClick={this.props.logout}>logout</Link>
                     </div>
                     <div className='col clickable'>
-                        <DepositModal trigger={<Link
+                        <DepositModal address={this.props.address} trigger={<Link
                             to=""
                             style={{
                                 color: "blue"
@@ -61,7 +61,8 @@ class HeaderBar extends React.Component {
 
 }
 
-const mapStateToProps = (state) => ({ user: state.auth.uid });
+const mapStateToProps = (state) => ({ user: state.auth.uid,
+                                      address: state.auth.address });
 
 const mapDispatchToProps = (dispatch) => {
     return {
