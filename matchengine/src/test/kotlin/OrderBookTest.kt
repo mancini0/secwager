@@ -15,25 +15,27 @@ class OrderBookTest {
 
 
     val orderPublisher = mock(OrderEventPublisher::class.java)
-    val depthPublisher = mock(DepthPublisher::class.java)
     val tradePublisher = mock(TradePublisher::class.java)
-    var book: OrderBook = OrderBook("IBM", depthPublisher, tradePublisher, orderPublisher)
+    var book: OrderBook = OrderBook("IBM", tradePublisher, orderPublisher)
 
 
     @Before
     fun before() {
-        this.book = OrderBook("IBM", depthPublisher, tradePublisher, orderPublisher)
+        this.book = OrderBook("IBM", tradePublisher, orderPublisher)
     }
 
 
     @Test
     fun cancelBuy(){
-        val depthCaptor = argumentCaptor<Depth>()
+        val depthSnapshots : MutableList<Market.Depth> = mutableListOf()
         book.submit(Order("buy", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
+        depthSnapshots.add(book.measureFullDepth());
         book.submit(Order("buy", orderType =  OrderType.CANCEL,  qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
+        depthSnapshots.add(book.measureFullDepth());
         book.submit(Order("sell",orderType = OrderType.SELL,  qtyOnMarket = 100, traderId="seller",price=2, symbol = "IBM"))
-        verify(depthPublisher, times(3)).onDepthChange(depthCaptor.capture())
-        assertThat(depthCaptor.allValues)
+        depthSnapshots.add(book.measureFullDepth());
+
+        assertThat(depthSnapshots)
                 .containsExactly(
                         Depth.newBuilder().setIsin("IBM").addBidPrices(5).addBidQtys(50).build(),
                         Depth.newBuilder().setIsin("IBM").build(),
@@ -46,16 +48,23 @@ class OrderBookTest {
 
     @Test
     fun fillIncomingSellAgainstRestingOrdersAtMultipleLevels(){
-        val depthCaptor = argumentCaptor<Depth>()
+        val depthSnapshots: MutableList<Market.Depth> = mutableListOf()
+        val callBacks : MutableList<()->Any> = mutableListOf()
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()
-        book.submit(Order("bid6", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
-        book.submit(Order("bid6Later", orderType =  OrderType.BUY, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM"))
-        book.submit(Order("bid7", orderType =  OrderType.BUY,  qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM"))
-        book.submit(Order("sell", orderType =  OrderType.SELL,  qtyOnMarket = 225, traderId = "seller", price = 4, symbol = "IBM"))
-        verify(depthPublisher, times(4)).onDepthChange(depthCaptor.capture())
+
+        callBacks.addAll(book.submit(Order("bid6", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callBacks.addAll(book.submit(Order("bid6Later", orderType =  OrderType.BUY, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callBacks.addAll(book.submit(Order("bid7", orderType =  OrderType.BUY,  qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callBacks.addAll(book.submit(Order("sell", orderType =  OrderType.SELL,  qtyOnMarket = 225, traderId = "seller", price = 4, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callBacks.forEach {it.invoke()}
+
         verify(orderPublisher, times(3)).onFill(filledBuyCaptor.capture(), filledSellCaptor.capture())
-        assertThat(depthCaptor.allValues)
+        assertThat(depthSnapshots)
                 .containsExactly(
                         Depth.newBuilder().setIsin("IBM").addBidPrices(6).addBidQtys(50).build(),
                         Depth.newBuilder().setIsin("IBM").addBidPrices(6).addBidQtys(200).build(),
@@ -148,16 +157,22 @@ class OrderBookTest {
 
     @Test
     fun partialfillIncomingSellAgainstRestingOrdersAtMultipleLevels(){
-        val depthCaptor = argumentCaptor<Depth>()
+        val depthSnapshots : MutableList<Market.Depth> = mutableListOf()
+        val callbacks : MutableList<()->Any> = mutableListOf();
+
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()
-        book.submit(Order("bid6", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
-        book.submit(Order("bid6Later", orderType =  OrderType.BUY, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM"))
-        book.submit(Order("bid7", orderType =  OrderType.BUY,  qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM"))
-        book.submit(Order("sell", orderType =  OrderType.SELL,  qtyOnMarket = 226, traderId = "seller", price = 4, symbol = "IBM"))
-        verify(depthPublisher, times(4)).onDepthChange(depthCaptor.capture())
+        callbacks.addAll(book.submit(Order("bid6", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callbacks.addAll(book.submit(Order("bid6Later", orderType =  OrderType.BUY, qtyOnMarket = 150, traderId = "buyer2", price = 6, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callbacks.addAll(book.submit(Order("bid7", orderType =  OrderType.BUY,  qtyOnMarket = 25, traderId = "buyer3", price = 7, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callbacks.addAll(book.submit(Order("sell", orderType =  OrderType.SELL,  qtyOnMarket = 226, traderId = "seller", price = 4, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callbacks.forEach { it.invoke() };
         verify(orderPublisher, times(3)).onFill(filledBuyCaptor.capture(), filledSellCaptor.capture())
-        assertThat(depthCaptor.allValues)
+        assertThat(depthSnapshots)
                 .containsExactly(
                         Depth.newBuilder().setIsin("IBM").addBidPrices(6).addBidQtys(50).build(),
                         Depth.newBuilder().setIsin("IBM").addBidPrices(6).addBidQtys(200).build(),
@@ -253,15 +268,19 @@ class OrderBookTest {
 
     @Test
     fun fillPartiallyFilledSell(){
-        val depthCaptor = argumentCaptor<Depth>()
+        val depthSnapshots : MutableList<Market.Depth> = mutableListOf()
+        val callbacks : MutableList<()->Any> = mutableListOf()
         val filledBuyCaptor = argumentCaptor<Market.Order>()
         val filledSellCaptor = argumentCaptor<Market.Order>()
-        book.submit(Order("firstBuy", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM"))
-        book.submit(Order("sell", orderType =  OrderType.SELL,  qtyOnMarket = 55, traderId = "seller", price = 4, symbol = "IBM"))
-        book.submit(Order("secondBuy", orderType =  OrderType.BUY,  qtyOnMarket = 35, traderId = "buyer2", price = 8, symbol = "IBM"))
-        verify(depthPublisher, times(3)).onDepthChange(depthCaptor.capture())
+        callbacks.addAll(book.submit(Order("firstBuy", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer1", price = 6, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callbacks.addAll(book.submit(Order("sell", orderType =  OrderType.SELL,  qtyOnMarket = 55, traderId = "seller", price = 4, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callbacks.addAll(book.submit(Order("secondBuy", orderType =  OrderType.BUY,  qtyOnMarket = 35, traderId = "buyer2", price = 8, symbol = "IBM")))
+        depthSnapshots.add(book.measureFullDepth())
+        callbacks.forEach { it.invoke() }
         verify(orderPublisher, times(2)).onFill(filledBuyCaptor.capture(), filledSellCaptor.capture())
-        assertThat(depthCaptor.allValues)
+        assertThat(depthSnapshots)
                 .containsExactly(
                         Depth.newBuilder().setIsin("IBM").addBidPrices(6).addBidQtys(50).build(),
                         Depth.newBuilder().setIsin("IBM").addAskPrices(4).addAskQtys(5).build(),
