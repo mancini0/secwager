@@ -13,23 +13,16 @@ import org.mockito.Mockito.*
 
 class OrderBookTest {
 
-    class CallBackRunner : CallbackExecutor {
-        override fun executeCallbacks(callbacks: MutableCollection<() -> Any>) : Boolean {
-            callbacks.forEach{it.invoke()}
-            callbacks.clear()
-            return true
-        }
-    }
 
     val orderPublisher = mock(OrderEventPublisher::class.java)
     val depthPublisher = mock(DepthPublisher::class.java)
     val tradePublisher = mock(TradePublisher::class.java)
-    var book: OrderBook = OrderBook("IBM", depthPublisher, tradePublisher, orderPublisher, CallBackRunner())
+    var book: OrderBook = OrderBook("IBM", depthPublisher, tradePublisher, orderPublisher)
 
 
     @Before
     fun before() {
-        this.book = OrderBook("IBM", depthPublisher, tradePublisher, orderPublisher, CallBackRunner() )
+        this.book = OrderBook("IBM", depthPublisher, tradePublisher, orderPublisher)
     }
 
 

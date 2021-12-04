@@ -26,14 +26,14 @@ fun main() {
     marketDataProducerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     marketDataProducerProps.put("value.serializer", "com.secwager.serdes.QuoteProtoSerializer");
     marketDataProducerProps.put("acks",0)
-    marketDataProducerProps.put("linger.ms",250)
+    marketDataProducerProps.put("linger.ms",500)
 
     val orderEventProducerProps = Properties()
     orderEventProducerProps.put("bootstrap.servers", bootstrapServers);
     orderEventProducerProps.put("transactional.id", "secwager-ordereventproducer-${instanceNumber}")
     orderEventProducerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     orderEventProducerProps.put("value.serializer", "com.secwager.serdes.OrderProtoSerializer");
-    marketDataProducerProps.put("linger.ms",250)
+    marketDataProducerProps.put("linger.ms",500)
 
 
     val orderKafkaConsumer = KafkaConsumer<String, Market.Order>(orderConsumerProps)
@@ -50,7 +50,7 @@ fun main() {
     val orderEventPublisher = OrderEventPublisherImpl(orderEventKafkaProducer)
     val callbackExecutor = CallbackExecutorImpl(lastCommit)
 
-        for(o in orderKafkaConsumer.poll(Duration.ofSeconds(1))){
+        for(o in orderKafkaConsumer.poll(Duration.ofSeconds(5))){
             callbackExecutor.currentOffset=o.offset();
             val book = booksBySymbol.getOrPut(o.key(),
                     {OrderBook(callbackExecutor = callbackExecutor, tradePublisher =marketDataPublisher,

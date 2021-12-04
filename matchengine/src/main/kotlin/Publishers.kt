@@ -10,13 +10,7 @@ interface TradePublisher {
 
 interface DepthPublisher {
    fun  onDepthChange(depth: Depth)
-   fun  onMarketDataChange(symbol: String)
 }
-
-interface CallbackExecutor {
-    fun executeCallbacks(callbacks:MutableCollection<()->Any>) : Boolean
-}
-
 
 interface OrderEventPublisher{
     fun onFill(buy:Order, sell:Order)

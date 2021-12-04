@@ -18,7 +18,6 @@ kt_jvm_image(
     srcs = [
         "App.kt",
         "CallbackExecutorImpl.kt",
-        "MarketAnnotations.kt",
         "MarketDataPublisher.kt",
         "OrderEventPublisherImpl.kt",
     ],
