@@ -11,6 +11,9 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
 
+import com.secwager.utils.ConversionUtils.Companion.orderToProto
+
+
 class OrderBookTest {
 
 
@@ -26,10 +29,28 @@ class OrderBookTest {
 
 
     @Test
+    fun serialize() {
+        val sell = Order("sell",orderType = OrderType.SELL,  qtyOnMarket = 100, traderId="seller",price=6, symbol = "IBM")
+        val buy = Order("buy", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM")
+        book.submit(sell)
+        book.submit(buy)
+        assertThat(book.serializeBook()).isEqualTo(Market.BookState.newBuilder()
+            .setMaxBid(5)
+            .setMinAsk(6)
+            .putAllBids(mutableMapOf(Pair(5, Market.BookState.RestingOrders.newBuilder().addOrder(orderToProto(buy)).build())))
+            .putAllAsks(mutableMapOf(Pair(6, Market.BookState.RestingOrders.newBuilder().addOrder(orderToProto(sell)).build())))
+            .putAllArena(mutableMapOf(Pair("buy",
+                orderToProto(buy)),
+                Pair("sell",
+                    orderToProto(sell))
+            )).build())
+    }
+
+    @Test
     fun cancelBuy(){
         val depthSnapshots : MutableList<Market.Depth> = mutableListOf()
         book.submit(Order("buy", orderType =  OrderType.BUY,  qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
-        depthSnapshots.add(book.measureFullDepth());
+        depthSnapshots.add(book.measureFullDepth())
         book.submit(Order("buy", orderType =  OrderType.CANCEL,  qtyOnMarket = 50, traderId = "buyer", price = 5, symbol = "IBM"))
         depthSnapshots.add(book.measureFullDepth());
         book.submit(Order("sell",orderType = OrderType.SELL,  qtyOnMarket = 100, traderId="seller",price=2, symbol = "IBM"))

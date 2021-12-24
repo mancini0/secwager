@@ -10,6 +10,7 @@ kt_jvm_test(
     test_class = "com.secwager.matchengine.OrderBookTest",
     deps = [
         ":orderbook",
+        "@maven//:com_google_truth_extensions_truth_proto_extension",
         "@maven//:com_google_truth_truth",
         "@maven//:com_nhaarman_mockitokotlin2_mockito_kotlin",
         "@maven//:junit_junit",

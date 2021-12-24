@@ -12,6 +12,7 @@ import com.secwager.utils.ConversionUtils
 import com.secwager.utils.ConversionUtils.Companion.orderToProto
 import java.awt.print.Book
 import java.util.*
+import kotlin.math.absoluteValue
 
 /**OrderBook implementation that does NOT inform the order submitter of depth changes via callbacks
  * instead, a measureFullDepth() function is provided which is intended to be called as frequently (or infrequently)
@@ -49,7 +50,7 @@ class OrderBook(
 
     private fun handleBuy(incomingOrder: Order, callBacks: MutableList<() -> Any>) {
         if (incomingOrder.price > maxBid || maxBid == 0) maxBid = incomingOrder.price
-        val agreeableAsks = restingSells.navigableKeySet().tailSet(minAsk).iterator()
+        val agreeableAsks = restingSells.navigableKeySet().headSet(incomingOrder.price+1).iterator()
         prices@ for (price in agreeableAsks) {
             val ordersThisLevel = restingSells.get(price)?.iterator() ?: continue
             price@ for (restingOrder in ordersThisLevel) {
@@ -168,7 +169,7 @@ class OrderBook(
 
 
 
-    fun serializeBookState(): BookState{
+    fun serializeBook(): BookState{
         return BookState.newBuilder().setMinAsk(this.minAsk)
         .setMaxBid(this.maxBid)
         .putAllArena(this.orderArena.mapValues{ orderToProto(it.value)})
@@ -178,6 +179,45 @@ class OrderBook(
         .putAllAsks(this.restingSells.mapValues{
             BookState.RestingOrders.newBuilder().addAllOrder(it.value.map{orderToProto(it)}).build()
         }).build()
+    }
+
+
+    fun deserializeBook(bookState: BookState) {
+        this.maxBid = bookState.maxBid;
+        this.minAsk = bookState.minAsk;
+
+        bookState.bidsMap.forEach {
+            this.restingBuys[it.key] = it.value.orderList.mapTo(mutableListOf()) { o ->
+                Order(
+                    id = o.orderId, traderId = o.traderId,
+                    symbol = o.isin, status = o.state, fills = o.matchesList.mapTo(mutableListOf()) { m ->
+                        Match(
+                            orderId = m.orderId,
+                            traderId = m.traderId, qty = m.qty, price = m.price
+                        )
+                    }, price = o.price, orderType = o.orderType,
+                    qtyFilled = o.qtyFilled, qtyOnMarket = o.qtyOnMarket
+                ).also { orderArena.put(it.id, it) }
+
+            }
+        }
+
+
+        bookState.asksMap.forEach {
+            this.restingSells[it.key] = it.value.orderList.mapTo(mutableListOf()) { o ->
+                Order(
+                    id = o.orderId, traderId = o.traderId,
+                    symbol = o.isin, status = o.state, fills = o.matchesList.mapTo(mutableListOf()) { m ->
+                        Match(
+                            orderId = m.orderId,
+                            traderId = m.traderId, qty = m.qty, price = m.price
+                        )
+                    }, price = o.price, orderType = o.orderType,
+                    qtyFilled = o.qtyFilled, qtyOnMarket = o.qtyOnMarket
+                ).also { orderArena.put(it.id, it) }
+            }
+            return
+        }
     }
 
 
