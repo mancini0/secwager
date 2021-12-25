@@ -38,7 +38,7 @@ kt_jvm_library(
 )
 
 kt_jvm_binary(
-    name = "blockchain-spv",
+    name = "blockchain-listener",
     srcs = [
         "src/main/kotlin/App.kt",
         "src/main/kotlin/di/AppComponent.kt",

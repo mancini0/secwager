@@ -1,6 +1,5 @@
 package com.secwager.orderentry
 
-import com.secwager.intervention.InterventionService
 import com.secwager.orderentry.JwtServerInterceptor.Companion.UID_CTX_KEY
 import com.secwager.orderentry.OrderEntry.OrderSubmissionStatus
 import com.secwager.orderentry.OrderEntry.OrderSubmissionStatus.FAILURE_INVALID_ORDER
@@ -19,7 +18,6 @@ import java.util.*
 import javax.inject.Inject
 
 class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Producer<String, ByteArray>,
-                                                private val interventionService: InterventionService,
                                                 private val cashierStub: CashierGrpcKt.CashierCoroutineStub) : OrderEntryServiceGrpcKt.OrderEntryServiceCoroutineImplBase() {
 
     companion object {
@@ -100,8 +98,6 @@ class OrderEntryServiceImpl @Inject constructor(private val kafkaProducer: Produ
                         "${SUCCESS.name}")
             }.onFailure {
                 log.error("could not unlock funds after order publish failed...requesting manual intervention")
-                interventionService.requestIntervention("could not unlock funds after order publish failed",
-                        LocalDateTime.now(), order.traderId, it)
             }
             kotlin.runCatching {
                 kafkaProducer.abortTransaction()

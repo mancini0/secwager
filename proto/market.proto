@@ -73,4 +73,5 @@ message BookState {
   map<string, Order> arena = 3;
   uint32 minAsk = 4;
   uint32 maxBid = 5;
+  string isin = 6;
 }
