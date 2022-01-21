@@ -26,14 +26,14 @@ fun main() {
     marketDataProducerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     marketDataProducerProps.put("value.serializer", "com.secwager.serdes.QuoteProtoSerializer");
     marketDataProducerProps.put("acks",0)
-    marketDataProducerProps.put("linger.ms",250)
+    marketDataProducerProps.put("linger.ms",500)
 
     val orderEventProducerProps = Properties()
     orderEventProducerProps.put("bootstrap.servers", bootstrapServers);
     orderEventProducerProps.put("transactional.id", "secwager-ordereventproducer-${instanceNumber}")
     orderEventProducerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     orderEventProducerProps.put("value.serializer", "com.secwager.serdes.OrderProtoSerializer");
-    marketDataProducerProps.put("linger.ms",250)
+    marketDataProducerProps.put("linger.ms",500)
 
 
     val orderKafkaConsumer = KafkaConsumer<String, Market.Order>(orderConsumerProps)
@@ -44,19 +44,17 @@ fun main() {
     val orderEventKafkaProducer = KafkaProducer<String,Market.Order>(orderEventProducerProps)
     orderEventKafkaProducer.initTransactions();
 
-    val lastCommit = orderKafkaConsumer.committed(setOf(orderTopic))[orderTopic]?.offset() ?: -1
     val booksBySymbol = mutableMapOf<String,OrderBook>()
     val marketDataPublisher = MarketDataPublisher(marketDataKafkaProducer)
     val orderEventPublisher = OrderEventPublisherImpl(orderEventKafkaProducer)
-    val callbackExecutor = CallbackExecutorImpl(lastCommit)
 
-        for(o in orderKafkaConsumer.poll(Duration.ofSeconds(1))){
-            callbackExecutor.currentOffset=o.offset();
+        for(o in orderKafkaConsumer.poll(Duration.ofSeconds(5))){
             val book = booksBySymbol.getOrPut(o.key(),
-                    {OrderBook(callbackExecutor = callbackExecutor, tradePublisher =marketDataPublisher,
-                            depthPublisher = marketDataPublisher, orderEventPublisher =orderEventPublisher, symbol=o.key())})
+                    {OrderBook(tradePublisher =marketDataPublisher,
+                            orderEventPublisher =orderEventPublisher, symbol=o.key())})
             val orderProto = o.value()
-            val orderDto = Order( id=orderProto.orderId, orderType= orderProto.orderType, symbol=orderProto.isin, qtyOnMarket=orderProto.qtyOnMarket, price=orderProto.price, traderId=orderProto.traderId)
+            val orderDto = Order( id=orderProto.orderId, orderType= orderProto.orderType, symbol=orderProto.isin,
+                qtyOnMarket=orderProto.qtyOnMarket, price=orderProto.price, traderId=orderProto.traderId)
             book.submit(orderDto)
         }
     }

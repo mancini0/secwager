@@ -2,7 +2,6 @@ package com.secwager.orderentry
 
 
 import com.google.common.truth.Truth.assertThat
-import com.secwager.intervention.InterventionService
 import com.secwager.proto.Market.*
 import com.secwager.proto.Market.Order.OrderType
 import com.secwager.proto.cashier.CashierGrpcKt
@@ -40,7 +39,6 @@ class OrderEntryServiceTest {
     private val kafkaProducer  = MockProducer<String,ByteArray>().apply {
         this.initTransactions()
     }
-    private val interventionService = mockk<InterventionService>()
 
 
     private val orderChannel: ManagedChannel = grpcCleanup.register(InProcessChannelBuilder
@@ -55,7 +53,7 @@ class OrderEntryServiceTest {
     private val orderEntryServer = grpcCleanup.register(InProcessServerBuilder
             .forName(orderEntryServerName).directExecutor()
             .intercept(JwtServerInterceptor())
-            .addService(OrderEntryServiceImpl(kafkaProducer, interventionService, cashierStub))
+            .addService(OrderEntryServiceImpl(kafkaProducer, cashierStub))
             .build()).start()
 
     private val cashierServer = grpcCleanup.register(InProcessServerBuilder

@@ -1,2 +1,8 @@
 **/target
 **/node_modules
+bazel-bin
+bazel-out
+bazel-secwager
+bazel-testlogs
+.idea
+.ijwb

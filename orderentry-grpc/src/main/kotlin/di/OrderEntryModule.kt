@@ -3,8 +3,7 @@ package com.secwager.orderentry.di
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.secwager.intervention.InterventionService
-import com.secwager.intervention.InterventionServiceLoggingImpl
+
 
 import com.secwager.proto.cashier.CashierGrpcKt
 import dagger.Module
@@ -48,11 +47,7 @@ class OrderEntryModule {
         return CashierGrpcKt.CashierCoroutineStub(channel)
     }
 
-    @Provides
-    @Singleton
-    fun provideEmergencyService(): InterventionService {
-        return InterventionServiceLoggingImpl()
-    }
+
 
     @Provides
     @Singleton
